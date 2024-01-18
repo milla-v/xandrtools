@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>XnderTools</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link  href="templates/styles.css" rel="stylesheet"  type="text/css">
+</head>
+<body>
+  <script>
+  function respNavigation() {
+    var x = document.getElementById("myTopnav");
+    if (x.className === "topnav") {
+      x.className += " responsive";
+    } else {
+      x.className = "topnav";
+    }
+  }
+  </script>
+  
+  <div class="topnav" id="myTopnav">
+    <a href="#home">XandrTools</a>
+    <div class="dropdown">
+      <button class="dropbtn">Tools
+        <i class="fa fa-caret-down"></i>
+      </button>
+      <div class="dropdown-content">
+        <a href="#">Link 1</a>
+        <a href="#">Link 2</a>
+        <a href="#">Link 3</a>
+      </div>
+    </div>
+    <a href="#home">Contacts</a>
+    <a href="#news">About</a>
+    <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="respNavigation()">&#9776;</a>
+  </div>
+  
+  <div class="content-box">
+    <div style="padding-left:16px">
+      <p>This tool is an ongoing experiment in validation:</p>
+      <h2>Validate the Xandr user ID:</h2>
+      <form method="POST" action="/">
+        <label for="xuid">Insert The Xangr iser ID:</label><br>
+        <div class="valid-box">
+          <input type="text" id="id" name="xuid" class="valid-input"><br>
+          <input type="submit" value="Validate" class="valid-submit">
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-col">
+     <a href="#">Terms</a>
+    </div>
+  </div>
+</body>
+</html>
