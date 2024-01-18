@@ -4,13 +4,21 @@ package service
 import (
 	"golang.org/x/crypto/acme/autocert"
 
+	"embed"
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
 	"os"
 )
+
+//go:embed templates/*.html
+var content embed.FS
+
+//go:embed templates/*.css
+var cssFiles embed.FS
 
 var proxyXandrtools = func() *httputil.ReverseProxy {
 	u, err := url.Parse("http://zero:80/xandrtools/")
@@ -27,10 +35,15 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 
 // Run starts http or https server
 func Run() {
+	t = template.Must(template.ParseFS(content,
+		"templates/xandrtools.html"))
+
 	mux := http.NewServeMux()
 
 	//	mux.Handle("xandrtools.com/", proxyXandrtools)
-	mux.HandleFunc("/", homePage)
+	mux.HandleFunc("/", handleXandrtools)
+
+	mux.HandleFunc("/templates/styles.css", handleStyle)
 
 	addr := os.Getenv("DEBUG_ADDR")
 	if addr != "" {

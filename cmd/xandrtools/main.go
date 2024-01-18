@@ -24,4 +24,5 @@ func main() {
 	}
 
 	service.Run()
+
 }
