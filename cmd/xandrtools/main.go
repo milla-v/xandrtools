@@ -1,8 +1,5 @@
 package main
 
-// chat command runs a chat server.
-package main
-
 import (
 	"flag"
 	"fmt"

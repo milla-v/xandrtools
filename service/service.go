@@ -1,7 +1,16 @@
 // Package service implements chat http service.
 package service
 
-//go:generate go run ../cmd/chatembed/chatembed.go
+import (
+	"golang.org/x/crypto/acme/autocert"
+
+	"fmt"
+	"log"
+	"net/http"
+	"net/http/httputil"
+	"net/url"
+	"os"
+)
 
 var proxyXandrtools = func() *httputil.ReverseProxy {
 	u, err := url.Parse("http://zero:80/xandrtools/")
@@ -11,61 +20,46 @@ var proxyXandrtools = func() *httputil.ReverseProxy {
 	return httputil.NewSingleHostReverseProxy(u)
 }()
 
-// Run starts a chat http server on address (host:port)
+func homePage(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "home page")
+	log.Printf(r.URL.Path)
+}
+
+// Run starts http or https server
 func Run() {
-	var err error
-
-	cfg.Readenv()
-	domcfg, err = loadDomainsConfig()
-	if err != nil {
-		log.Println("cannot load domains config:", err)
-	} else {
-		log.Printf("domains loaded: %+v", domcfg)
-	}
-
-	log.Printf("chat version: %s, date: %s\n", version, date)
-	log.Println("starting server on https://" + cfg.Domain + ":" + cfg.Port + "/")
-
-	loc = mustLoadLocation()
-
-	connectChan = make(chan *client)
-	connectedChan = make(chan *client, 100)
-	disconnectChan = make(chan *client, 100)
-	broadcastChan = make(chan *message, 100)
-	historyFile, err = os.OpenFile(cfg.WorkDir+"history.html", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	mux := http.NewServeMux()
 
-	mux.Handle("xandrtools.com/", proxyXandrtools)
+	//	mux.Handle("xandrtools.com/", proxyXandrtools)
+	mux.HandleFunc("/", homePage)
 
-	_, err = os.Stat("cert.pem")
-	if err == nil {
-		log.Println("cert.pem exists. Starting dev server")
-		hosts := addDynamicHosts(nil)
-		log.Printf("dynamic hosts: %s", hosts)
-		startDevServer(mux)
-		return
+	addr := os.Getenv("DEBUG_ADDR")
+	if addr != "" {
+		startDevServer(mux, addr)
+	} else {
+		startProdServer(mux)
 	}
 
 	log.Println("cert.pem does not exist. Starting prod server with autocert")
 }
 
-func startDevServer(h http.Handler) {
-	var s *http.Server
-
-	if strings.HasPrefix(cfg.Domain, "127.0.0.1") {
-		s = &http.Server{
-			Addr:    cfg.Domain + ":" + cfg.Port,
-			Handler: h,
-		}
-	} else {
-		s = &http.Server{
-			Addr:    ":" + cfg.Port,
-			Handler: h,
-		}
+// startProdServer get the certificate for domain and starts a https server.
+func startProdServer(h http.Handler) {
+	hosts := []string{
+		"xandrtools.com",
 	}
-	log.Fatal(s.ListenAndServeTLS("cert.pem", "key.pem"))
+	log.Println("starting prod server")
+	l := autocert.NewListener(hosts...)
+	err := http.Serve(l, h)
+	log.Fatal(err)
+}
+
+// startDevServer starts http server on localhost.
+func startDevServer(h http.Handler, addr string) {
+	log.Println("starting dev server on", addr)
+	s := &http.Server{
+		Addr:    addr,
+		Handler: h,
+	}
+
+	log.Fatal(s.ListenAndServe())
 }
