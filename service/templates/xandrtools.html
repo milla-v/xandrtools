@@ -39,22 +39,27 @@
       <p>This tool is an ongoing experiment in validation:</p>
       <h2>Validate the Xandr user ID:</h2>
       <form method="POST" action="/">
-        <label for="xuid">Insert The Xangr iser ID:</label><br>
+        <label for="xuid">Insert The Xangr User ID:</label><br>
         <div class="valid-box">
           <input type="text" id="id" name="xuid" class="valid-input"><br>
           <input type="submit" value="Validate" class="valid-submit">
         </div>
       </form>
-    </div>
-    <div>
+      <br> 
       <div>
-        {{if eq .Errs true}}
-          {{range .Validation.ErrList}}
-            <p>{{.}}</p>
+        <div>
+          {{if eq .Errs true}}
+            <label>ID: </label><label style="color: red">{{.Validation.WrongUserID}}</label>
+            {{range .Validation.ErrList}}
+              <p><span style='font-size:17px; color: red;'>&#8594;</span> {{.}}</p>
+            {{end}}
           {{end}}
-        {{end}}
+          {{if ne .Validation.UserID 0}}
+            <p><span style='font-size:17px; color: green;'>&#8594;</span> {{.Validation.ValidMsg}}</p>
+          {{end}}
+        </div>
       </div>
-    </div>
+   </div>
   </div>
 
   <div class="footer">
