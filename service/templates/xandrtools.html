@@ -46,6 +46,15 @@
         </div>
       </form>
     </div>
+    <div>
+      <div>
+        {{if eq .Errs true}}
+          {{range .Validation.ErrList}}
+            <p>{{.}}</p>
+          {{end}}
+        {{end}}
+      </div>
+    </div>
   </div>
 
   <div class="footer">

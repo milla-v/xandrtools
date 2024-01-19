@@ -17,21 +17,28 @@ func handleStyle(w http.ResponseWriter, r *http.Request) {
 
 func handleXandrtools(w http.ResponseWriter, r *http.Request) {
 	type data struct {
-		XUID        int64
-		XuidErrList []string
+		XUID       int64
+		Validation xandr
+		Errs       bool
 	}
 	var d data
-
+	d.Errs = false
 	switch r.Method {
 	case "POST":
 		s := r.FormValue("xuid")
 		if s == "" {
 			fmt.Println("empty link")
 		}
-		d.XuidErrList = processXandrUID(s)
+		d.Validation = processXandrUID(s)
 		fmt.Println("----------------------------")
 
 	}
+
+	log.Println("len errs: ", len(d.Validation.ErrList))
+	if len(d.Validation.ErrList) > 0 {
+		d.Errs = true
+	}
+	log.Println("errs: ", d.Errs)
 
 	if err := t.ExecuteTemplate(w, "xandrtools.html", d); err != nil {
 		log.Println(err)
