@@ -16,7 +16,7 @@ func processXandrUID(str string) xandr {
 	negative := "ID cannot be negative"
 	letters := "ID must contain numbers only"
 	zero := "Cannot start from 0"
-	large := "UserID value is out of range"
+	large := "UserID value is out of range.  UserID number should be in the range from 1 to 9223372036854775807"
 	empty := "Empty the Xanrd userID field"
 	valid := "ID validation completed. No errors or warnings founded."
 

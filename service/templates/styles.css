@@ -1,9 +1,10 @@
 body {
-      margin:0;
-      font-family:Arial;
-      min-height: 100%;
-      background-color: white;
-      }
+	margin:0;
+	font-family:Arial;
+	min-height: 100%;
+	background-color: white;
+    font-size: 18px;
+    }
     
     :root {
       --gray: #F7F9FF;
@@ -93,26 +94,30 @@ body {
     
     .footer {
     	height: 50px;
-    	margin: 0 auto;
-    	max-width: 1240px;
-    	text-align: left;
-    	background-color: var(--gray);
-      }
+	margin: 0 auto;
+	text-align: center;
+	background-color: var(--gray);
+	width: 100%;
+    }
       
       .footer-col {
-        padding: 10px;
-      }
+    padding: 10px;
+    display: inline-block;
+    width: 1240px;
+    text-align: left;
+    }
       
       .valid-box {
         display: flex;
+        margin-top: 10px;
       }
       
       .valid-input {
         margin-right: 10px;
+        width: 340px;
       }
       
       .valid-input, .valid-submit {
-        border-radius: 15px;
         padding: 10px;
         font-size: 17px;
       }
