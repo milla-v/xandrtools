@@ -40,6 +40,8 @@ func handleXandrtools(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Println("errs: ", d.Errs)
 
+	validateUUID()
+
 	if err := t.ExecuteTemplate(w, "xandrtools.html", d); err != nil {
 		log.Println(err)
 		http.Error(w, "error", http.StatusInternalServerError)
