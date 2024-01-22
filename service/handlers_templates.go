@@ -20,8 +20,10 @@ func handleXandrtools(w http.ResponseWriter, r *http.Request) {
 		XUID       int64
 		Validation xandr
 		Errs       bool
+		ValUUID    uuid
 	}
 	var d data
+	var err error
 	d.Errs = false
 	switch r.Method {
 	case "POST":
@@ -33,8 +35,11 @@ func handleXandrtools(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("----------------------------")
 
 	}
-	test := "acde070d-8c4c-4f0d-9d8a-162843c10333"
-	parseUUID(test)
+	test := "acde070d-8c4c-4f0d-9d8a"
+	d.ValUUID.ErrList, err = validateUUID(test)
+	if err != nil {
+		log.Println("ValUUD err: ", len(d.ValUUID.ErrList))
+	}
 
 	log.Println("len errs: ", len(d.Validation.ErrList))
 	if len(d.Validation.ErrList) > 0 {
