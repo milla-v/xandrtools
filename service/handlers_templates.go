@@ -33,14 +33,14 @@ func handleXandrtools(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("----------------------------")
 
 	}
+	test := "acde070d-8c4c-4f0d-9d8a-162843c10333"
+	parseUUID(test)
 
 	log.Println("len errs: ", len(d.Validation.ErrList))
 	if len(d.Validation.ErrList) > 0 {
 		d.Errs = true
 	}
 	log.Println("errs: ", d.Errs)
-
-	validateUUID()
 
 	if err := t.ExecuteTemplate(w, "xandrtools.html", d); err != nil {
 		log.Println(err)
