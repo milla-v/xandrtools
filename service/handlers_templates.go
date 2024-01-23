@@ -35,10 +35,10 @@ func handleXandrtools(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("----------------------------")
 
 	}
-	test := "acde070d-8c4c-4f0d-9d8a"
-	d.ValUUID.ErrList, err = validateUUID(test)
+	test := "123e4567-e89b-12d3-a456-426614174000"
+	d.ValUUID.ErrMsg, err = validateUUID(test)
 	if err != nil {
-		log.Println("ValUUD err: ", len(d.ValUUID.ErrList))
+		log.Println("ValUUD err: ", len(d.ValUUID.ErrMsg))
 	}
 
 	log.Println("len errs: ", len(d.Validation.ErrList))

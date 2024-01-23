@@ -7,39 +7,35 @@ import (
 	"strings"
 )
 
-func validateUUID(uuid string) ([]string, error) {
+func validateUUID(uuid string) (string, error) {
 	var err error
-	var errList []string
+	var errMsg string
 
 	log.Println("------------VALIDATE UUID-------------")
 	sections, err := parseUUID(uuid)
 	if err != nil {
 		log.Println("Parsing Err: ", err)
-		errList = append(errList, err.Error())
-		log.Println("sections len: ", len(sections))
-		for i := 0; i < len(errList); i++ {
-			log.Println(errList[i])
-			return errList, err
-
+		errMsg = err.Error()
+		return errMsg, err
+	}
+	//check if hexadecimal
+	if len(sections) > 0 {
+		for i := 0; i < len(sections); i++ {
+			_, err := strconv.ParseInt(sections[i], 16, 64)
+			if err != nil {
+				errMsg = notHex
+				log.Println("errMsg ", errMsg)
+				return errMsg, err
+			}
 		}
-		return errList, err
 	}
 
-	s := "123!4567"
-	n, err := strconv.ParseUint(s, 16, 64)
-	if err != nil {
-		log.Println("s is not valid", err)
-	}
-	log.Println("n = ", n)
-	log.Println("len s = ", len(s))
-	return errList, err
+	return errMsg, err
 }
 
 func parseUUID(uu string) ([]string, error) {
 	var sections []string
 	var uuid string
-	var found bool
-	var hyphen int
 	var err error
 
 	log.Println("----------PARSE UUID----------------")
@@ -49,27 +45,15 @@ func parseUUID(uu string) ([]string, error) {
 	log.Println("len of hyphens: ", strings.Count(uuid, "-"))
 	hyphenQuantity := strings.Count(uuid, "-")
 	if hyphenQuantity == 4 {
-		for i := 0; i < 4; i++ {
-			//find, copy and delete with hyphen first 4 sections of uuid
-			log.Println("-------------------", i, "--------------------")
-			hyphen = strings.Index(uuid, "-")
-			log.Println("First hyphen position: ", hyphen)
-			sec := uuid[:hyphen]
-			log.Println("sec1: ", sec)
-			sections = append(sections, sec)
-			uuid, found = strings.CutPrefix(uuid, sec+"-")
-			log.Println("uuid after delete first section: ", uuid, "found: ", found)
-			if err != nil {
-				return sections, err
-			}
-		}
-		log.Println("UUID AFTER FOR: ", uuid)
-		sections = append(sections, uuid)
-
+		sections = strings.Split(uuid, "-")
+		log.Println("SPLIT res len: ", len(sections))
 		for i := 0; i < len(sections); i++ {
 			log.Println(i, ". ", sections[i])
 		}
-		log.Println("Sections len: ", len(sections))
+		if err != nil {
+			log.Println("slpit err: ", err)
+			return sections, err
+		}
 	} else {
 		errString := "There is only " + strconv.Itoa(hyphenQuantity) + " hyphens. Must be 4!"
 		errQnt := errors.New(errString)
@@ -77,6 +61,6 @@ func parseUUID(uu string) ([]string, error) {
 		log.Println(errQnt)
 
 	}
-
+	log.Println("I am here")
 	return sections, err
 }
