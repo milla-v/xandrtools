@@ -38,10 +38,10 @@
     <div style="padding-left:16px">
       <p>This tool is an ongoing experiment in validation:</p>
       <h2>Validate the Xandr user ID:</h2>
-      <form method="POST" action="/">
+      <form method="POST" action="/?=1">
         <label for="xuid">Insert The Xandr User ID:</label>
         <div class="valid-box">
-          <input type="text" id="id" name="xuid" class="valid-input" {{if ne .Validation.WrongUserID ""}} value="{{.Validation.WrongUserID}}" {{end}} {{if ne .Validation.UserID 0}} value="{{.Validation.UserID}}" {{end}}><br>
+          <input type="text" id="xid" name="xuid" class="valid-input" {{if ne .Validation.WrongUserID ""}} value="{{.Validation.WrongUserID}}" {{end}} {{if ne .Validation.UserID 0}} value="{{.Validation.UserID}}" {{end}}><br>
           <input type="submit" value="Validate" class="valid-submit">
         </div>
       </form>
@@ -58,6 +58,38 @@
         {{end}}
         <br>
         <a href="https://docs.xandr.com/bundle/xandr-api/page/legacy-bss-file-format.html">Legacy BSS File Format</a>
+      </div>
+    </div>
+  
+    <div style="padding-left:16px">
+      <h2>Validate the UUID:</h2>
+      <form method="POST" action="/?=2">
+        <label for="uuid">Insert UUID:</label>
+        <div class="valid-box">
+          <input type="text" id="xid" name="uuid" class="valid-input" {{if ne .ValUUID.UUID ""}} value="{{.ValUUID.UUID}}" {{end}}><br>
+          <input type="submit" value="Validate" class="valid-submit">
+        </div>
+      </form>
+      <br> 
+      <div>
+        {{if and (ne .ValUUID.ErrMsg "") (eq .ValUUID.SectionsExist false)}}
+          <label>ID: </label><label style="color: red">{{.ValUUID.UUID}}</label>
+          <p><span style='font-size:17px; color: red;'>&#8594;</span> {{.ValUUID.ErrMsg}}</p>
+        {{end}}
+        {{if and (ne .ValUUID.ErrMsg "") (eq .ValUUID.SectionsExist true) }}
+          <label>ID: </label>
+          {{if eq .ValUUID.ErrSecNum 1}}<label style="color: red">{{.SecOne}}</label><label>-{{.SecTwo}}</label><label>-{{.SecThree}}</label><label>-{{.SecFour}}</label><label>-{{.SecFive}}</label>{{end}}
+          {{if eq .ValUUID.ErrSecNum 2}}<label>{{.SecOne}}-</label><label style="color: red">{{.SecTwo}}</label><label>-{{.SecThree}}</label><label>-{{.SecFour}}</label><label>-{{.SecFive}}</label>{{end}}
+          {{if eq .ValUUID.ErrSecNum 3}}<label>{{.SecOne}}</label><label>-{{.SecTwo}}-</label><label style="color: red">{{.SecThree}}</label><label>-{{.SecFour}}</label><label>-{{.SecFive}}</label>{{end}}
+          {{if eq .ValUUID.ErrSecNum 4}}<label>{{.SecOne}}</label><label>-{{.SecTwo}}</label><label>-{{.SecThree}}-</label><label style="color: red">{{.SecFour}}</label><label>-{{.SecFive}}</label>{{end}}
+          {{if eq .ValUUID.ErrSecNum 5}}<label>{{.SecOne}}</label><label>-{{.SecTwo}}</label><label>-{{.SecThree}}</label><label>-{{.SecFour}}-</label><label style="color: red">{{.SecFive}}</label>{{end}}
+          <p><span style='font-size:17px; color: red;'>&#8594;</span> {{.ValUUID.ErrMsg}}</p>
+        {{end}}
+        {{if eq .ValUUID.ErrMsg ""}}
+         <p><span style='font-size:17px; color: green;'>&#8594;</span> UUID validation completed. No errors or warnings founded.</p>
+        {{end}}
+        <br>
+        <a href="https://en.wikipedia.org/wiki/Universally_unique_identifier">Universally unique identifier</a>
       </div>
    </div>
   </div>

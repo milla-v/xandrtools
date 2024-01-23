@@ -7,30 +7,38 @@ import (
 	"strings"
 )
 
-func validateUUID(uuid string) (string, error) {
+func validateUUID(str string) (uuid, error) {
 	var err error
-	var errMsg string
+	var u uuid
 
 	log.Println("------------VALIDATE UUID-------------")
-	sections, err := parseUUID(uuid)
+	u.UUID = str
+	u.Sections, err = parseUUID(str)
 	if err != nil {
 		log.Println("Parsing Err: ", err)
-		errMsg = err.Error()
-		return errMsg, err
+		u.ErrMsg = err.Error()
+		u.SectionsExist = false
+		log.Println("Sections Exist: ", u.SectionsExist)
+		return u, err
 	}
 	//check if hexadecimal
-	if len(sections) > 0 {
-		for i := 0; i < len(sections); i++ {
-			_, err := strconv.ParseInt(sections[i], 16, 64)
+	log.Println("Len u.Sections = ", len(u.Sections))
+	if len(u.Sections) > 0 {
+		u.SectionsExist = true
+		for i := 0; i < len(u.Sections); i++ {
+			_, err := strconv.ParseInt(u.Sections[i], 16, 64)
 			if err != nil {
-				errMsg = notHex
-				log.Println("errMsg ", errMsg)
-				return errMsg, err
+				//add 1 to don't get 0 section if error
+				u.ErrSecNum = i + 1
+				u.ErrMsg = "Section " + strconv.Itoa(u.ErrSecNum) + " " + notHex
+				log.Println("errMsg ", u.ErrMsg)
+				log.Println("eerSecNum: ", u.ErrSecNum)
+				return u, err
 			}
 		}
 	}
-
-	return errMsg, err
+	log.Println("Sections Exist: ", u.SectionsExist)
+	return u, err
 }
 
 func parseUUID(uu string) ([]string, error) {
@@ -55,7 +63,7 @@ func parseUUID(uu string) ([]string, error) {
 			return sections, err
 		}
 	} else {
-		errString := "There is only " + strconv.Itoa(hyphenQuantity) + " hyphens. Must be 4!"
+		errString := "There is only " + strconv.Itoa(hyphenQuantity) + " hyphens. Must be 4! Ex.: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
 		errQnt := errors.New(errString)
 		err = errQnt
 		log.Println(errQnt)
