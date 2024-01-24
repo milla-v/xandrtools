@@ -67,6 +67,10 @@ func handleXandrtools(w http.ResponseWriter, r *http.Request) {
 			log.Println("errmsg: ", d.ValUUID.ErrMsg)
 		}
 	}
+	if r.Method == "GET" {
+		log.Println("METHOD: ", r.Method)
+		log.Println("URL: ", r.URL)
+	}
 	/*
 		switch r.Method {
 		case "POST":
