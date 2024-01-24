@@ -20,6 +20,9 @@ var content embed.FS
 //go:embed templates/*.css
 var cssFiles embed.FS
 
+//go:embed templates/*.png
+var pngFiles embed.FS
+
 var proxyXandrtools = func() *httputil.ReverseProxy {
 	u, err := url.Parse("http://zero:80/xandrtools/")
 	if err != nil {
@@ -44,6 +47,7 @@ func Run() {
 	mux.HandleFunc("/", handleXandrtools)
 
 	mux.HandleFunc("/templates/styles.css", handleStyle)
+	mux.HandleFunc("/templates/copy_btn.png", handlePng)
 
 	addr := os.Getenv("DEBUG_ADDR")
 	if addr != "" {

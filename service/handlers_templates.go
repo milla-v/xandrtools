@@ -15,6 +15,12 @@ func handleStyle(w http.ResponseWriter, r *http.Request) {
 	http.FileServer(fs).ServeHTTP(w, r)
 }
 
+func handlePng(w http.ResponseWriter, r *http.Request) {
+	log.Println("handlePng", r.URL.Path)
+	fs := http.FS(pngFiles)
+	http.FileServer(fs).ServeHTTP(w, r)
+}
+
 func handleXandrtools(w http.ResponseWriter, r *http.Request) {
 	type data struct {
 		XUID       int64
