@@ -36,6 +36,28 @@ func validateUUID(str string) (uuid, error) {
 				return u, err
 			}
 		}
+		if len(u.Sections[0]) != 8 {
+			u.ErrSecNum = 1
+			u.ErrMsg = "Wrong size. The number of characters in Section 1 should be 8"
+			return u, err
+		}
+		if len(u.Sections[1]) != 4 {
+			u.ErrSecNum = 2
+			u.ErrMsg = "Wrong size. The number of characters in Section 2 should be 4"
+			return u, err
+		}
+		if len(u.Sections[2]) != 4 {
+			u.ErrSecNum = 3
+			u.ErrMsg = "Wrong size. The number of characters in Section 3 should be 4"
+		}
+		if len(u.Sections[3]) != 4 {
+			u.ErrSecNum = 4
+			u.ErrMsg = "Wrong size. The number of characters in Section 4 chould be 4"
+		}
+		if len(u.Sections[4]) != 12 {
+			u.ErrSecNum = 5
+			u.ErrMsg = "Wrong size. The number of characters in Section 5 chould be 12"
+		}
 	}
 	log.Println("Sections Exist: ", u.SectionsExist)
 	return u, err
