@@ -10,6 +10,7 @@ import (
 func validateUUID(str string) (uuid, error) {
 	var err error
 	var u uuid
+	u.Ok = false
 
 	log.Println("------------VALIDATE UUID-------------")
 	u.UUID = str
@@ -49,16 +50,20 @@ func validateUUID(str string) (uuid, error) {
 		if len(u.Sections[2]) != 4 {
 			u.ErrSecNum = 3
 			u.ErrMsg = "Wrong size. The number of characters in Section 3 should be 4"
+			return u, err
 		}
 		if len(u.Sections[3]) != 4 {
 			u.ErrSecNum = 4
 			u.ErrMsg = "Wrong size. The number of characters in Section 4 chould be 4"
+			return u, err
 		}
 		if len(u.Sections[4]) != 12 {
 			u.ErrSecNum = 5
 			u.ErrMsg = "Wrong size. The number of characters in Section 5 chould be 12"
+			return u, err
 		}
 	}
+	u.Ok = true
 	log.Println("Sections Exist: ", u.SectionsExist)
 	return u, err
 }

@@ -16,4 +16,5 @@ type uuid struct {
 	ErrSecNum     int
 	Sections      []string
 	SectionsExist bool
+	Ok            bool
 }

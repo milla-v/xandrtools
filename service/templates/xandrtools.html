@@ -86,7 +86,7 @@
           {{if eq .ValUUID.ErrSecNum 5}}<label>{{.SecOne}}</label><label>-{{.SecTwo}}</label><label>-{{.SecThree}}</label><label>-{{.SecFour}}-</label><label style="color: red">{{.SecFive}}</label>{{end}}
           <p><span style='font-size:17px; color: red;'>&#8594;</span> {{.ValUUID.ErrMsg}}</p>
         {{end}}
-        {{if eq .ValUUID.ErrMsg ""}}
+        {{if eq .ValUUID.Ok true}}
          <p><span style='font-size:17px; color: green;'>&#8594;</span> UUID validation completed. No errors or warnings founded.</p>
         {{end}}
         <br>
