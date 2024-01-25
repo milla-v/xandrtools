@@ -7,14 +7,46 @@
 </head>
 <body>
   <script>
-  function respNavigation() {
-    var x = document.getElementById("myTopnav");
-    if (x.className === "topnav") {
-      x.className += " responsive";
-    } else {
-      x.className = "topnav";
+    function respNavigation() {
+      var x = document.getElementById("myTopnav");
+      if (x.className === "topnav") {
+        x.className += " responsive";
+      } else {
+        x.className = "topnav";
+      }
     }
-  }
+    
+    function copyXLink() {
+      // Get the text field
+      var copyID = document.getElementById("xid");
+    
+      // Select the text field
+      copyID.select();
+      copyID.setSelectionRange(0, 99999); // For mobile devices
+    
+      // Copy the text inside the text field
+      navigator.clipboard.writeText(window.location.href + copyID.value);
+      
+      // Alert the copied text
+      alert("Copied the text: " + window.location.href + copyID.value);
+    }
+    
+    function copyUULink() {
+      // Get the text field
+      var copyID = document.getElementById("uuid");
+      var copyLink = document.getElementById("uulink")
+    
+      // Select the text field
+      copyID.select();
+      copyID.setSelectionRange(0, 99999); // For mobile devices
+    
+      // Copy the text inside the text field
+      navigator.clipboard.writeText(copyLink.value + copyID.value);
+      
+      // Alert the copied text
+      alert("Copied the text: " + copyLink.value + copyID.value);
+    }
+  
   </script>
   
   <div class="topnav" id="myTopnav">
@@ -38,12 +70,12 @@
     <div style="padding-left:16px">
       <p>This tool is an ongoing experiment in validation:</p>
       <h2>Validate the Xandr user ID:</h2>
-      <form method="POST" action="/?=1">
+      <form method="POST" action="/validate?type=xandrid&id=">
         <label for="xuid">Insert The Xandr User ID:</label>
         <div class="valid-box">
           <input type="text" id="xid" name="xuid" class="valid-input" {{if ne .Validation.WrongUserID ""}} value="{{.Validation.WrongUserID}}" {{end}} {{if ne .Validation.UserID 0}} value="{{.Validation.UserID}}" {{end}}><br>
           <input type="submit" value="Validate" class="valid-submit">
-          <div class="box-btn-copy"><a title="Copy" href="/"><img src="templates/copy_btn.png" alt=""></a></div>
+          <div title="Copy" class="box-btn-copy"  onclick="copyXLink()"><img src="templates/copy_btn.png" alt=""></div>
         </div>
       </form>
       <br> 
@@ -64,11 +96,12 @@
   
     <div style="padding-left:16px">
       <h2>Validate the UUID:</h2>
-      <form method="POST" action="/?=2">
+      <form method="POST" action="/validate?type=uuid&id=">
         <label for="uuid">Insert UUID:</label>
         <div class="valid-box">
-          <input type="text" id="xid" name="uuid" class="valid-input" {{if ne .ValUUID.UUID ""}} value="{{.ValUUID.UUID}}" {{end}}><br>
+          <input type="text" id="uuid" name="uuid" class="valid-input" {{if ne .ValUUID.UUID ""}} value="{{.ValUUID.UUID}}" {{end}}><br>
           <input type="submit" value="Validate" class="valid-submit">
+          <div title="Copy" class="box-btn-copy"  onclick="copyXLink()"><img src="templates/copy_btn.png" alt=""></div>
         </div>
       </form>
       <br> 

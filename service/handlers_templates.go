@@ -40,7 +40,7 @@ func handleXandrtools(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "POST" {
 		switch r.RequestURI {
-		case "/?=1":
+		case "/validate?type=xandrid&id=":
 			s = r.FormValue("xuid")
 			if s == "" {
 				fmt.Println("empty link")
@@ -53,7 +53,7 @@ func handleXandrtools(w http.ResponseWriter, r *http.Request) {
 			}
 			log.Println("errs: ", d.Errs)
 
-		case "/?=2":
+		case "/validate?type=uuid&id=":
 			s = r.FormValue("uuid")
 			if s == "" {
 				fmt.Println("empty link")
@@ -73,10 +73,40 @@ func handleXandrtools(w http.ResponseWriter, r *http.Request) {
 			log.Println("errmsg: ", d.ValUUID.ErrMsg)
 		}
 	}
-	if r.Method == "GET" {
-		log.Println("METHOD: ", r.Method)
-		log.Println("URL: ", r.URL)
+
+	if r.Method == "GET" && r.URL.Path != "/" {
+		if r.URL.Path == "/validate" && r.URL.Query().Get("type") == "xandrid" {
+			log.Println("VALIDATE TYPE: ", r.URL.Query().Get("type"))
+			id := r.URL.Query().Get("id")
+			log.Println("XandrID = ", id)
+			d.Validation = processXandrUID(id)
+
+			log.Println("len errs: ", len(d.Validation.ErrList))
+			if len(d.Validation.ErrList) > 0 {
+				d.Errs = true
+			}
+			log.Println("errs: ", d.Errs)
+		}
+		if r.URL.Path == "/validate" && r.URL.Query().Get("type") == "uuid" {
+			log.Println("VALIDATE TYPE: ", r.URL.Query().Get("type"))
+			id := r.URL.Query().Get("id")
+			log.Println("UUID = ", id)
+			d.ValUUID, err = validateUUID(s)
+			if err != nil {
+				log.Println("ValUUD err: ", len(d.ValUUID.ErrMsg))
+				log.Println("ErrSecNum = ", d.ValUUID.ErrSecNum)
+			}
+			if len(d.ValUUID.Sections) > 0 {
+				d.SecOne = d.ValUUID.Sections[0]
+				d.SecTwo = d.ValUUID.Sections[1]
+				d.SecThree = d.ValUUID.Sections[2]
+				d.SecFour = d.ValUUID.Sections[3]
+				d.SecFive = d.ValUUID.Sections[4]
+			}
+			log.Println("errmsg: ", d.ValUUID.ErrMsg)
+		}
 	}
+
 	/*
 		switch r.Method {
 		case "POST":

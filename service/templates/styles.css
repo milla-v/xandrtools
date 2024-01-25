@@ -14,11 +14,11 @@ body {
       text-decoration: none;
     }
     
-    a:hover {
+    .box-btn-copy:hover {
 		position: relative;
     }
     
-    a[title]:hover::after {
+    .box-btn-copy[title]:hover::after {
     		content: attr(title);
 		color: gray;
 		padding: 4px 8px;
