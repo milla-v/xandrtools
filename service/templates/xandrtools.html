@@ -33,18 +33,17 @@
     
     function copyUULink() {
       // Get the text field
-      var copyID = document.getElementById("uuid");
-      var copyLink = document.getElementById("uulink")
+      var copyID = document.getElementById("uid");
     
       // Select the text field
       copyID.select();
       copyID.setSelectionRange(0, 99999); // For mobile devices
     
       // Copy the text inside the text field
-      navigator.clipboard.writeText(copyLink.value + copyID.value);
+       navigator.clipboard.writeText(window.location.href + copyID.value);
       
       // Alert the copied text
-      alert("Copied the text: " + copyLink.value + copyID.value);
+      alert("Copied the text: " + window.location.href + copyID.value);
     }
   
   </script>
@@ -99,9 +98,9 @@
       <form method="POST" action="/validate?type=uuid&id=">
         <label for="uuid">Insert UUID:</label>
         <div class="valid-box">
-          <input type="text" id="uuid" name="uuid" class="valid-input" {{if ne .ValUUID.UUID ""}} value="{{.ValUUID.UUID}}" {{end}}><br>
+          <input type="text" id="uid" name="uuid" class="valid-input" {{if ne .ValUUID.UUID ""}} value="{{.ValUUID.UUID}}" {{end}}><br>
           <input type="submit" value="Validate" class="valid-submit">
-          <div title="Copy" class="box-btn-copy"  onclick="copyXLink()"><img src="templates/copy_btn.png" alt=""></div>
+          <div title="Copy" class="box-btn-copy"  onclick="copyUULink()"><img src="templates/copy_btn.png" alt=""></div>
         </div>
       </form>
       <br> 

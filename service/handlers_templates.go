@@ -75,6 +75,7 @@ func handleXandrtools(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method == "GET" && r.URL.Path != "/" {
+		//1. path = validate and type = xandr
 		if r.URL.Path == "/validate" && r.URL.Query().Get("type") == "xandrid" {
 			log.Println("VALIDATE TYPE: ", r.URL.Query().Get("type"))
 			id := r.URL.Query().Get("id")
@@ -87,11 +88,12 @@ func handleXandrtools(w http.ResponseWriter, r *http.Request) {
 			}
 			log.Println("errs: ", d.Errs)
 		}
+		//2. path = validate and type = uuid
 		if r.URL.Path == "/validate" && r.URL.Query().Get("type") == "uuid" {
 			log.Println("VALIDATE TYPE: ", r.URL.Query().Get("type"))
 			id := r.URL.Query().Get("id")
 			log.Println("UUID = ", id)
-			d.ValUUID, err = validateUUID(s)
+			d.ValUUID, err = validateUUID(id)
 			if err != nil {
 				log.Println("ValUUD err: ", len(d.ValUUID.ErrMsg))
 				log.Println("ErrSecNum = ", d.ValUUID.ErrSecNum)
