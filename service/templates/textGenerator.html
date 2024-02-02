@@ -15,32 +15,43 @@
         x.className = "topnav";
       }
     }
-    function checkOne() {
+
+    function checkOne(o) {
       var checkBox = document.getElementById("one");
-      
       var text = document.getElementById("fieldOne");
       if (checkBox.checked == true){
         text.style.display = "block";
+        var c = checked.removeChild(fieldOne);
+        checked.appendChild(c);
       } else {
          text.style.display = "none";
       }
     }
+
     function checkTwo() {
       var checkBox = document.getElementById("two");
-      
       var text = document.getElementById("fieldTwo");
       if (checkBox.checked == true){
         text.style.display = "block";
+        var c = checked.removeChild(fieldTwo);
+        checked.appendChild(c);
       } else {
          text.style.display = "none";
       }
+
+      var c = checked.children[0];
+      checked.removeChild(c);
+      checked.appendChild(c);
     }
+    
     function checkThree() {
       var checkBox = document.getElementById("three");
-      
+
       var text = document.getElementById("fieldThree");
       if (checkBox.checked == true){
         text.style.display = "block";
+        var c = checked.removeChild(fieldThree);
+        checked.appendChild(c);
       } else {
          text.style.display = "none";
       }
@@ -51,16 +62,21 @@
       var text = document.getElementById("fieldFour");
       if (checkBox.checked == true){
         text.style.display = "block";
+        var c = checked.removeChild(fieldFour);
+        checked.appendChild(c);
       } else {
          text.style.display = "none";
       }
     }
+    
     function checkFive() {
       var checkBox = document.getElementById("five");
-      
+  
       var text = document.getElementById("fieldFive");
       if (checkBox.checked == true){
         text.style.display = "block";
+        var c = checked.removeChild(fieldFive);
+        checked.appendChild(c);
       } else {
          text.style.display = "none";
       }
@@ -97,7 +113,7 @@
       <label for="four">Field four:</label><br>
       <input type="checkbox" id="five" onclick="checkFive()">
       <label for="five">Field five:</label><br>
-      <div class="fields-sample-container">
+      <div class="fields-sample-container" id="checked">
         <input type="text" id="fieldOne" style="display:none" class="field-sample-input" value="Field One is Checked">
         <input type="text" id="fieldTwo" style="display:none" class="field-sample-input" value="Field Two is Checked">
         <input type="text" id="fieldThree" style="display:none" class="field-sample-input" value="Field Three is Checked">
@@ -105,6 +121,7 @@
         <input type="text" id="fieldFive" style="display:none" class="field-sample-input" value="Field Five is Checked">
       </div>
     </div>
+    <div id="out">out</div>
   </div>
 
   <div class="footer">
