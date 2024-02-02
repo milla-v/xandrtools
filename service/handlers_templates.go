@@ -140,3 +140,18 @@ func handleXandrtools(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
+	log.Println("textGenerator page")
+	type data struct {
+		FieldOne string
+	}
+
+	var d data
+
+	if err := t.ExecuteTemplate(w, "textGenerator.html", d); err != nil {
+		log.Println(err)
+		http.Error(w, "error", http.StatusInternalServerError)
+		return
+	}
+}

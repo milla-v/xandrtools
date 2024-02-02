@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>XandrTools</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link  href="templates/styles.css" rel="stylesheet"  type="text/css">
+</head>
+<body>
+  <script>
+    function respNavigation() {
+      var x = document.getElementById("myTopnav");
+      if (x.className === "topnav") {
+        x.className += " responsive";
+      } else {
+        x.className = "topnav";
+      }
+    }
+    function checkField() {
+      var checkBox = document.getElementById();
+      if checkBox = "one" {
+      var text = document.getElementById("fieldOne");
+      if (checkBox.checked == true){
+        text.style.display = "block";
+      } else {
+         text.style.display = "none";
+      }
+    }}
+  </script>
+  
+  <div class="topnav" id="myTopnav">
+    <a href="#home">XandrTools</a>
+    <div class="dropdown">
+      <button class="dropbtn">Tools
+        <i class="fa fa-caret-down"></i>
+      </button>
+      <div class="dropdown-content">
+        <a href="#">Link 1</a>
+        <a href="#">Link 2</a>
+        <a href="#">Link 3</a>
+      </div>
+    </div>
+    <a href="#home">Contacts</a>
+    <a href="#news">About</a>
+    <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="respNavigation()">&#9776;</a>
+  </div>
+  
+  <div class="content-box">
+    <div style="padding-left:16px">
+      <h2>Generate text sample:</h2>
+      <input type="checkbox" id="one" onclick="checkField(id)">
+      <label for="one">Field one:</label>
+      <input type="checkbox" id="two" onclick="checkField()">
+      <label for="two">Field two:</label>
+      <br>
+      <input type="text" id="fieldOne" style="display:none" value="Field One is Checked">
+      <input type="text" id="fieldTwo" style="display:none" value="Field Two is Checked">
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-col">
+     <a href="#">Terms</a>
+    </div>
+  </div>
+</body>
+</html>
