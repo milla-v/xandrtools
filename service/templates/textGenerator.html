@@ -15,16 +15,56 @@
         x.className = "topnav";
       }
     }
-    function checkField() {
-      var checkBox = document.getElementById();
-      if checkBox = "one" {
+    function checkOne() {
+      var checkBox = document.getElementById("one");
+      
       var text = document.getElementById("fieldOne");
       if (checkBox.checked == true){
         text.style.display = "block";
       } else {
          text.style.display = "none";
       }
-    }}
+    }
+    function checkTwo() {
+      var checkBox = document.getElementById("two");
+      
+      var text = document.getElementById("fieldTwo");
+      if (checkBox.checked == true){
+        text.style.display = "block";
+      } else {
+         text.style.display = "none";
+      }
+    }
+    function checkThree() {
+      var checkBox = document.getElementById("three");
+      
+      var text = document.getElementById("fieldThree");
+      if (checkBox.checked == true){
+        text.style.display = "block";
+      } else {
+         text.style.display = "none";
+      }
+    }
+    function checkFour() {
+      var checkBox = document.getElementById("four");
+      
+      var text = document.getElementById("fieldFour");
+      if (checkBox.checked == true){
+        text.style.display = "block";
+      } else {
+         text.style.display = "none";
+      }
+    }
+    function checkFive() {
+      var checkBox = document.getElementById("five");
+      
+      var text = document.getElementById("fieldFive");
+      if (checkBox.checked == true){
+        text.style.display = "block";
+      } else {
+         text.style.display = "none";
+      }
+    }
   </script>
   
   <div class="topnav" id="myTopnav">
@@ -47,13 +87,23 @@
   <div class="content-box">
     <div style="padding-left:16px">
       <h2>Generate text sample:</h2>
-      <input type="checkbox" id="one" onclick="checkField(id)">
-      <label for="one">Field one:</label>
-      <input type="checkbox" id="two" onclick="checkField()">
-      <label for="two">Field two:</label>
-      <br>
-      <input type="text" id="fieldOne" style="display:none" value="Field One is Checked">
-      <input type="text" id="fieldTwo" style="display:none" value="Field Two is Checked">
+      <input type="checkbox" id="one" onclick="checkOne()">
+      <label for="one">Field one:</label><br>
+      <input type="checkbox" id="two" onclick="checkTwo()">
+      <label for="two">Field two:</label><br>
+      <input type="checkbox" id="three" onclick="checkThree()">
+      <label for="three">Field three:</label><br>
+      <input type="checkbox" id="four" onclick="checkFour()">
+      <label for="four">Field four:</label><br>
+      <input type="checkbox" id="five" onclick="checkFive()">
+      <label for="five">Field five:</label><br>
+      <div class="fields-sample-container">
+        <input type="text" id="fieldOne" style="display:none" class="field-sample-input" value="Field One is Checked">
+        <input type="text" id="fieldTwo" style="display:none" class="field-sample-input" value="Field Two is Checked">
+        <input type="text" id="fieldThree" style="display:none" class="field-sample-input" value="Field Three is Checked">
+        <input type="text" id="fieldFour" style="display:none" class="field-sample-input" value="Field Four is Checked">
+        <input type="text" id="fieldFive" style="display:none" class="field-sample-input" value="Field Five is Checked">
+      </div>
     </div>
   </div>
 

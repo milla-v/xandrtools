@@ -108,12 +108,22 @@ body {
     	background-color: white;
     }
     
+    .field-sample-input {
+    		margin-right: 10px;
+    }
+    
+    .fields-sample-container {
+    		display: flex;
+		padding-top: 15px;
+		padding-bottom: 15px;
+    }
+    
     .footer {
-    	height: 50px;
-	margin: 0 auto;
-	text-align: center;
-	background-color: var(--gray);
-	width: 100%;
+	    	height: 50px;
+		margin: 0 auto;
+		text-align: center;
+		background-color: var(--gray);
+		width: 100%;
     }
       
       .footer-col {
@@ -133,7 +143,7 @@ body {
         width: 340px;
       }
       
-      .valid-input, .valid-submit {
+      .valid-input, .valid-submit, .field-sample-input {
         padding: 10px;
         font-size: 17px;
       }
