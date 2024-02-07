@@ -148,12 +148,15 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 	type data struct {
 		FieldOne string
 	}
-
 	var d data
+	var segs []string
 	fieldsmap := make(map[int]string)
+	var textsample string
 	if r.Method == "POST" {
 		log.Println("r.Method = ", r.Method)
 		r.ParseForm()
+		//get a map of form values
+		//form sorted fieldsmap
 		for k := range r.Form {
 			fmt.Printf("%s value is %v\n", k, r.Form.Get(k))
 			value := r.Form.Get(k)
@@ -164,8 +167,18 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 			log.Println("key : ", key)
 			fieldsmap[key] = value
 			log.Println("FIELDSMAP: ", fieldsmap)
+			textsample = textsample + "," + value
+			log.Println("Textsample : ", textsample)
 		}
+		//get array of segments
+		for k := range fieldsmap {
+			segs = append(segs, fieldsmap[k])
+			log.Println("SEGS : ", segs)
+		}
+	}
 
+	if r.Method == "GET" {
+		log.Println("URL PATH: ", r.URL.Path)
 	}
 
 	if err := t.ExecuteTemplate(w, "textGenerator.html", d); err != nil {
