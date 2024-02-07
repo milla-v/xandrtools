@@ -148,6 +148,28 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var d data
+	if r.Method == "POST" {
+		log.Println("r.Method = ", r.Method)
+		r.ParseForm()
+		fieldsmap := r.Form
+		log.Println("r.Form : ", r.Form)
+		log.Println("----------- Fields Map ----------------")
+		for key, value := range fieldsmap {
+			fmt.Printf("%s value is %v\n", key, value)
+		}
+		//create a new map for fields
+		//fields := map[int]string
+		keys := make([]string, 0, len(fieldsmap))
+		for k := range fieldsmap {
+			log.Println("key: ", k, "VALUE: ", fieldsmap[k])
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+
+		for _, k := range keys {
+			log.Println("sorted key: ", k, "Sorted VALUE: ", fieldsmap[k])
+		}
+	}
 
 	if err := t.ExecuteTemplate(w, "textGenerator.html", d); err != nil {
 		log.Println(err)
