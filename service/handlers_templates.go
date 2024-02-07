@@ -5,6 +5,8 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
 )
 
 var t *template.Template
@@ -148,27 +150,22 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var d data
+	fieldsmap := make(map[int]string)
 	if r.Method == "POST" {
 		log.Println("r.Method = ", r.Method)
 		r.ParseForm()
-		fieldsmap := r.Form
-		log.Println("r.Form : ", r.Form)
-		log.Println("----------- Fields Map ----------------")
-		for key, value := range fieldsmap {
-			fmt.Printf("%s value is %v\n", key, value)
+		for k := range r.Form {
+			fmt.Printf("%s value is %v\n", k, r.Form.Get(k))
+			value := r.Form.Get(k)
+			key, err := strconv.Atoi(strings.TrimPrefix(k, "sel_"))
+			if err != nil {
+				log.Println("key error :", err)
+			}
+			log.Println("key : ", key)
+			fieldsmap[key] = value
+			log.Println("FIELDSMAP: ", fieldsmap)
 		}
-		//create a new map for fields
-		//fields := map[int]string
-		keys := make([]string, 0, len(fieldsmap))
-		for k := range fieldsmap {
-			log.Println("key: ", k, "VALUE: ", fieldsmap[k])
-			keys = append(keys, k)
-		}
-		sort.Strings(keys)
 
-		for _, k := range keys {
-			log.Println("sorted key: ", k, "Sorted VALUE: ", fieldsmap[k])
-		}
 	}
 
 	if err := t.ExecuteTemplate(w, "textGenerator.html", d); err != nil {
