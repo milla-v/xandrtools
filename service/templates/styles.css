@@ -152,8 +152,13 @@ body {
         margin-right: 10px;
         width: 340px;
       }
+    
+    .valid-input-out {
+	    	margin-right: 10px;
+		width: 500px;
+    }
       
-      .valid-input, .valid-submit, .field-sample-input {
+      .valid-input, .valid-submit, .field-sample-input, .valid-input-out {
         padding: 10px;
         font-size: 17px;
       }

@@ -196,6 +196,10 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 		d.SegmentsExists = true
 	}
 
+	log.Println("URL: ", r.URL)
+	id := r.URL.Query().Get("id")
+	log.Println("GET id :", id)
+
 	if err := t.ExecuteTemplate(w, "textGenerator.html", d); err != nil {
 		log.Println(err)
 		http.Error(w, "error", http.StatusInternalServerError)
