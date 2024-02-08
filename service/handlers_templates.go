@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"net/url"
 	"sort"
 	"strconv"
 	"strings"
@@ -149,10 +150,12 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 	type data struct {
 		ID             string
 		SegmentsExists bool
+		Link           string
 	}
 	var d data
 	d.SegmentsExists = false
 	var segs []string
+
 	log.Println("ID = ", d.ID)
 	log.Println("initializing len of segs: ", len(segs))
 	fieldsmap := make(map[int]string)
@@ -190,6 +193,10 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 			d.ID = d.ID + value
 		}
 		log.Println("SEGS : ", segs)
+
+		//to escape phohibited symbols
+		d.Link = url.QueryEscape(d.ID)
+		log.Println("d.Link : ", d.Link)
 	}
 	log.Println("ID = (after POST)", d.ID)
 	if len(segs) > 0 {

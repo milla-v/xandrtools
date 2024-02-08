@@ -112,9 +112,10 @@
          <input type="submit" value="Generate" class="valid-submit">
       </form>
       {{if eq .SegmentsExists true}}
-        <p>STRING: {{.ID}} </p>
+        
         <div class="valid-box">
-        <input type="text" id="out" name="xuid" class="valid-input-out" value="{{.ID}}"><br>
+        <p> {{.ID}} </p>
+        <input type="hidden" id="out" name="out" value="{{.Link}}"><br>
         <div title="Copy" class="box-btn-copy"  onclick="copyOut()"><img src="templates/copy_btn.png" alt=""></div>
         </div>
       {{end}}
