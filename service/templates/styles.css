@@ -108,8 +108,13 @@ body {
     	background-color: white;
     }
     
-    .field-sample-input {
+    .field-sample-input, .field-sample-input-small {
     		margin-right: 10px;
+    }
+    
+    .field-sample-input-small {
+    		width: 20px;
+		text-align: center;
     }
     
     .fields-sample-container {
@@ -131,6 +136,11 @@ body {
     display: inline-block;
     width: 1240px;
     text-align: left;
+    }
+    
+    .segment-box {
+    		float: left;
+		margin-right: 30px;
     }
       
       .valid-box {

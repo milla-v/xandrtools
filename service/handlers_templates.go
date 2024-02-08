@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -150,8 +151,9 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 	}
 	var d data
 	var segs []string
+	log.Println("initializing len of segs: ", len(segs))
 	fieldsmap := make(map[int]string)
-	var textsample string
+
 	if r.Method == "POST" {
 		log.Println("r.Method = ", r.Method)
 		r.ParseForm()
@@ -164,17 +166,23 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				log.Println("key error :", err)
 			}
-			log.Println("key : ", key)
 			fieldsmap[key] = value
-			log.Println("FIELDSMAP: ", fieldsmap)
-			textsample = textsample + "," + value
-			log.Println("Textsample : ", textsample)
 		}
-		//get array of segments
+		//sort by keys
+		keys := make([]int, 0, len(fieldsmap))
 		for k := range fieldsmap {
-			segs = append(segs, fieldsmap[k])
-			log.Println("SEGS : ", segs)
+			keys = append(keys, k)
 		}
+		sort.Ints(keys)
+
+		//get sorted array of segments
+		for _, k := range keys {
+			log.Println("Key", k, "Value", fieldsmap[k])
+			//get array of segments
+			segs = append(segs, fieldsmap[k])
+		}
+		log.Println("SEGS : ", segs)
+
 	}
 
 	if r.Method == "GET" {
