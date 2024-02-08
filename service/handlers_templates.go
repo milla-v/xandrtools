@@ -147,10 +147,13 @@ func handleXandrtools(w http.ResponseWriter, r *http.Request) {
 func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 	log.Println("textGenerator page")
 	type data struct {
-		FieldOne string
+		ID             string
+		SegmentsExists bool
 	}
 	var d data
+	d.SegmentsExists = false
 	var segs []string
+	log.Println("ID = ", d.ID)
 	log.Println("initializing len of segs: ", len(segs))
 	fieldsmap := make(map[int]string)
 
@@ -159,6 +162,7 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 		r.ParseForm()
 		//get a map of form values
 		//form sorted fieldsmap
+		log.Println("ID = (if POST)", d.ID)
 		for k := range r.Form {
 			fmt.Printf("%s value is %v\n", k, r.Form.Get(k))
 			value := r.Form.Get(k)
@@ -176,17 +180,20 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 		sort.Ints(keys)
 
 		//get sorted array of segments
+		//get id string
 		for _, k := range keys {
 			log.Println("Key", k, "Value", fieldsmap[k])
 			//get array of segments
 			segs = append(segs, fieldsmap[k])
+			//form id string
+			value := fieldsmap[k]
+			d.ID = d.ID + value
 		}
 		log.Println("SEGS : ", segs)
-
 	}
-
-	if r.Method == "GET" {
-		log.Println("URL PATH: ", r.URL.Path)
+	log.Println("ID = (after POST)", d.ID)
+	if len(segs) > 0 {
+		d.SegmentsExists = true
 	}
 
 	if err := t.ExecuteTemplate(w, "textGenerator.html", d); err != nil {
