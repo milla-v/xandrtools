@@ -34,18 +34,8 @@
     }
     
     function copyOut() {
-      // Get the text field
-      var copyID = document.getElementById("out");
-    
-      // Select the text field
-      copyID.select();
-      copyID.setSelectionRange(0, 99999); // For mobile devices
-    
-      // Copy the text inside the text field
-      navigator.clipboard.writeText(window.location.href + "?id=" + copyID.value);
-      
-      // Alert the copied text
-      alert("Copied the text: " + window.location.href + "?id=" + copyID.value);
+      navigator.clipboard.writeText(window.location.href + "?id=" + out.value);
+      alert("Copied the text: " + window.location.href + "?id=" + out.value);
     }
 
   </script>
