@@ -203,9 +203,14 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 		d.SegmentsExists = true
 	}
 
+	//check url and take id
 	log.Println("URL: ", r.URL)
 	id := r.URL.Query().Get("id")
 	log.Println("GET id :", id)
+	if len(id) > 0 {
+		d.SegmentsExists = true
+		d.ID = id
+	}
 
 	if err := t.ExecuteTemplate(w, "textGenerator.html", d); err != nil {
 		log.Println(err)
