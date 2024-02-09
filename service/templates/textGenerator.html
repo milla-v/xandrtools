@@ -20,7 +20,7 @@
 
     function checkField(name) {
       var checkBox = document.getElementById(name);
-      var text = document.getElementById("field"+name);
+      var text = document.getElementById("field_"+name);
       if (checkBox.checked == true){
         text.style.display = "block";
         var c = checked.removeChild(text);
@@ -47,9 +47,8 @@
         <i class="fa fa-caret-down"></i>
       </button>
       <div class="dropdown-content">
+        <a href="/">Validate</a>
         <a href="/textGenerator">Generate text sample</a>
-        <a href="#">Link 2</a>
-        <a href="#">Link 3</a>
       </div>
     </div>
     <a href="#home">Contacts</a>
@@ -62,42 +61,43 @@
       <h2>Generate text sample:</h2>
       <div>
           <div class="segment-box">
-            <input type="checkbox" id="one" onclick="checkField('one')">
-            <label for="one">Segment One:</label><br>
-            <input type="checkbox" id="three" onclick="checkField('three')">
-            <label for="three">Segment two:</label><br>
-            <input type="checkbox" id="five" onclick="checkField('five')">
-            <label for="five">Segment three:</label><br>
-            <input type="checkbox" id="seven" onclick="checkField('seven')">
-            <label for="seven">Segment four:</label><br>
-            <input type="checkbox" id="nine" onclick="checkField('nine')">
-            <label for="nine">Segment five:</label><br>
+            <input type="checkbox" id="seg_id" onclick="checkField('seg_id')">
+            <label for="seg_id">SEG_ID:</label><br>
+            <input type="checkbox" id="seg_code" onclick="checkField('seg_code')">
+            <label for="seg_code">SEG_CODE:</label><br>
+            <input type="checkbox" id="member_id" onclick="checkField('member_id')">
+            <label for="member_id">MEMBER_ID:</label><br>
+            <input type="checkbox" id="timestamp" onclick="checkField('timestamp')">
+            <label for="timestamp">TIMESTAMP:</label><br>
+            <input type="checkbox" id="value" onclick="checkField('value')">
+            <label for="value">VALUE:</label><br>
           </div>
           <div>
-            <input type="checkbox" id="two" onclick="checkField('two')">
-            <label for="two">:</label><br>
-            <input type="checkbox" id="four" onclick="checkField('four')">
-            <label for="four">;</label><br>
-            <input type="checkbox" id="six" onclick="checkField('six')">
-            <label for="six">,</label><br>
-            <input type="checkbox" id="eight" onclick="checkField('eight')">
-            <label for="eight">^</label><br>
-            <input type="checkbox" id="ten" onclick="checkField('ten')">
-            <label for="ten">UNK</label><br>
+            <input type="checkbox" id="sep_1" onclick="checkField('sep_1')">
+            <label for="sep_1">:</label><br>
+            <input type="checkbox" id="sep_2" onclick="checkField('sep_2')">
+            <label for="sep_2">;</label><br>
+            <input type="checkbox" id="sep_3" onclick="checkField('sep_3')">
+            <label for="sep_3">,</label><br>
+            <input type="checkbox" id="sep_4" onclick="checkField('sep_4')">
+            <label for="sep_4">^</label><br>
+            <input type="checkbox" id="sep_5" onclick="checkField('sep_5')">
+            <label for="sep_5">#</label><br>
           </div>
         </div>
       <form method="POST" name="fields">
         <div class="fields-sample-container" id="checked">
-          <input type="text" id="fieldone" style="display:none" class="field-sample-input" value="SEG_ID">
-          <input type="text" id="fieldtwo" style="display:none" class="field-sample-input-small" value=":">
-          <input type="text" id="fieldthree" style="display:none" class="field-sample-input" value="SEG_CODE">
-          <input type="text" id="fieldfour" style="display:none" class="field-sample-input-small" value=";">
-          <input type="text" id="fieldfive" style="display:none" class="field-sample-input" value="MEMBER_ID">
-          <input type="text" id="fieldsix" style="display:none" class="field-sample-input-small" value=",">
-          <input type="text" id="fieldseven" style="display:none" class="field-sample-input" value="TIMESTAMP">
-          <input type="text" id="fieldeight" style="display:none" class="field-sample-input-small" value="^">
-          <input type="text" id="fieldnine" style="display:none" class="field-sample-input" value="VALUE">
-          <input type="text" id="fieldten" style="display:none" class="field-sample-input-small" value="UNK">
+          <input type="text" id="field_seg_id" style="display:none" class="field-sample-input" value="SEG_ID">
+          <input type="text" id="field_seg_code" style="display:none" class="field-sample-input" value="SEG_CODE">
+          <input type="text" id="field_member_id" style="display:none" class="field-sample-input" value="MEMBER_ID">
+          <input type="text" id="field_timestamp" style="display:none" class="field-sample-input" value="TIMESTAMP">
+          <input type="text" id="field_value" style="display:none" class="field-sample-input" value="VALUE">
+          
+          <input type="text" id="field_sep_1" style="display:none" class="field-sample-input-small" value=":">
+          <input type="text" id="field_sep_2" style="display:none" class="field-sample-input-small" value=";">
+          <input type="text" id="field_sep_3" style="display:none" class="field-sample-input-small" value=",">
+          <input type="text" id="field_sep_4" style="display:none" class="field-sample-input-small" value="^">
+          <input type="text" id="field_sep_5" style="display:none" class="field-sample-input-small" value="#">
         </div>
          <input type="submit" value="Generate" class="valid-submit">
       </form>
