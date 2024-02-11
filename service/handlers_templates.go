@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	"math/rand"
 	"net/http"
-	"net/url"
-	"sort"
 	"strconv"
 	"strings"
 )
@@ -145,12 +144,22 @@ func handleXandrtools(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+type separators struct {
+	Sep1 string
+	Sep2 string
+	Sep3 string
+	Sep4 string
+	Sep5 string
+}
+
 func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 	log.Println("textGenerator page")
 	type data struct {
 		ID             string
 		SegmentsExists bool
 		Link           string
+		InitScript     template.JS
+		GeneratedText  string
 	}
 	var d data
 	d.SegmentsExists = false
@@ -158,63 +167,88 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("ID = ", d.ID)
 	log.Println("initializing len of segs: ", len(segs))
-	fieldsmap := make(map[int]string)
 
-	if r.Method == "POST" {
-		log.Println("r.Method = ", r.Method)
-		r.ParseForm()
-		//get a map of form values
-		//form sorted fieldsmap
-		log.Println("ID = (if POST)", d.ID)
-		for k := range r.Form {
-			fmt.Printf("%s value is %v\n", k, r.Form.Get(k))
-			value := r.Form.Get(k)
-			key, err := strconv.Atoi(strings.TrimPrefix(k, "sel_"))
-			if err != nil {
-				log.Println("key error :", err)
-			}
-			fieldsmap[key] = value
-		}
-		//sort by keys
-		keys := make([]int, 0, len(fieldsmap))
-		for k := range fieldsmap {
-			keys = append(keys, k)
-		}
-		sort.Ints(keys)
-
-		//get sorted array of segments
-		//get id string
-		for _, k := range keys {
-			log.Println("Key", k, "Value", fieldsmap[k])
-			//get array of segments
-			segs = append(segs, fieldsmap[k])
-			//form id string
-			value := fieldsmap[k]
-			d.ID = d.ID + value
-		}
-		log.Println("SEGS : ", segs)
-
-		//to escape phohibited symbols
-		d.Link = url.QueryEscape(d.ID)
-		log.Println("d.Link : ", d.Link)
+	seps := separators{
+		Sep1: r.URL.Query().Get("sep_1"),
+		Sep2: r.URL.Query().Get("sep_2"),
+		Sep3: r.URL.Query().Get("sep_3"),
+		Sep4: r.URL.Query().Get("sep_4"),
+		Sep5: r.URL.Query().Get("sep_5"),
 	}
-	log.Println("ID = (after POST)", d.ID)
-	if len(segs) > 0 {
+
+	sf := r.URL.Query().Get("sf")
+	segmentFields := strings.Split(sf, "-")
+
+	var js string
+	for _, f := range segmentFields {
+		id := "'" + strings.ToLower(f) + "'"
+		js += "var checkBox = document.getElementById(" + id + ");\n"
+		js += "checkBox.checked = true;\n"
+		js += "checkField(" + id + ");\n"
+	}
+	d.InitScript = template.JS(js)
+
+	//to escape phohibited symbols
+	d.Link = r.URL.RawPath
+
+	if sf != "" {
 		d.SegmentsExists = true
 	}
 
-	//check url and take id
-	log.Println("URL: ", r.URL)
-	id := r.URL.Query().Get("id")
-	log.Println("GET id :", id)
-	if len(id) > 0 {
-		d.SegmentsExists = true
-		d.ID = id
-	}
+	d.GeneratedText = generateSample(segmentFields, seps)
 
 	if err := t.ExecuteTemplate(w, "textGenerator.html", d); err != nil {
 		log.Println(err)
 		http.Error(w, "error", http.StatusInternalServerError)
 		return
 	}
+}
+
+func generateSample(segmentFields []string, seps separators) string {
+	var s string
+
+	uid := strconv.Itoa(int(rand.Int63()))
+
+	var segmentAdd []string
+	var segmentRem []string
+
+	for _, sf := range segmentFields {
+
+		switch sf {
+		case "SEG_ID":
+			segID := 1000 + rand.Intn(1000)
+			segmentAdd = append(segmentAdd, strconv.Itoa(segID))
+			segmentRem = append(segmentRem, strconv.Itoa(segID+100))
+		case "SEG_CODE":
+			segID := 1000 + rand.Intn(1000)
+			segmentAdd = append(segmentAdd, "code_"+strconv.Itoa(segID))
+			segmentRem = append(segmentRem, "code_"+strconv.Itoa(segID+100))
+		case "MEMBER_ID":
+			segmentAdd = append(segmentAdd, "100")
+			segmentRem = append(segmentRem, "100")
+		case "EXPIRATION":
+			segmentAdd = append(segmentAdd, "43200")
+			segmentRem = append(segmentRem, "-1")
+		case "VALUE":
+			value := 1 + rand.Intn(5)
+			segmentAdd = append(segmentAdd, strconv.Itoa(value))
+			segmentRem = append(segmentRem, "0")
+		}
+	}
+
+	lineTemplate := "{UID}{SEP_1}{SEGMENTS_ADD}{SEP_4}{SEGMENTS_DEL}{SEP_5}{DOMAIN}"
+
+	sr := strings.NewReplacer(
+		"{UID}", uid,
+		"{SEP_1}", seps.Sep1,
+		"{SEGMENTS_ADD}", strings.Join(segmentAdd, seps.Sep3),
+		"{SEP_4}", seps.Sep4,
+		"{SEGMENTS_DEL}", strings.Join(segmentRem, seps.Sep3),
+		"{SEP_5}", "",
+		"{DOMAIN}", "",
+	)
+
+	s += sr.Replace(lineTemplate) + "\n"
+
+	return s
 }
