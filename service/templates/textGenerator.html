@@ -116,8 +116,8 @@
         <div title="Copy" class="box-btn-copy"  onclick="copyOut()"><img src="templates/copy_btn.png" alt=""></div>
         </div>
         <div>
-        	<textarea cols="120" rows="25" style="border: solid 1px red;">
-        		{{.GeneratedText}}
+        	<textarea cols="180" rows="25" style="border: solid 1px red;">
+        		{{- .GeneratedText -}}
         	</textarea>
         </div>
       {{end}}
