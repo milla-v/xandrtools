@@ -108,40 +108,46 @@ body {
     	background-color: white;
     }
     
-    .field-sample-input, .field-sample-input-small {
-    		margin-right: 10px;
-    }
+.field-sample-input, .field-sample-input-small {
+	margin-right: 10px;
+}
+
+.field-sample-input-small {
+	width: 20px;
+	text-align: center;
+}
+
+.fields-sample-container {
+	display: flex;
+	padding-top: 15px;
+	padding-bottom: 15px;
+}
+
+.footer {
+ 	height: 50px;
+	margin: 0 auto;
+	text-align: center;
+	background-color: var(--gray);
+	width: 100%;
+}
+  
+.footer-col {
+	padding: 10px;
+	display: inline-block;
+	width: 1240px;
+	text-align: left;
+}
     
-    .field-sample-input-small {
-    		width: 20px;
-		text-align: center;
-    }
+.gen-box {
+	width: 100%;
+	text-size: 14px;
+	font-size: inherit;
+}
     
-    .fields-sample-container {
-    		display: flex;
-		padding-top: 15px;
-		padding-bottom: 15px;
-    }
-    
-    .footer {
-	    	height: 50px;
-		margin: 0 auto;
-		text-align: center;
-		background-color: var(--gray);
-		width: 100%;
-    }
-      
-      .footer-col {
-    padding: 10px;
-    display: inline-block;
-    width: 1240px;
-    text-align: left;
-    }
-    
-    .segment-box {
-    		float: left;
-		margin-right: 30px;
-    }
+.segment-box {
+	float: left;
+	margin-right: 30px;
+}
       
       .valid-box {
         display: flex;
