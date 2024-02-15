@@ -162,6 +162,8 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 		Link           string
 		InitScript     template.JS
 		GeneratedText  string
+		Seps           separators
+		Errors         string
 	}
 	var d data
 	d.SegmentsExists = false
@@ -170,12 +172,15 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 	log.Println("ID = ", d.ID)
 	log.Println("initializing len of segs: ", len(segs))
 
-	seps := separators{
-		Sep1: r.URL.Query().Get("sep_1"),
-		Sep2: r.URL.Query().Get("sep_2"),
-		Sep3: r.URL.Query().Get("sep_3"),
-		Sep4: r.URL.Query().Get("sep_4"),
-		Sep5: r.URL.Query().Get("sep_5"),
+	d.Seps.Sep1 = r.URL.Query().Get("sep_1")
+	d.Seps.Sep2 = r.URL.Query().Get("sep_2")
+	d.Seps.Sep3 = r.URL.Query().Get("sep_3")
+	d.Seps.Sep4 = r.URL.Query().Get("sep_4")
+	d.Seps.Sep5 = r.URL.Query().Get("sep_5")
+
+	setDefaultSeparators(&d.Seps)
+	if err := checkSeparators(d.Seps); err != nil {
+		d.Errors = err.Error()
 	}
 
 	sf := r.URL.Query().Get("sf")
@@ -197,12 +202,47 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 		d.SegmentsExists = true
 	}
 
-	d.GeneratedText = generateSample(segmentFields, seps)
+	d.GeneratedText = generateSample(segmentFields, d.Seps)
 
 	if err := t.ExecuteTemplate(w, "textGenerator.html", d); err != nil {
 		log.Println(err)
 		http.Error(w, "error", http.StatusInternalServerError)
 		return
+	}
+}
+
+func checkSeparators(seps separators) error {
+	notAllowed := "[](){}$\\/|?*+-"
+	sp := []string{
+		seps.Sep1, seps.Sep2, seps.Sep3, seps.Sep4, seps.Sep5,
+	}
+
+	for i, s := range sp {
+		if len(s) != 1 {
+			return fmt.Errorf("sep%d should be a single character", i+1)
+		}
+		if strings.ContainsAny(seps.Sep1, notAllowed) {
+			return fmt.Errorf("sep%d: symbols "+notAllowed+" are not allowed as a separators", i+1)
+		}
+	}
+	return nil
+}
+
+func setDefaultSeparators(seps *separators) {
+	if seps.Sep1 == "" {
+		seps.Sep1 = ":"
+	}
+	if seps.Sep2 == "" {
+		seps.Sep2 = ";"
+	}
+	if seps.Sep3 == "" {
+		seps.Sep3 = ","
+	}
+	if seps.Sep4 == "" {
+		seps.Sep4 = "#"
+	}
+	if seps.Sep5 == "" {
+		seps.Sep5 = "^"
 	}
 }
 

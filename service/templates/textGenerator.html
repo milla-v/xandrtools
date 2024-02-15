@@ -42,8 +42,21 @@
     }
     
     function copyOut() {
-      navigator.clipboard.writeText(window.location.href + "?id=" + out.value);
-      alert("Copied the text: " + window.location.href + "?id=" + out.value);
+      var s = window.location.href;
+      navigator.clipboard.writeText(s);
+//      alert("Copied the text: " + s);
+      copy_link_button.style.border = "solid 1px green";
+
+      var reset = function() {
+      	copy_link_button.style.border = "solid 1px white";
+      }
+
+      setTimeout(reset, 2000);
+    }
+
+    function setTab(id) {
+    	var inp = document.getElementById('inp_' + id);
+    	inp.value = '\t';
     }
 
     function init() {
@@ -88,15 +101,16 @@
 	      <form method="GET">
 	          <div>
 	            <label for="sep_1">SEP_1</label>
-	            <input type="text" name="sep_1" value=":"><br>
+	            <input type="text" id="inp_sep_1" name="sep_1" value="{{.Seps.Sep1}}">
+	            <a title="click to enter TAB character in input box" href="javascript:setTab('sep_1')">tab</a><br>
 	            <label for="sep_2">SEP_2</label>
-	            <input type="text" name="sep_2" value=";"><br>
+	            <input type="text" name="sep_2" value="{{.Seps.Sep2}}"><br>
 	            <label for="sep_3">SEP_3</label>
-	            <input type="text" name="sep_3" value=","><br>
+	            <input type="text" name="sep_3" value="{{.Seps.Sep3}}"><br>
 	            <label for="sep_4">SEP_4</label>
-	            <input type="text" name="sep_4" value="#"><br>
+	            <input type="text" name="sep_4" value="{{.Seps.Sep4}}"><br>
 	            <label for="sep_5">SEP_5</label>
-	            <input type="text" name="sep_5" value="^"><br>
+	            <input type="text" name="sep_5" value="{{.Seps.Sep5}}"><br>
 	          </div>
 	        <div class="fields-sample-container" id="checked">
 	          <input type="text" id="field_seg_id" style="display:none" class="field-sample-input" value="SEG_ID">
@@ -113,7 +127,7 @@
         <div class="valid-box">
         <p> {{.ID}} </p>
         <input type="hidden" id="out" name="out" ><br>
-        <div title="Copy" class="box-btn-copy"  onclick="copyOut()"><img src="templates/copy_btn.png" alt=""></div>
+        <div title="Copy link" class="box-btn-copy"  onclick="copyOut()"><img id="copy_link_button" src="templates/copy_btn.png" alt=""></div>
         </div>
         <div>
         	<textarea cols="180" rows="25" style="border: solid 1px red;" class="gen-box">
