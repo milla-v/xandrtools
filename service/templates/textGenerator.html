@@ -110,7 +110,8 @@
               <label for="sep_3">SEP_3</label>
               <input type="text" name="sep_3" value="{{.Seps.Sep3}}"><br>
               <label for="sep_4">SEP_4</label>
-              <input type="text" name="sep_4" value="{{.Seps.Sep4}}"><br>
+              <input type="text" name="sep_4" value="{{.Seps.Sep4}}">
+              <a title="click to enter TAB character in input box" href="javascript:setTab('sep_4')">tab</a><br>
               <label for="sep_5">SEP_5</label>
               <input type="text" name="sep_5" value="{{.Seps.Sep5}}"><br>
             </div>
@@ -122,12 +123,14 @@
             <input type="text" id="field_timestamp" style="display:none" class="field-sample-input" value="TIMESTAMP">
             <input type="text" id="field_value" style="display:none" class="field-sample-input" value="VALUE">
           </div>
+          {{if ne .ErrMsg ""}}
+            <p style="color: red;">{{.ErrMsg}}</p>
+          {{end}}
           <input type="submit" value="Generate" class="valid-submit" style="margin-top: 10px;">
           <input type="hidden" id="sf" name="sf">
   	      </form>
       </div>
       {{if eq .SegmentsExists true}}
-        
       <div class="gen-text-container">
         	<textarea class="gen-box">{{- .GeneratedText -}}</textarea>
         <div class="valid-box">
