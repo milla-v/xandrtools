@@ -57,6 +57,7 @@
     function setTab(id) {
     	var inp = document.getElementById('inp_' + id);
     	inp.value = '\t';
+    inp.select()
     }
 
     function init() {
@@ -110,7 +111,7 @@
               <label for="sep_3">SEP_3</label>
               <input type="text" name="sep_3" value="{{.Seps.Sep3}}"><br>
               <label for="sep_4">SEP_4</label>
-              <input type="text" name="sep_4" value="{{.Seps.Sep4}}">
+              <input type="text" id="inp_sep_4" name="sep_4" value="{{.Seps.Sep4}}">
               <a title="click to enter TAB character in input box" href="javascript:setTab('sep_4')">tab</a><br>
               <label for="sep_5">SEP_5</label>
               <input type="text" name="sep_5" value="{{.Seps.Sep5}}"><br>
