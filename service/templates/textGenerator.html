@@ -56,8 +56,12 @@
 
     function setTab(id) {
     	var inp = document.getElementById('inp_' + id);
-    	inp.value = '\t';
-    inp.select()
+    	inp.value = 'TAB';
+    }
+
+    function setSpace(id) {
+    	var inp = document.getElementById('inp_' + id);
+    	inp.value = 'SPACE';
     }
 
     function init() {
@@ -105,14 +109,16 @@
               <h3>Separators</h3>
               <label for="sep_1">SEP_1</label>
               <input type="text" id="inp_sep_1" name="sep_1" value="{{.Seps.Sep1}}">
-              <a title="click to enter TAB character in input box" href="javascript:setTab('sep_1')">tab</a><br>
+              <a title="click to enter TAB ('\t') character in input box" href="javascript:setTab('sep_1')">tab</a>
+              <a title="click to enter SPACE (' ') character in input box" href="javascript:setSpace('sep_1')">space</a><br>
               <label for="sep_2">SEP_2</label>
               <input type="text" name="sep_2" value="{{.Seps.Sep2}}"><br>
               <label for="sep_3">SEP_3</label>
               <input type="text" name="sep_3" value="{{.Seps.Sep3}}"><br>
               <label for="sep_4">SEP_4</label>
               <input type="text" id="inp_sep_4" name="sep_4" value="{{.Seps.Sep4}}">
-              <a title="click to enter TAB character in input box" href="javascript:setTab('sep_4')">tab</a><br>
+              <a title="click to enter TAB ('\t') character in input box" href="javascript:setTab('sep_4')">tab</a>
+              <a title="click to enter SPACE (' ') character in input box" href="javascript:setSpace('sep_4')">space</a><br>
               <label for="sep_5">SEP_5</label>
               <input type="text" name="sep_5" value="{{.Seps.Sep5}}"><br>
             </div>

@@ -17,10 +17,10 @@ func checkSeparators(seps separators) error {
 	}
 
 	for i, s := range sp {
-		if len(s) != 1 {
+		if len(s) != 1 && s != "TAB" && s != "SPACE" {
 			return fmt.Errorf("sep%d should be a single character", i+1)
 		}
-		if strings.ContainsAny(seps.Sep1, notAllowed) {
+		if strings.ContainsAny(s, notAllowed) {
 			return fmt.Errorf("sep%d: symbols "+notAllowed+" are not allowed as a separators", i+1)
 		}
 	}
@@ -80,6 +80,16 @@ func generateSegments(segmentFields []string, seps separators, count int) (segme
 	return
 }
 
+func replaceTabs(s string) string {
+	if s == "TAB" {
+		return "\t"
+	}
+	if s == "SPACE" {
+		return " "
+	}
+	return s
+}
+
 func generateSample(segmentFields []string, seps separators) string {
 	const lineTemplate = "{UID}{SEP_1}{SEGMENTS_ADD}{SEP_4}{SEGMENTS_DEL}{SEP_5}{DOMAIN}"
 
@@ -88,6 +98,9 @@ func generateSample(segmentFields []string, seps separators) string {
 		{"idfa", 3},
 		{"aaid", 8},
 	}
+
+	seps.Sep1 = replaceTabs(seps.Sep1)
+	seps.Sep4 = replaceTabs(seps.Sep4)
 
 	var s string
 
