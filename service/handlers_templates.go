@@ -148,7 +148,7 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 	if err := checkSeparators(d.Seps); err != nil {
 		d.Errors = err.Error()
 	}
-
+	log.Println("d.Errors : ", d.Errors)
 	sf := r.URL.Query().Get("sf")
 	segmentFields := strings.Split(sf, "-")
 

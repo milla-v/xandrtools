@@ -15,10 +15,17 @@ func checkSeparators(seps separators) error {
 	sp := []string{
 		seps.Sep1, seps.Sep2, seps.Sep3, seps.Sep4, seps.Sep5,
 	}
-
+	log.Println("len sp before for: ", len(sp))
 	for i, s := range sp {
-		if len(s) != 1 && s != "TAB" && s != "SPACE" {
+		log.Println("len s in for before if : ", len(s))
+		log.Println("s in for before if : ", s)
+		if len(s) != 1 {
+			log.Println("Len s = ", len(s))
+			log.Println("S = ", s)
 			return fmt.Errorf("sep%d should be a single character", i+1)
+		}
+		if s != "TAB" && s != "SPACE" {
+			log.Println("s != tab or space: ", s)
 		}
 		if strings.ContainsAny(s, notAllowed) {
 			return fmt.Errorf("sep%d: symbols "+notAllowed+" are not allowed as a separators", i+1)
