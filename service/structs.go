@@ -7,6 +7,14 @@ type idtype struct {
 	number int
 }
 
+type segments struct {
+	SegID     string
+	SegCode   string
+	MemberID  string
+	Timestamp string
+	Value     string
+}
+
 type separators struct {
 	Sep1 string
 	Sep2 string

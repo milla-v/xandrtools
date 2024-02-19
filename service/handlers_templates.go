@@ -127,7 +127,7 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 		GeneratedText  string
 		Seps           separators
 		Errors         string
-		ErrMsg         string
+		Segs           []segments
 	}
 	var d data
 	d.SegmentsExists = false
@@ -145,12 +145,27 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 	log.Println("SEPS: ", d.Seps)
 
 	setDefaultSeparators(&d.Seps)
+
+	//check separators
 	if err := checkSeparators(d.Seps); err != nil {
 		d.Errors = err.Error()
 	}
 	log.Println("d.Errors : ", d.Errors)
 	sf := r.URL.Query().Get("sf")
 	segmentFields := strings.Split(sf, "-")
+
+	log.Println("segmentFields : ", segmentFields)
+
+	// checks segments
+	if err := checkSegments(d.Segs); err != nil {
+		d.Errors = err.Error()
+	}
+
+	if sf != "" {
+		d.SegmentsExists = true
+	} else {
+		d.Errors = "Choose at least  SEG_ID or SEG_CODE"
+	}
 
 	var js string
 	for _, f := range segmentFields {
@@ -163,12 +178,6 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 
 	//to escape phohibited symbols
 	d.Link = r.URL.RawPath
-
-	if sf != "" {
-		d.SegmentsExists = true
-	} else {
-		d.ErrMsg = "Choose at least  SEG_ID or SEG_CODE"
-	}
 
 	d.GeneratedText = generateSample(segmentFields, d.Seps)
 

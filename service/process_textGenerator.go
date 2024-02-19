@@ -148,3 +148,8 @@ func generateSample(segmentFields []string, seps separators) string {
 
 	return s
 }
+
+func checkSegments(segs []segments) error {
+	var err error
+	return err
+}
