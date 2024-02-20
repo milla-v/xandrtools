@@ -127,7 +127,6 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 		GeneratedText  string
 		Seps           separators
 		Errors         string
-		Segs           []segments
 	}
 	var d data
 	d.SegmentsExists = false
@@ -154,10 +153,11 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 	sf := r.URL.Query().Get("sf")
 	segmentFields := strings.Split(sf, "-")
 
+	log.Println("segmentFields[0]: ", segmentFields[0])
 	log.Println("segmentFields : ", segmentFields)
 
 	// checks segments
-	if err := checkSegments(d.Segs); err != nil {
+	if err := checkSegments(segmentFields); err != nil {
 		d.Errors = err.Error()
 	}
 

@@ -149,7 +149,12 @@ func generateSample(segmentFields []string, seps separators) string {
 	return s
 }
 
-func checkSegments(segs []segments) error {
+func checkSegments(segmentFields []string) error {
 	var err error
+	for _, s := range segmentFields {
+		if strings.Contains(s, "SEG_ID") {
+			log.Println("Have SEG_ID!")
+		}
+	}
 	return err
 }
