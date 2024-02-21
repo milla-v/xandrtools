@@ -149,12 +149,24 @@ func generateSample(segmentFields []string, seps separators) string {
 	return s
 }
 
-func checkSegments(segmentFields []string) error {
+func checkSegments(segmentFields []string) (string, error) {
 	var err error
+	var check string
+	//check if at least  SEG_ID or SEG_CODE was choosen
+	// check if SEG_CODE or SEG_ID included but not both.
 	for _, s := range segmentFields {
-		if strings.Contains(s, "SEG_ID") {
-			log.Println("Have SEG_ID!")
+		if strings.Contains(s, "SEG_ID") || strings.Contains(s, "SEG_CODE") {
+			log.Println("Have SEG_ID or SEG_CODE!")
+			if strings.Contains(s, "SEG_ID") && strings.Contains(s, "SEG_CODE") {
+				log.Println("!!! SEG_ID && SEG_CODE")
+			}
+		} else {
+			check = "Choose at least  SEG_ID or SEG_CODE"
+		}
+		if strings.Contains(s, "SEG_ID") && strings.Contains(s, "SEG_CODE") {
+			log.Println("!!! SEG_ID && SEG_CODE")
+			check = " You may include SEG_CODE or SEG_ID but not both."
 		}
 	}
-	return err
+	return check, err
 }

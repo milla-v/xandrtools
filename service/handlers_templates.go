@@ -128,6 +128,8 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 		Seps           separators
 		Errors         string
 	}
+
+	var err error
 	var d data
 	d.SegmentsExists = false
 	var segs []string
@@ -157,14 +159,16 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 	log.Println("segmentFields : ", segmentFields)
 
 	// checks segments
-	if err := checkSegments(segmentFields); err != nil {
+	d.Errors, err = checkSegments(segmentFields)
+	if err != nil {
 		d.Errors = err.Error()
+		log.Println("d.Errors error: ", d.Errors)
 	}
+
+	log.Println("check segment: d.Errors = ", d.Errors)
 
 	if sf != "" {
 		d.SegmentsExists = true
-	} else {
-		d.Errors = "Choose at least  SEG_ID or SEG_CODE"
 	}
 
 	var js string
