@@ -152,21 +152,35 @@ func generateSample(segmentFields []string, seps separators) string {
 func checkSegments(segmentFields []string) (string, error) {
 	var err error
 	var check string
-	//check if at least  SEG_ID or SEG_CODE was choosen
-	// check if SEG_CODE or SEG_ID included but not both.
+	var segIDfound bool
+	var segCodeFound bool
+
+	log.Println("segIDfound before for: ", segIDfound)
+	log.Println("segCodeFound before for: ", segCodeFound)
+
+	//start check segmentFields
 	for _, s := range segmentFields {
-		if strings.Contains(s, "SEG_ID") || strings.Contains(s, "SEG_CODE") {
-			log.Println("Have SEG_ID or SEG_CODE!")
-			if strings.Contains(s, "SEG_ID") && strings.Contains(s, "SEG_CODE") {
-				log.Println("!!! SEG_ID && SEG_CODE")
-			}
-		} else {
-			check = "Choose at least  SEG_ID or SEG_CODE"
+		if strings.Contains(s, "SEG_ID") {
+			log.Println("Have SEG_ID!")
+			segIDfound = true
+			log.Println("segIDfound IN for: ", segIDfound)
+
 		}
-		if strings.Contains(s, "SEG_ID") && strings.Contains(s, "SEG_CODE") {
-			log.Println("!!! SEG_ID && SEG_CODE")
-			check = " You may include SEG_CODE or SEG_ID but not both."
+		if strings.Contains(s, "SEG_CODE") {
+			log.Println("Have SEG_CODE")
+			segCodeFound = true
+			log.Println("segCodefound IN for: ", segCodeFound)
 		}
+	}
+	//check if at least  SEG_ID or SEG_CODE was choosen
+	if segIDfound == false && segCodeFound == false {
+		check = "Choose at least  SEG_ID or SEG_CODE"
+		log.Println(check)
+	}
+	// check if SEG_CODE or SEG_ID included but not both.
+	if segIDfound == true && segCodeFound == true {
+		check = "You may include SEG_CODE or SEG_ID but not both."
+		log.Println(check)
 	}
 	return check, err
 }
