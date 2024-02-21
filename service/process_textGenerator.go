@@ -15,13 +15,9 @@ func checkSeparators(seps separators) error {
 	sp := []string{
 		seps.Sep1, seps.Sep2, seps.Sep3, seps.Sep4, seps.Sep5,
 	}
-	log.Println("len sp before for: ", len(sp))
+
 	for i, s := range sp {
-		log.Println("len s in for before if : ", len(s))
-		log.Println("s in for before if : ", s)
 		if len(s) != 1 {
-			log.Println("Len s = ", len(s))
-			log.Println("S = ", s)
 			return fmt.Errorf("sep%d should be a single character", i+1)
 		}
 		if s != "TAB" && s != "SPACE" {
@@ -142,8 +138,9 @@ func generateSample(segmentFields []string, seps separators) string {
 			"{SEP_5}", sep5,
 			"{DOMAIN}", domain,
 		)
-
+		log.Println("sr:", sr)
 		s += sr.Replace(lineTemplate) + "\n"
+		log.Println("sr:", sr)
 	}
 
 	return s
@@ -155,32 +152,23 @@ func checkSegments(segmentFields []string) (string, error) {
 	var segIDfound bool
 	var segCodeFound bool
 
-	log.Println("segIDfound before for: ", segIDfound)
-	log.Println("segCodeFound before for: ", segCodeFound)
-
 	//start check segmentFields
 	for _, s := range segmentFields {
 		if strings.Contains(s, "SEG_ID") {
-			log.Println("Have SEG_ID!")
 			segIDfound = true
-			log.Println("segIDfound IN for: ", segIDfound)
-
 		}
 		if strings.Contains(s, "SEG_CODE") {
-			log.Println("Have SEG_CODE")
 			segCodeFound = true
-			log.Println("segCodefound IN for: ", segCodeFound)
 		}
 	}
 	//check if at least  SEG_ID or SEG_CODE was choosen
 	if segIDfound == false && segCodeFound == false {
 		check = "Choose at least  SEG_ID or SEG_CODE"
-		log.Println(check)
 	}
 	// check if SEG_CODE or SEG_ID included but not both.
 	if segIDfound == true && segCodeFound == true {
 		check = "You may include SEG_CODE or SEG_ID but not both."
-		log.Println(check)
 	}
+
 	return check, err
 }

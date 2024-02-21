@@ -120,18 +120,18 @@ func handleXandrtools(w http.ResponseWriter, r *http.Request) {
 func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 	log.Println("textGenerator page")
 	type data struct {
-		ID             string
-		SegmentsExists bool
-		Link           string
-		InitScript     template.JS
-		GeneratedText  string
-		Seps           separators
-		Errors         string
+		ID            string
+		ShowText      bool
+		Link          string
+		InitScript    template.JS
+		GeneratedText string
+		Seps          separators
+		Errors        string
 	}
 
 	var err error
 	var d data
-	d.SegmentsExists = false
+	d.ShowText = false
 	var segs []string
 
 	//log.Println("ID = ", d.ID)
@@ -143,21 +143,22 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 	d.Seps.Sep4 = r.URL.Query().Get("sep_4")
 	d.Seps.Sep5 = r.URL.Query().Get("sep_5")
 
-	log.Println("SEPS: ", d.Seps)
+	log.Println("1. -----------SET DEFAULT SEPARATORS------------")
 
 	setDefaultSeparators(&d.Seps)
-
+	log.Println("2. -----------CHECK SEPARATORS------------")
 	//check separators
 	if err := checkSeparators(d.Seps); err != nil {
 		d.Errors = err.Error()
 	}
-	log.Println("d.Errors : ", d.Errors)
+	log.Println("3. -----------CHECK SF------------")
 	sf := r.URL.Query().Get("sf")
 	segmentFields := strings.Split(sf, "-")
-
-	log.Println("segmentFields[0]: ", segmentFields[0])
-	log.Println("segmentFields : ", segmentFields)
-
+	/*if sf != "" {
+		d.ShowText = true
+	}*/
+	log.Println("d.Errors: ", d.Errors)
+	log.Println("4. -----------CHECK SEGMENTS------------")
 	// checks segments
 	d.Errors, err = checkSegments(segmentFields)
 	if err != nil {
@@ -165,11 +166,7 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 		log.Println("d.Errors error: ", d.Errors)
 	}
 
-	log.Println("check segment: d.Errors = ", d.Errors)
-
-	if sf != "" {
-		d.SegmentsExists = true
-	}
+	log.Println("d.Errors = ", d.Errors)
 
 	var js string
 	for _, f := range segmentFields {
@@ -180,11 +177,12 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 	}
 	d.InitScript = template.JS(js)
 
-	//to escape phohibited symbols
-	d.Link = r.URL.RawPath
-
-	d.GeneratedText = generateSample(segmentFields, d.Seps)
-
+	log.Println("5. -----------GENERATE SAMPLE------------")
+	log.Println("len d.Errors = ", len(d.Errors))
+	if len(d.Errors) == 0 && sf != "" {
+		d.ShowText = true
+		d.GeneratedText = generateSample(segmentFields, d.Seps)
+	}
 	if err := t.ExecuteTemplate(w, "textGenerator.html", d); err != nil {
 		log.Println(err)
 		http.Error(w, "error", http.StatusInternalServerError)
