@@ -130,8 +130,10 @@
             <input type="text" id="field_timestamp" style="display:none" class="field-sample-input" value="TIMESTAMP">
             <input type="text" id="field_value" style="display:none" class="field-sample-input" value="VALUE">
           </div>
-          {{if ne .Errors ""}}
-            <p style="color: red;">{{.Errors}}</p>
+          {{if ne .SegError ""}}
+            <p style="color: red;">{{.SegError}}</p>
+          {{else if ne .SepError ""}}
+            <p style="color: red;">{{.SepError}}</p>
           {{end}}
           <input type="submit" value="Generate" class="valid-submit" style="margin-top: 10px;">
           <input type="hidden" id="sf" name="sf">

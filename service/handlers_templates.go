@@ -126,7 +126,9 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 		InitScript    template.JS
 		GeneratedText string
 		Seps          separators
-		Errors        string
+		SegError      string //holds segment errors
+		SepError      string //separator errors
+
 	}
 
 	var err error
@@ -149,7 +151,7 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 	log.Println("2. -----------CHECK SEPARATORS------------")
 	//check separators
 	if err := checkSeparators(d.Seps); err != nil {
-		d.Errors = err.Error()
+		d.SepError = err.Error()
 	}
 	log.Println("3. -----------CHECK SF------------")
 	sf := r.URL.Query().Get("sf")
@@ -157,16 +159,16 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 	/*if sf != "" {
 		d.ShowText = true
 	}*/
-	log.Println("d.Errors: ", d.Errors)
+	log.Println("d.SepError: ", d.SepError)
 	log.Println("4. -----------CHECK SEGMENTS------------")
 	// checks segments
-	d.Errors, err = checkSegments(segmentFields)
+	d.SegError, err = checkSegments(segmentFields)
 	if err != nil {
-		d.Errors = err.Error()
-		log.Println("d.Errors error: ", d.Errors)
+		d.SegError = err.Error()
+		log.Println("d.SegError error: ", d.SegError)
 	}
 
-	log.Println("d.Errors = ", d.Errors)
+	log.Println("d.SegError = ", d.SegError)
 
 	var js string
 	for _, f := range segmentFields {
@@ -178,8 +180,9 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 	d.InitScript = template.JS(js)
 
 	log.Println("5. -----------GENERATE SAMPLE------------")
-	log.Println("len d.Errors = ", len(d.Errors))
-	if len(d.Errors) == 0 && sf != "" {
+	log.Println("len d.SepError = ", len(d.SepError))
+	log.Println("len of d.SegError", len(d.SegError))
+	if len(d.SegError) == 0 && sf != "" && len(d.SepError) == 0 {
 		d.ShowText = true
 		d.GeneratedText = generateSample(segmentFields, d.Seps)
 	}

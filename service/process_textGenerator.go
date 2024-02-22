@@ -17,7 +17,9 @@ func checkSeparators(seps separators) error {
 	}
 
 	for i, s := range sp {
-		if len(s) != 1 {
+		log.Println(i, ". ", s)
+		log.Println("len(s) = ", len(s))
+		if len(s) != 1 && s != "TAB" && s != "SPACE" {
 			return fmt.Errorf("sep%d should be a single character", i+1)
 		}
 		if s != "TAB" && s != "SPACE" {
@@ -151,6 +153,7 @@ func checkSegments(segmentFields []string) (string, error) {
 	var check string
 	var segIDfound bool
 	var segCodeFound bool
+	var memberIDfound bool
 
 	//start check segmentFields
 	for _, s := range segmentFields {
@@ -160,6 +163,9 @@ func checkSegments(segmentFields []string) (string, error) {
 		if strings.Contains(s, "SEG_CODE") {
 			segCodeFound = true
 		}
+		if strings.Contains(s, "MEMBER_ID") {
+			memberIDfound = true
+		}
 	}
 	//check if at least  SEG_ID or SEG_CODE was choosen
 	if segIDfound == false && segCodeFound == false {
@@ -168,6 +174,10 @@ func checkSegments(segmentFields []string) (string, error) {
 	// check if SEG_CODE or SEG_ID included but not both.
 	if segIDfound == true && segCodeFound == true {
 		check = "You may include SEG_CODE or SEG_ID but not both."
+	}
+
+	if segCodeFound == true && memberIDfound == false {
+		check = "MEMBER_ID is required if you use a SEG_CODE."
 	}
 
 	return check, err
