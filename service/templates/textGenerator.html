@@ -92,7 +92,7 @@
       <div>
           <div style="padding-top: 5px;">
             <div class="segment-box">
-              <h3>Segments</h3>
+              <h3>Segment fields</h3>
               <input type="checkbox" id="seg_id" onclick="checkField('seg_id')">
               <label for="seg_id">SEG_ID</label><br>
               <input type="checkbox" id="seg_code" onclick="checkField('seg_code')">
@@ -103,6 +103,8 @@
               <label for="timestamp">TIMESTAMP</label><br>
               <input type="checkbox" id="value" onclick="checkField('value')">
               <label for="value">VALUE</label><br>
+              <input type="checkbox" id="expiration" onclick="checkField('expiration')">
+              <label for="value">EXPIRATION</label><br>
             </div>
           <form method="GET">
             <div>
@@ -129,6 +131,7 @@
             <input type="text" id="field_member_id" style="display:none" class="field-sample-input" value="MEMBER_ID">
             <input type="text" id="field_timestamp" style="display:none" class="field-sample-input" value="TIMESTAMP">
             <input type="text" id="field_value" style="display:none" class="field-sample-input" value="VALUE">
+            <input type="text" id="field_expiration" style="display:none" class="field-sample-input" value="EXPIRATION">
           </div>
           {{if ne .SegError ""}}
             <p style="color: red;">{{.SegError}}</p>

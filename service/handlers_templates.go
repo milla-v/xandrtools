@@ -182,6 +182,7 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 	log.Println("5. -----------GENERATE SAMPLE------------")
 	log.Println("len d.SepError = ", len(d.SepError))
 	log.Println("len of d.SegError", len(d.SegError))
+	log.Println("SEGMENT FIELDS: ", segmentFields)
 	if len(d.SegError) == 0 && sf != "" && len(d.SepError) == 0 {
 		d.ShowText = true
 		d.GeneratedText = generateSample(segmentFields, d.Seps)

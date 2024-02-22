@@ -75,7 +75,12 @@ func generateSegments(segmentFields []string, seps separators, count int) (segme
 				value := 1 + rand.Intn(5)
 				segmentAdd = append(segmentAdd, strconv.Itoa(value))
 				segmentRem = append(segmentRem, "0")
+			case "TIMESTAMP":
+				segID := 1000 + rand.Intn(1000)
+				segmentAdd = append(segmentAdd, strconv.Itoa(segID))
+				segmentRem = append(segmentRem, strconv.Itoa(segID+100))
 			}
+
 		}
 
 		segmentsToAdd = append(segmentsToAdd, strings.Join(segmentAdd, seps.Sep3))
@@ -153,7 +158,6 @@ func checkSegments(segmentFields []string) (string, error) {
 	var check string
 	var segIDfound bool
 	var segCodeFound bool
-	var memberIDfound bool
 
 	//start check segmentFields
 	for _, s := range segmentFields {
@@ -163,9 +167,6 @@ func checkSegments(segmentFields []string) (string, error) {
 		if strings.Contains(s, "SEG_CODE") {
 			segCodeFound = true
 		}
-		if strings.Contains(s, "MEMBER_ID") {
-			memberIDfound = true
-		}
 	}
 	//check if at least  SEG_ID or SEG_CODE was choosen
 	if segIDfound == false && segCodeFound == false {
@@ -174,10 +175,6 @@ func checkSegments(segmentFields []string) (string, error) {
 	// check if SEG_CODE or SEG_ID included but not both.
 	if segIDfound == true && segCodeFound == true {
 		check = "You may include SEG_CODE or SEG_ID but not both."
-	}
-
-	if segCodeFound == true && memberIDfound == false {
-		check = "MEMBER_ID is required if you use a SEG_CODE."
 	}
 
 	return check, err
