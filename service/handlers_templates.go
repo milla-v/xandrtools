@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -37,80 +36,38 @@ func handleXandrtools(w http.ResponseWriter, r *http.Request) {
 	var d data
 	var err error
 	d.Errs = false
-	var s string
 
-	log.Println("METHOD: ", r.Method)
+	//1. path = validate and type = xandrid
+	if r.URL.Path == "/validate" && r.URL.Query().Get("type") == "xandrid" {
+		log.Println("VALIDATE TYPE: ", r.URL.Query().Get("type"))
+		id := r.URL.Query().Get("id")
+		log.Println("XandrID = ", id)
+		d.Validation = processXandrUID(id)
 
-	if r.Method == "POST" {
-		switch r.RequestURI {
-		case "/validate?type=xandrid&id=":
-			s = r.FormValue("xuid")
-			log.Println("XandrID VALIDATION CASE: ", s)
-			if s == "" {
-				fmt.Println("empty link")
-			}
-			d.Validation = processXandrUID(s)
-			fmt.Println("---------------------------")
-			log.Println("len errs: ", len(d.Validation.ErrList))
-			if len(d.Validation.ErrList) > 0 {
-				d.Errs = true
-			}
-			log.Println("errs: ", d.Errs)
-
-		case "/validate?type=uuid&id=":
-			s = r.FormValue("uuid")
-			if s == "" {
-				fmt.Println("empty link")
-			}
-			d.ValUUID, err = validateUUID(s)
-			if err != nil {
-				log.Println("ValUUD err: ", len(d.ValUUID.ErrMsg))
-				log.Println("ErrSecNum = ", d.ValUUID.ErrSecNum)
-			}
-			if len(d.ValUUID.Sections) > 0 {
-				d.SecOne = d.ValUUID.Sections[0]
-				d.SecTwo = d.ValUUID.Sections[1]
-				d.SecThree = d.ValUUID.Sections[2]
-				d.SecFour = d.ValUUID.Sections[3]
-				d.SecFive = d.ValUUID.Sections[4]
-			}
-			log.Println("errmsg: ", d.ValUUID.ErrMsg)
+		log.Println("len errs: ", len(d.Validation.ErrList))
+		if len(d.Validation.ErrList) > 0 {
+			d.Errs = true
 		}
+		log.Println("errs: ", d.Errs)
 	}
-
-	if r.Method == "GET" && r.URL.Path != "/" {
-		//1. path = validate and type = xandr
-		if r.URL.Path == "/validate" && r.URL.Query().Get("type") == "xandrid" {
-			log.Println("VALIDATE TYPE: ", r.URL.Query().Get("type"))
-			id := r.URL.Query().Get("id")
-			log.Println("XandrID = ", id)
-			d.Validation = processXandrUID(id)
-
-			log.Println("len errs: ", len(d.Validation.ErrList))
-			if len(d.Validation.ErrList) > 0 {
-				d.Errs = true
-			}
-			log.Println("errs: ", d.Errs)
+	//2. path = validate and type = uuid
+	if r.URL.Path == "/validate" && r.URL.Query().Get("type") == "uuid" {
+		log.Println("VALIDATE TYPE: ", r.URL.Query().Get("type"))
+		id := r.URL.Query().Get("id")
+		log.Println("UUID = ", id)
+		d.ValUUID, err = validateUUID(id)
+		if err != nil {
+			log.Println("ValUUD err: ", len(d.ValUUID.ErrMsg))
+			log.Println("ErrSecNum = ", d.ValUUID.ErrSecNum)
 		}
-		//2. path = validate and type = uuid
-		if r.URL.Path == "/validate" && r.URL.Query().Get("type") == "uuid" {
-			log.Println("VALIDATE TYPE: ", r.URL.Query().Get("type"))
-			id := r.URL.Query().Get("id")
-			log.Println("UUID = ", id)
-			d.ValUUID, err = validateUUID(id)
-			if err != nil {
-				log.Println("ValUUD err: ", len(d.ValUUID.ErrMsg))
-				log.Println("ErrSecNum = ", d.ValUUID.ErrSecNum)
-			}
-			if len(d.ValUUID.Sections) > 0 {
-				d.SecOne = d.ValUUID.Sections[0]
-				d.SecTwo = d.ValUUID.Sections[1]
-				d.SecThree = d.ValUUID.Sections[2]
-				d.SecFour = d.ValUUID.Sections[3]
-				d.SecFive = d.ValUUID.Sections[4]
-			}
-			log.Println("errmsg: ", d.ValUUID.ErrMsg)
+		if len(d.ValUUID.Sections) > 0 {
+			d.SecOne = d.ValUUID.Sections[0]
+			d.SecTwo = d.ValUUID.Sections[1]
+			d.SecThree = d.ValUUID.Sections[2]
+			d.SecFour = d.ValUUID.Sections[3]
+			d.SecFive = d.ValUUID.Sections[4]
 		}
+		log.Println("errmsg: ", d.ValUUID.ErrMsg)
 	}
 
 	if err := t.ExecuteTemplate(w, "xandrtools.html", d); err != nil {

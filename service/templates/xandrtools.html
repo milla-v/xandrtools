@@ -68,10 +68,11 @@
     <div style="padding-left:16px">
       <p>This tool is an ongoing experiment in validation:</p>
       <h2>Validate the Xandr user ID:</h2>
-      <form method="POST" action="/validate?type=xandrid&id=">
+      <form method="GET" action="/validate">
         <label for="xuid">Insert The Xandr User ID: </label>
         <div class="valid-box">
-          <input type="text" id="xid" name="xuid" class="valid-input" {{if and (ne .Validation.WrongUserID "") (ne .Validation.WrongUserID "Empty input")}} value="{{.Validation.WrongUserID}}" {{end}} {{if ne .Validation.UserID 0}} value="{{.Validation.UserID}}" {{end}}><br>
+          <input type="hidden" id="type" name="type" value="xandrid">
+          <input type="text" id="xid" name="id" class="valid-input" {{if and (ne .Validation.WrongUserID "") (ne .Validation.WrongUserID "Empty input")}} value="{{.Validation.WrongUserID}}" {{end}} {{if ne .Validation.UserID 0}} value="{{.Validation.UserID}}" {{end}}><br>
           <input type="submit" value="Validate" class="valid-submit">
           <div title="Copy" class="box-btn-copy"  onclick="copyXLink()"><img src="templates/copy_btn.png" alt=""></div>
         </div>
@@ -94,10 +95,11 @@
   
     <div style="padding-left:16px">
       <h2>Validate the UUID:</h2>
-      <form method="POST" action="/validate?type=uuid&id=">
+      <form method="GET" action="/validate">
         <label for="uuid">Insert UUID:</label>
         <div class="valid-box">
-          <input type="text" id="uid" name="uuid" class="valid-input" {{if ne .ValUUID.UUID ""}} value="{{.ValUUID.UUID}}" {{end}}><br>
+          <input type="hidden" id="type" name="type" value="uuid">
+          <input type="text" id="uid" name="id" class="valid-input" {{if ne .ValUUID.UUID ""}} value="{{.ValUUID.UUID}}" {{end}}><br>
           <input type="submit" value="Validate" class="valid-submit">
           <div title="Copy" class="box-btn-copy"  onclick="copyUULink()"><img src="templates/copy_btn.png" alt=""></div>
         </div>
