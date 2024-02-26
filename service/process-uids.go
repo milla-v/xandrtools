@@ -20,16 +20,21 @@ func processXandrUID(str string) xandr {
 	empty := "Empty the Xanrd userID field"
 	valid := "ID validation completed. No errors or warnings founded."
 
-	log.Println("str[0]: ", string(str[0]))
-
 	xuid, err = strconv.ParseInt(str, 10, 64)
+
 	if err != nil {
+		if str == "" {
+			xr.ErrList = append(xr.ErrList, empty)
+			log.Println(empty)
+			xr.WrongUserID = "Empty input"
+		}
 		if strings.Contains(err.Error(), "out of range") {
 			xr.ErrList = append(xr.ErrList, large)
 			log.Println(large)
 			xr.WrongUserID = str
 		}
-		if strings.Contains(err.Error(), "invalid syntax") {
+
+		if str != "" && strings.Contains(err.Error(), "invalid syntax") {
 			xr.ErrList = append(xr.ErrList, letters)
 			log.Println(letters)
 			xr.WrongUserID = str
@@ -40,10 +45,6 @@ func processXandrUID(str string) xandr {
 		xr.ErrList = append(xr.ErrList, zero)
 		log.Println(zero)
 		xr.WrongUserID = str
-	} else if xuid == 0 {
-		xr.ErrList = append(xr.ErrList, empty)
-		log.Println(empty)
-		xr.WrongUserID = "Empty input"
 	} else if xuid <= 0 {
 		xr.ErrList = append(xr.ErrList, negative)
 		log.Println("negative")

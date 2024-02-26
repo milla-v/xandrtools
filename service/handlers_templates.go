@@ -39,10 +39,13 @@ func handleXandrtools(w http.ResponseWriter, r *http.Request) {
 	d.Errs = false
 	var s string
 
+	log.Println("METHOD: ", r.Method)
+
 	if r.Method == "POST" {
 		switch r.RequestURI {
 		case "/validate?type=xandrid&id=":
 			s = r.FormValue("xuid")
+			log.Println("XandrID VALIDATION CASE: ", s)
 			if s == "" {
 				fmt.Println("empty link")
 			}
