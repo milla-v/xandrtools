@@ -72,7 +72,7 @@
         <label for="xuid">Insert The Xandr User ID: </label>
         <div class="valid-box">
           <input type="hidden" id="type" name="type" value="xandrid">
-          <input type="text" id="xid" name="id" class="valid-input" {{if and (ne .Validation.WrongUserID "") (ne .Validation.WrongUserID "Empty input")}} value="{{.Validation.WrongUserID}}" {{end}} {{if ne .Validation.UserID 0}} value="{{.Validation.UserID}}" {{end}}><br>
+          <input type="text" id="xid" name="id" class="valid-input" {{if and (ne .ValidationResult.WrongUserID "") (ne .ValidationResult.WrongUserID "Empty input")}} value="{{.ValidationResult.WrongUserID}}" {{end}} {{if ne .ValidationResult.UserID 0}} value="{{.ValidationResult.UserID}}" {{end}}><br>
           <input type="submit" value="Validate" class="valid-submit">
           <div title="Copy" class="box-btn-copy"  onclick="copyXLink()"><img src="templates/copy_btn.png" alt=""></div>
         </div>
@@ -80,13 +80,13 @@
       <br> 
       <div>
         {{if eq .Errs true}}
-          <label>ID: </label><label style="color: red">{{.Validation.WrongUserID}}</label>
-          {{range .Validation.ErrList}}
+          <label>ID: </label><label style="color: red">{{.ValidationResult.WrongUserID}}</label>
+          {{range .ValidationResult.ErrList}}
             <p><span style='font-size:17px; color: red;'>&#8594;</span> {{.}}</p>
           {{end}}
         {{end}}
-        {{if ne .Validation.UserID 0}}
-          <p><span style='font-size:17px; color: green;'>&#8594;</span> {{.Validation.ValidMsg}}</p>
+        {{if ne .ValidationResult.UserID 0}}
+          <p><span style='font-size:17px; color: green;'>&#8594;</span> {{.ValidationResult.ValidMsg}}</p>
         {{end}}
         <br>
         <a href="https://docs.xandr.com/bundle/xandr-api/page/legacy-bss-file-format.html">Legacy BSS File Format</a>

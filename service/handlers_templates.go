@@ -23,15 +23,15 @@ func handlePng(w http.ResponseWriter, r *http.Request) {
 
 func handleXandrtools(w http.ResponseWriter, r *http.Request) {
 	type data struct {
-		XUID       int64
-		Validation xandr
-		Errs       bool
-		ValUUID    uuid
-		SecOne     string
-		SecTwo     string
-		SecThree   string
-		SecFour    string
-		SecFive    string
+		XUID             int64
+		ValidationResult xandr
+		Errs             bool
+		ValUUID          uuid
+		SecOne           string
+		SecTwo           string
+		SecThree         string
+		SecFour          string
+		SecFive          string
 	}
 	var d data
 	var err error
@@ -42,10 +42,10 @@ func handleXandrtools(w http.ResponseWriter, r *http.Request) {
 		log.Println("VALIDATE TYPE: ", r.URL.Query().Get("type"))
 		id := r.URL.Query().Get("id")
 		log.Println("XandrID = ", id)
-		d.Validation = processXandrUID(id)
+		d.ValidationResult = processXandrUID(id)
 
-		log.Println("len errs: ", len(d.Validation.ErrList))
-		if len(d.Validation.ErrList) > 0 {
+		log.Println("len errs: ", len(d.ValidationResult.ErrList))
+		if len(d.ValidationResult.ErrList) > 0 {
 			d.Errs = true
 		}
 		log.Println("errs: ", d.Errs)
