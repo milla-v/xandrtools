@@ -86,7 +86,6 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var d data
 	d.ShowText = false
-	var segs []string
 
 	d.Seps.Sep1 = r.URL.Query().Get("sep_1")
 	d.Seps.Sep2 = r.URL.Query().Get("sep_2")
@@ -94,13 +93,14 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 	d.Seps.Sep4 = r.URL.Query().Get("sep_4")
 	d.Seps.Sep5 = r.URL.Query().Get("sep_5")
 
-	//set default separators
+	//set default separator
 	setDefaultSeparators(&d.Seps)
 
 	//check separators
 	if err := checkSeparators(d.Seps); err != nil {
 		d.SepError = err.Error()
 	}
+
 	//check sf value
 	sf := r.URL.Query().Get("sf")
 	segmentFields := strings.Split(sf, "-")
