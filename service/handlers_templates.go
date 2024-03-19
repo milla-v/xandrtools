@@ -22,47 +22,7 @@ func handlePng(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleXandrtools(w http.ResponseWriter, r *http.Request) {
-	type data struct {
-		XUID             int64
-		ValidationResult xandr
-		Errs             bool
-		ValUUID          uuid
-		SecOne           string //section one of uuid
-		SecTwo           string //section two of uuid
-		SecThree         string //section three of uuid
-		SecFour          string //section four of uuid
-		SecFive          string //section five of uuid
-	}
-	var d data
-	var err error
-	d.Errs = false
-
-	//1. input name = "type" value = "xandrid"
-	if r.URL.Query().Get("type") == "xandrid" {
-		id := r.URL.Query().Get("id")
-		d.ValidationResult = processXandrUID(id)
-		if len(d.ValidationResult.ErrList) > 0 {
-			d.Errs = true
-		}
-	}
-	//2. input name = "type" value = "uuid"
-	if r.URL.Query().Get("type") == "uuid" {
-		id := r.URL.Query().Get("id")
-		d.ValUUID, err = validateUUID(id)
-		if err != nil {
-			log.Println("ValUUD err: ", len(d.ValUUID.ErrMsg))
-			log.Println("ErrSecNum = ", d.ValUUID.ErrSecNum)
-		}
-		if len(d.ValUUID.Sections) > 0 {
-			d.SecOne = d.ValUUID.Sections[0]
-			d.SecTwo = d.ValUUID.Sections[1]
-			d.SecThree = d.ValUUID.Sections[2]
-			d.SecFour = d.ValUUID.Sections[3]
-			d.SecFive = d.ValUUID.Sections[4]
-		}
-	}
-
-	if err := t.ExecuteTemplate(w, "xandrtools.html", d); err != nil {
+	if err := t.ExecuteTemplate(w, "xandrtools.html", nil); err != nil {
 		log.Println(err)
 		http.Error(w, "error", http.StatusInternalServerError)
 		return
@@ -127,6 +87,54 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 		d.GeneratedText = generateSample(segmentFields, d.Seps)
 	}
 	if err := t.ExecuteTemplate(w, "textGenerator.html", d); err != nil {
+		log.Println(err)
+		http.Error(w, "error", http.StatusInternalServerError)
+		return
+	}
+}
+
+func handleValidators(w http.ResponseWriter, r *http.Request) {
+	type data struct {
+		XUID             int64
+		ValidationResult xandr
+		Errs             bool
+		ValUUID          uuid
+		SecOne           string //section one of uuid
+		SecTwo           string //section two of uuid
+		SecThree         string //section three of uuid
+		SecFour          string //section four of uuid
+		SecFive          string //section five of uuid
+	}
+	var d data
+	var err error
+	d.Errs = false
+
+	//1. input name = "type" value = "xandrid"
+	if r.URL.Query().Get("type") == "xandrid" {
+		id := r.URL.Query().Get("id")
+		d.ValidationResult = processXandrUID(id)
+		if len(d.ValidationResult.ErrList) > 0 {
+			d.Errs = true
+		}
+	}
+	//2. input name = "type" value = "uuid"
+	if r.URL.Query().Get("type") == "uuid" {
+		id := r.URL.Query().Get("id")
+		d.ValUUID, err = validateUUID(id)
+		if err != nil {
+			log.Println("ValUUD err: ", len(d.ValUUID.ErrMsg))
+			log.Println("ErrSecNum = ", d.ValUUID.ErrSecNum)
+		}
+		if len(d.ValUUID.Sections) > 0 {
+			d.SecOne = d.ValUUID.Sections[0]
+			d.SecTwo = d.ValUUID.Sections[1]
+			d.SecThree = d.ValUUID.Sections[2]
+			d.SecFour = d.ValUUID.Sections[3]
+			d.SecFive = d.ValUUID.Sections[4]
+		}
+	}
+
+	if err := t.ExecuteTemplate(w, "validators.html", d); err != nil {
 		log.Println(err)
 		http.Error(w, "error", http.StatusInternalServerError)
 		return
