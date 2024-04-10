@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 	"strings"
+
+	"github.com/milla-v/xandr/bss/xgen"
 )
 
 var t *template.Template
@@ -40,12 +42,32 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 		Seps          separators
 		SegError      string //holds segment errors
 		SepError      string //separator errors
-
 	}
 
 	var err error
 	var d data
 	d.ShowText = false
+
+	sfs := r.URL.Query().Get("sf")
+	str := strings.Split(sfs, "-")
+	var segFields []xgen.SegmentFieldName
+
+	for _, s := range str {
+		segFields = append(segFields, xgen.SegmentFieldName(s))
+	}
+
+	gen := xgen.TextEncoderParameters{
+		Sep1:          r.URL.Query().Get("sep_1"),
+		Sep2:          r.URL.Query().Get("sep_2"),
+		Sep3:          r.URL.Query().Get("sep_3"),
+		Sep4:          r.URL.Query().Get("sep_4"),
+		Sep5:          r.URL.Query().Get("sep_5"),
+		SegmentFields: segFields,
+	}
+	_ = gen
+	//textWriter, err := xgen.NewT
+
+	// old code from here
 
 	d.Seps.Sep1 = r.URL.Query().Get("sep_1")
 	d.Seps.Sep2 = r.URL.Query().Get("sep_2")
