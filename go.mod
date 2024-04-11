@@ -8,7 +8,7 @@ require (
 )
 
 require (
-	github.com/milla-v/xandr v1.0.0 // indirect
+	github.com/milla-v/xandr v1.0.1 // indirect
 	golang.org/x/net v0.10.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 )

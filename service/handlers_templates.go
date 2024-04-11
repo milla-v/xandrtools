@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 
+	_ "github.com/milla-v/xandr/bss"
 	"github.com/milla-v/xandr/bss/xgen"
 )
 
@@ -36,12 +37,10 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 	type data struct {
 		ID            string
 		ShowText      bool
-		Link          string
 		InitScript    template.JS
 		GeneratedText string
 		Seps          separators
-		SegError      string //holds segment errors
-		SepError      string //separator errors
+		GenError      string //error from xgen library
 	}
 
 	var err error
@@ -56,6 +55,9 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 		segFields = append(segFields, xgen.SegmentFieldName(s))
 	}
 
+	//set default separator
+	setDefaultSeparators(&d.Seps)
+
 	gen := xgen.TextEncoderParameters{
 		Sep1:          r.URL.Query().Get("sep_1"),
 		Sep2:          r.URL.Query().Get("sep_2"),
@@ -64,8 +66,23 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 		Sep5:          r.URL.Query().Get("sep_5"),
 		SegmentFields: segFields,
 	}
-	_ = gen
-	//textWriter, err := xgen.NewT
+
+	//check separators, segments and return err
+	_, err = xgen.NewTextEncoder(gen)
+	if err != nil {
+		d.GenError = err.Error()
+		log.Println("d.GenError = ", d.GenError)
+	}
+
+	var js string
+
+	for _, f := range str {
+		id := "'" + strings.ToLower(f) + "'"
+		js += "var checkBox = document.getElementById(" + id + ");\n"
+		js += "checkBox.checked = true;\n"
+		js += "checkField(" + id + ");\n"
+	}
+	d.InitScript = template.JS(js)
 
 	// old code from here
 
@@ -75,39 +92,48 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 	d.Seps.Sep4 = r.URL.Query().Get("sep_4")
 	d.Seps.Sep5 = r.URL.Query().Get("sep_5")
 
-	//set default separator
-	setDefaultSeparators(&d.Seps)
+	/*
+			//check separators
+			if err := checkSeparators(d.Seps); err != nil {
+				d.SepError = err.Error()
+			}
 
-	//check separators
-	if err := checkSeparators(d.Seps); err != nil {
-		d.SepError = err.Error()
-	}
+			//check sf value
+			sf := r.URL.Query().Get("sf")
+			segmentFields := strings.Split(sf, "-")
+			log.Println("sf: ", sf)
+			log.Println("segmentFields: ", segmentFields)
 
-	//check sf value
-	sf := r.URL.Query().Get("sf")
-	segmentFields := strings.Split(sf, "-")
+			// checks segments
+			d.SegError, err = checkSegments(segmentFields)
+			if err != nil {
+				d.SegError = err.Error()
+				log.Println("d.SegError error: ", d.SegError)
+			}
 
-	// checks segments
-	d.SegError, err = checkSegments(segmentFields)
-	if err != nil {
-		d.SegError = err.Error()
-		log.Println("d.SegError error: ", d.SegError)
-	}
-
-	var js string
-	for _, f := range segmentFields {
-		id := "'" + strings.ToLower(f) + "'"
-		js += "var checkBox = document.getElementById(" + id + ");\n"
-		js += "checkBox.checked = true;\n"
-		js += "checkField(" + id + ");\n"
-	}
-	d.InitScript = template.JS(js)
-
+		var js string
+		for _, f := range segmentFields {
+			id := "'" + strings.ToLower(f) + "'"
+			js += "var checkBox = document.getElementById(" + id + ");\n"
+			js += "checkBox.checked = true;\n"
+			js += "checkField(" + id + ");\n"
+		}
+		d.InitScript = template.JS(js)
+	*/
 	//generate text sample
-	if len(d.SegError) == 0 && sf != "" && len(d.SepError) == 0 {
-		d.ShowText = true
-		d.GeneratedText = generateSample(segmentFields, d.Seps)
+	var text []string
+	for _, s := range segFields {
+		text = append(text, string(s))
 	}
+	if len(d.GenError) == 0 && sfs != "" {
+		d.ShowText = true
+		d.GeneratedText = generateSample(text, d.Seps)
+	}
+	/*
+		if len(d.SegError) == 0 && sf != "" && len(d.SepError) == 0 {
+			d.ShowText = true
+			d.GeneratedText = generateSample(segmentFields, d.Seps)
+		}*/
 	if err := t.ExecuteTemplate(w, "textGenerator.html", d); err != nil {
 		log.Println(err)
 		http.Error(w, "error", http.StatusInternalServerError)

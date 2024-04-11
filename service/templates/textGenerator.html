@@ -131,10 +131,8 @@
             <input type="text" id="field_value" style="display:none" class="field-sample-input" value="VALUE">
             <input type="text" id="field_expiration" style="display:none" class="field-sample-input" value="EXPIRATION">
           </div>
-          {{if ne .SegError ""}}
-            <p style="color: red;">{{.SegError}}</p>
-          {{else if ne .SepError ""}}
-            <p style="color: red;">{{.SepError}}</p>
+          {{if ne .GenError ""}}
+            <p style="color: red;">{{.GenError}}</p>
           {{end}}
           <input type="submit" value="Generate" class="valid-submit" style="margin-top: 10px;">
           <input type="hidden" id="sf" name="sf">
