@@ -1,13 +1,11 @@
 package service
 
 import (
-	"bytes"
 	"html/template"
 	"log"
 	"net/http"
 	"strings"
 
-	"github.com/milla-v/xandr/bss"
 	"github.com/milla-v/xandr/bss/xgen"
 )
 
@@ -58,13 +56,12 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//set default separator
-	setDefaultSeparators(&d.Seps)
 
 	params := xgen.TextEncoderParameters{
-		Sep1:          r.URL.Query().Get("sep_1"),
+		Sep1:          replaceTabs(r.URL.Query().Get("sep_1")),
 		Sep2:          r.URL.Query().Get("sep_2"),
 		Sep3:          r.URL.Query().Get("sep_3"),
-		Sep4:          r.URL.Query().Get("sep_4"),
+		Sep4:          replaceTabs(r.URL.Query().Get("sep_4")),
 		Sep5:          r.URL.Query().Get("sep_5"),
 		SegmentFields: segFields,
 	}
@@ -90,7 +87,10 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 
 	if len(d.GenError) == 0 && sfs != "" {
 		d.ShowText = true
-		d.GeneratedText, err = generateSample2(params)
+		d.GeneratedText, err = generateSample2(&params)
+		if err != nil {
+			d.GenError = err.Error()
+		}
 	}
 
 	// old code from here
@@ -101,15 +101,17 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 	d.Seps.Sep4 = r.URL.Query().Get("sep_4")
 	d.Seps.Sep5 = r.URL.Query().Get("sep_5")
 
+	setDefaultSeparators(&d.Seps)
+
 	//generate text sample
-	var text []string
-	for _, s := range segFields {
-		text = append(text, string(s))
-	}
-	if len(d.GenError) == 0 && sfs != "" {
-		d.ShowText = true
-		d.GeneratedText = generateSample(text, d.Seps)
-	}
+	//	var text []string
+	//	for _, s := range segFields {
+	//		text = append(text, string(s))
+	//	}
+	//	if len(d.GenError) == 0 && sfs != "" {
+	//		d.ShowText = true
+	//		d.GeneratedText = generateSample(text, d.Seps)
+	//	}
 	/*
 		if len(d.SegError) == 0 && sf != "" && len(d.SepError) == 0 {
 			d.ShowText = true
