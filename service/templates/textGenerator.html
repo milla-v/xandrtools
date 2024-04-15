@@ -77,12 +77,10 @@
         <i class="fa fa-caret-down"></i>
       </button>
       <div class="dropdown-content">
-        <a href="/">Validate</a>
+        <a href="/validators">Validators</a>
         <a href="/textGenerator">Generate text sample</a>
       </div>
     </div>
-    <a href="#home">Contacts</a>
-    <a href="#news">About</a>
     <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="respNavigation()">&#9776;</a>
   </div>
   
@@ -104,7 +102,7 @@
               <input type="checkbox" id="value" onclick="checkField('value')">
               <label for="value">VALUE</label><br>
               <input type="checkbox" id="expiration" onclick="checkField('expiration')">
-              <label for="value">EXPIRATION</label><br>
+              <label for="expiration">EXPIRATION</label><br>
             </div>
           <form method="GET">
             <div>
@@ -133,10 +131,8 @@
             <input type="text" id="field_value" style="display:none" class="field-sample-input" value="VALUE">
             <input type="text" id="field_expiration" style="display:none" class="field-sample-input" value="EXPIRATION">
           </div>
-          {{if ne .SegError ""}}
-            <p style="color: red;">{{.SegError}}</p>
-          {{else if ne .SepError ""}}
-            <p style="color: red;">{{.SepError}}</p>
+          {{if ne .GenError ""}}
+            <p style="color: red;">{{.GenError}}</p>
           {{end}}
           <input type="submit" value="Generate" class="valid-submit" style="margin-top: 10px;">
           <input type="hidden" id="sf" name="sf">
@@ -156,7 +152,7 @@
 
   <div class="footer">
     <div class="footer-col">
-     <a href="#">Terms</a>
+     
     </div>
   </div>
 </body>

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"math/rand"
@@ -8,6 +9,8 @@ import (
 	"strings"
 
 	guuid "github.com/google/uuid"
+	"github.com/milla-v/xandr/bss"
+	"github.com/milla-v/xandr/bss/xgen"
 )
 
 func checkSeparators(seps separators) error {
@@ -151,6 +154,50 @@ func generateSample(segmentFields []string, seps separators) string {
 	}
 
 	return s
+}
+
+func generateSample2(params *xgen.TextEncoderParameters) (string, error) {
+	var err error
+	var out bytes.Buffer
+
+	var users []*xgen.UserRecord
+
+	user1 := &xgen.UserRecord{
+		UID: "12345",
+		Segments: []xgen.Segment{
+			{ID: 100, Expiration: 180 * 60 * 24, Value: 123},
+			{ID: 101, Expiration: 1440, Value: 123},
+		},
+	}
+
+	user2 := &xgen.UserRecord{
+		UID:    "12345",
+		Domain: xgen.IDFA,
+		Segments: []xgen.Segment{
+			{ID: 100, Expiration: 180 * 60 * 24, Value: 123},
+			{ID: 101, Expiration: 1440, Value: 123},
+		},
+	}
+
+	users = append(users, user1, user2)
+
+	w, err := bss.NewSegmentDataFormatter(&out, bss.FormatText, params)
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+
+	if err := w.Append(users); err != nil {
+		log.Println(err)
+		return "", err
+	}
+
+	if err := w.Close(); err != nil {
+		log.Println(err)
+		return "", err
+	}
+
+	return out.String(), err
 }
 
 func checkSegments(segmentFields []string) (string, error) {
