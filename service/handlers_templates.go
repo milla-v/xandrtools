@@ -86,14 +86,6 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 	}
 	d.InitScript = template.JS(js)
 
-	// old code from here
-
-	d.Seps.Sep1 = r.URL.Query().Get("sep_1")
-	d.Seps.Sep2 = r.URL.Query().Get("sep_2")
-	d.Seps.Sep3 = r.URL.Query().Get("sep_3")
-	d.Seps.Sep4 = r.URL.Query().Get("sep_4")
-	d.Seps.Sep5 = r.URL.Query().Get("sep_5")
-
 	//generate text sample
 	var out bytes.Buffer
 	var gentext *bss.SegmentDataFormatter
@@ -106,8 +98,17 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 	if len(d.GenError) == 0 && sfs != "" {
 		d.ShowText = true
 		log.Println("d.ShowText = ", d.ShowText)
-		log.Println("gentext: ", gentext)
+
 	}
+
+	// old code from here
+
+	d.Seps.Sep1 = r.URL.Query().Get("sep_1")
+	d.Seps.Sep2 = r.URL.Query().Get("sep_2")
+	d.Seps.Sep3 = r.URL.Query().Get("sep_3")
+	d.Seps.Sep4 = r.URL.Query().Get("sep_4")
+	d.Seps.Sep5 = r.URL.Query().Get("sep_5")
+
 	//generate text sample
 	var text []string
 	for _, s := range segFields {
