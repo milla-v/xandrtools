@@ -153,6 +153,18 @@ func generateSample(segmentFields []string, seps separators) string {
 	return s
 }
 
+func generateSample2(params *xgen.TextEncoderParameters) (string, err) {
+	var err error
+	var out bytes.Buffer
+
+	w, err := bss.NewSegmentDataFormatter(&out, bss.FormatText, &params)
+	if err != nil {
+		log.Println("w err: ", err)
+	}
+
+	return s, err
+}
+
 func checkSegments(segmentFields []string) (string, error) {
 	var err error
 	var check string

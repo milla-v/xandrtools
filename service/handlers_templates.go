@@ -60,7 +60,7 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 	//set default separator
 	setDefaultSeparators(&d.Seps)
 
-	gen := xgen.TextEncoderParameters{
+	params := xgen.TextEncoderParameters{
 		Sep1:          r.URL.Query().Get("sep_1"),
 		Sep2:          r.URL.Query().Get("sep_2"),
 		Sep3:          r.URL.Query().Get("sep_3"),
@@ -70,7 +70,7 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//check separators, segments and return err
-	_, err = xgen.NewTextEncoder(gen)
+	_, err = xgen.NewTextEncoder(params)
 	if err != nil {
 		d.GenError = err.Error()
 		log.Println("d.GenError = ", d.GenError)
@@ -87,18 +87,10 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 	d.InitScript = template.JS(js)
 
 	//generate text sample
-	var out bytes.Buffer
-	var gentext *bss.SegmentDataFormatter
 
-	gentext, err = bss.NewSegmentDataFormatter(&out, bss.FormatText, &gen)
-	if err != nil {
-		log.Println("gentext err: ", err)
-	}
-	//var users []*xgen.UserRecord
 	if len(d.GenError) == 0 && sfs != "" {
 		d.ShowText = true
-		log.Println("d.ShowText = ", d.ShowText)
-
+		d.GeneratedText, err = generateSample2(params)
 	}
 
 	// old code from here
