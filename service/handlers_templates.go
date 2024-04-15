@@ -1,12 +1,13 @@
 package service
 
 import (
+	"bytes"
 	"html/template"
 	"log"
 	"net/http"
 	"strings"
 
-	_ "github.com/milla-v/xandr/bss"
+	"github.com/milla-v/xandr/bss"
 	"github.com/milla-v/xandr/bss/xgen"
 )
 
@@ -41,6 +42,7 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 		GeneratedText string
 		Seps          separators
 		GenError      string //error from xgen library
+		GenText       string
 	}
 
 	var err error
@@ -92,34 +94,20 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 	d.Seps.Sep4 = r.URL.Query().Get("sep_4")
 	d.Seps.Sep5 = r.URL.Query().Get("sep_5")
 
-	/*
-			//check separators
-			if err := checkSeparators(d.Seps); err != nil {
-				d.SepError = err.Error()
-			}
+	//generate text sample
+	var out bytes.Buffer
+	var gentext *bss.SegmentDataFormatter
 
-			//check sf value
-			sf := r.URL.Query().Get("sf")
-			segmentFields := strings.Split(sf, "-")
-			log.Println("sf: ", sf)
-			log.Println("segmentFields: ", segmentFields)
-
-			// checks segments
-			d.SegError, err = checkSegments(segmentFields)
-			if err != nil {
-				d.SegError = err.Error()
-				log.Println("d.SegError error: ", d.SegError)
-			}
-
-		var js string
-		for _, f := range segmentFields {
-			id := "'" + strings.ToLower(f) + "'"
-			js += "var checkBox = document.getElementById(" + id + ");\n"
-			js += "checkBox.checked = true;\n"
-			js += "checkField(" + id + ");\n"
-		}
-		d.InitScript = template.JS(js)
-	*/
+	gentext, err = bss.NewSegmentDataFormatter(&out, bss.FormatText, &gen)
+	if err != nil {
+		log.Println("gentext err: ", err)
+	}
+	//var users []*xgen.UserRecord
+	if len(d.GenError) == 0 && sfs != "" {
+		d.ShowText = true
+		log.Println("d.ShowText = ", d.ShowText)
+		log.Println("gentext: ", gentext)
+	}
 	//generate text sample
 	var text []string
 	for _, s := range segFields {
