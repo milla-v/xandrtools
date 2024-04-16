@@ -87,7 +87,7 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 
 	if len(d.GenError) == 0 && sfs != "" {
 		d.ShowText = true
-		d.GeneratedText, err = generateSample2(&params)
+		d.GeneratedText, err = generateSample(&params)
 		if err != nil {
 			d.GenError = err.Error()
 		}

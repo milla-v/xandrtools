@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"strings"
 
-	guuid "github.com/google/uuid"
 	"github.com/milla-v/xandr/bss"
 	"github.com/milla-v/xandr/bss/xgen"
 )
@@ -103,6 +102,7 @@ func replaceTabs(s string) string {
 	return s
 }
 
+/*
 func generateSample(segmentFields []string, seps separators) string {
 	const lineTemplate = "{UID}{SEP_1}{SEGMENTS_ADD}{SEP_4}{SEGMENTS_DEL}{SEP_5}{DOMAIN}"
 
@@ -156,7 +156,9 @@ func generateSample(segmentFields []string, seps separators) string {
 	return s
 }
 
-func generateSample2(params *xgen.TextEncoderParameters) (string, error) {
+*/
+
+func generateSample(params *xgen.TextEncoderParameters) (string, error) {
 	var err error
 	var out bytes.Buffer
 
