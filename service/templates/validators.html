@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>XandrTools</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link  href="templates/styles.css" rel="stylesheet"  type="text/css">
+</head>
+<body>
+  <script>
+    function respNavigation() {
+      var x = document.getElementById("myTopnav");
+      if (x.className === "topnav") {
+        x.className += " responsive";
+      } else {
+        x.className = "topnav";
+      }
+    }
+    
+    function copyXLink() {
+      // Get the text field
+      var copyID = document.getElementById("xid");
+    
+      // Select the text field
+      copyID.select();
+      copyID.setSelectionRange(0, 99999); // For mobile devices
+    
+      // Copy the text inside the text field
+      navigator.clipboard.writeText(window.location.href + copyID.value);
+      
+      // Alert the copied text
+      alert("Copied the text: " + window.location.href + copyID.value);
+    }
+    
+    function copyUULink() {
+      // Get the text field
+      var copyID = document.getElementById("uid");
+    
+      // Select the text field
+      copyID.select();
+      copyID.setSelectionRange(0, 99999); // For mobile devices
+    
+      // Copy the text inside the text field
+       navigator.clipboard.writeText(window.location.href + copyID.value);
+      
+      // Alert the copied text
+      alert("Copied the text: " + window.location.href + copyID.value);
+    }
+  
+  </script>
+  
+  <div class="topnav" id="myTopnav">
+    <a href="/">XandrTools</a>
+    <div class="dropdown">
+      <button class="dropbtn">Tools
+        <i class="fa fa-caret-down"></i>
+      </button>
+      <div class="dropdown-content">
+        <a href="/validators">Validators</a>
+        <a href="/textGenerator">Generate text sample</a>
+      </div>
+    </div>
+    <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="respNavigation()">&#9776;</a>
+  </div>
+  
+  <div class="content-box">
+    <div style="padding-left:16px">
+      <h2>Validate the Xandr user ID:</h2>
+      <form method="GET" action="/validate">
+        <label for="xuid">Insert The Xandr User ID: </label>
+        <div class="valid-box">
+          <input type="hidden" id="type" name="type" value="xandrid">
+          <input type="text" id="xid" name="id" class="valid-input" {{if and (ne .ValidationResult.WrongUserID "") (ne .ValidationResult.WrongUserID "Empty input")}} value="{{.ValidationResult.WrongUserID}}" {{end}} {{if ne .ValidationResult.UserID 0}} value="{{.ValidationResult.UserID}}" {{end}}><br>
+          <input type="submit" value="Validate" class="valid-submit">
+          <div title="Copy" class="box-btn-copy"  onclick="copyXLink()"><img src="templates/copy_btn.png" alt=""></div>
+        </div>
+      </form>
+      <br> 
+      <div>
+        {{if eq .Errs true}}
+          <label>ID: </label><label style="color: red">{{.ValidationResult.WrongUserID}}</label>
+          {{range .ValidationResult.ErrList}}
+            <p><span style='font-size:17px; color: red;'>&#8594;</span> {{.}}</p>
+          {{end}}
+        {{end}}
+        {{if ne .ValidationResult.UserID 0}}
+          <p><span style='font-size:17px; color: green;'>&#8594;</span> {{.ValidationResult.ValidMsg}}</p>
+        {{end}}
+        <br>
+        <a href="https://docs.xandr.com/bundle/xandr-api/page/legacy-bss-file-format.html">Legacy BSS File Format</a>
+      </div>
+    </div>
+  
+    <div style="padding-left:16px">
+      <h2>Validate the UUID:</h2>
+      <form method="GET" action="/validate">
+        <label for="uuid">Insert UUID:</label>
+        <div class="valid-box">
+          <input type="hidden" id="type" name="type" value="uuid">
+          <input type="text" id="uid" name="id" class="valid-input" {{if ne .ValUUID.UUID ""}} value="{{.ValUUID.UUID}}" {{end}}><br>
+          <input type="submit" value="Validate" class="valid-submit">
+          <div title="Copy" class="box-btn-copy"  onclick="copyUULink()"><img src="templates/copy_btn.png" alt=""></div>
+        </div>
+      </form>
+      <br> 
+      <div>
+        {{if and (ne .ValUUID.ErrMsg "") (eq .ValUUID.SectionsExist false)}}
+          <label>ID: </label><label style="color: red">{{.ValUUID.UUID}}</label>
+          <p><span style='font-size:17px; color: red;'>&#8594;</span> {{.ValUUID.ErrMsg}}</p>
+        {{end}}
+        {{if and (ne .ValUUID.ErrMsg "") (eq .ValUUID.SectionsExist true) }}
+          <label>ID: </label>
+          {{if eq .ValUUID.ErrSecNum 1}}<label style="color: red">{{.SecOne}}</label><label>-{{.SecTwo}}</label><label>-{{.SecThree}}</label><label>-{{.SecFour}}</label><label>-{{.SecFive}}</label>{{end}}
+          {{if eq .ValUUID.ErrSecNum 2}}<label>{{.SecOne}}-</label><label style="color: red">{{.SecTwo}}</label><label>-{{.SecThree}}</label><label>-{{.SecFour}}</label><label>-{{.SecFive}}</label>{{end}}
+          {{if eq .ValUUID.ErrSecNum 3}}<label>{{.SecOne}}</label><label>-{{.SecTwo}}-</label><label style="color: red">{{.SecThree}}</label><label>-{{.SecFour}}</label><label>-{{.SecFive}}</label>{{end}}
+          {{if eq .ValUUID.ErrSecNum 4}}<label>{{.SecOne}}</label><label>-{{.SecTwo}}</label><label>-{{.SecThree}}-</label><label style="color: red">{{.SecFour}}</label><label>-{{.SecFive}}</label>{{end}}
+          {{if eq .ValUUID.ErrSecNum 5}}<label>{{.SecOne}}</label><label>-{{.SecTwo}}</label><label>-{{.SecThree}}</label><label>-{{.SecFour}}-</label><label style="color: red">{{.SecFive}}</label>{{end}}
+          <p><span style='font-size:17px; color: red;'>&#8594;</span> {{.ValUUID.ErrMsg}}</p>
+        {{end}}
+        {{if eq .ValUUID.Ok true}}
+         <p><span style='font-size:17px; color: green;'>&#8594;</span> UUID validation completed. No errors or warnings founded.</p>
+        {{end}}
+        <br>
+        <a href="https://en.wikipedia.org/wiki/Universally_unique_identifier">Universally unique identifier</a>
+      </div>
+   </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-col">
+    
+    </div>
+  </div>
+</body>
+</html>
