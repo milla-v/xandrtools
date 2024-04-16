@@ -165,8 +165,8 @@ func generateSample2(params *xgen.TextEncoderParameters) (string, error) {
 	user1 := &xgen.UserRecord{
 		UID: "12345",
 		Segments: []xgen.Segment{
-			{ID: 100, Expiration: 180 * 60 * 24, Value: 123},
-			{ID: 101, Expiration: 1440, Value: 123},
+			{ID: 100, Expiration: 180 * 60 * 24, Value: 123, MemberID: 700, Code: "code_123"},
+			{ID: 101, Expiration: 1440, Value: 123, MemberID: 700, Code: "code_123"},
 		},
 	}
 
@@ -174,8 +174,8 @@ func generateSample2(params *xgen.TextEncoderParameters) (string, error) {
 		UID:    "12345",
 		Domain: xgen.IDFA,
 		Segments: []xgen.Segment{
-			{ID: 100, Expiration: 180 * 60 * 24, Value: 123},
-			{ID: 101, Expiration: 1440, Value: 123},
+			{ID: 100, Expiration: 180 * 60 * 24, Value: 123, MemberID: 700, Code: "code_123"},
+			{ID: 101, Expiration: 1440, Value: 123, MemberID: 700, Code: "code_123"},
 		},
 	}
 
