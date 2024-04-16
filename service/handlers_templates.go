@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 	"strings"
+
+	"github.com/milla-v/xandr/bss/xgen"
 )
 
 var t *template.Template
@@ -22,39 +24,133 @@ func handlePng(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleXandrtools(w http.ResponseWriter, r *http.Request) {
+	if err := t.ExecuteTemplate(w, "xandrtools.html", nil); err != nil {
+		log.Println(err)
+		http.Error(w, "error", http.StatusInternalServerError)
+		return
+	}
+}
+
+func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
+	log.Println("textGenerator page")
+	type data struct {
+		ID            string
+		ShowText      bool
+		InitScript    template.JS
+		GeneratedText string
+		Seps          separators
+		GenError      string //error from xgen library
+		GenText       string
+	}
+
+	var err error
+	var d data
+	d.ShowText = false
+
+	sfs := r.URL.Query().Get("sf")
+	str := strings.Split(sfs, "-")
+	var segFields []xgen.SegmentFieldName
+
+	for _, s := range str {
+		segFields = append(segFields, xgen.SegmentFieldName(s))
+	}
+
+	//set default separator
+
+	params := xgen.TextEncoderParameters{
+		Sep1:          replaceTabs(r.URL.Query().Get("sep_1")),
+		Sep2:          r.URL.Query().Get("sep_2"),
+		Sep3:          r.URL.Query().Get("sep_3"),
+		Sep4:          replaceTabs(r.URL.Query().Get("sep_4")),
+		Sep5:          r.URL.Query().Get("sep_5"),
+		SegmentFields: segFields,
+	}
+
+	//check separators, segments and return err
+	_, err = xgen.NewTextEncoder(params)
+	if err != nil {
+		d.GenError = err.Error()
+		log.Println("d.GenError = ", d.GenError)
+	}
+
+	var js string
+
+	for _, f := range str {
+		id := "'" + strings.ToLower(f) + "'"
+		js += "var checkBox = document.getElementById(" + id + ");\n"
+		js += "checkBox.checked = true;\n"
+		js += "checkField(" + id + ");\n"
+	}
+	d.InitScript = template.JS(js)
+
+	//generate text sample
+
+	if len(d.GenError) == 0 && sfs != "" {
+		d.ShowText = true
+		d.GeneratedText, err = generateSample2(&params)
+		if err != nil {
+			d.GenError = err.Error()
+		}
+	}
+
+	// old code from here
+
+	d.Seps.Sep1 = r.URL.Query().Get("sep_1")
+	d.Seps.Sep2 = r.URL.Query().Get("sep_2")
+	d.Seps.Sep3 = r.URL.Query().Get("sep_3")
+	d.Seps.Sep4 = r.URL.Query().Get("sep_4")
+	d.Seps.Sep5 = r.URL.Query().Get("sep_5")
+
+	setDefaultSeparators(&d.Seps)
+
+	//generate text sample
+	//	var text []string
+	//	for _, s := range segFields {
+	//		text = append(text, string(s))
+	//	}
+	//	if len(d.GenError) == 0 && sfs != "" {
+	//		d.ShowText = true
+	//		d.GeneratedText = generateSample(text, d.Seps)
+	//	}
+	/*
+		if len(d.SegError) == 0 && sf != "" && len(d.SepError) == 0 {
+			d.ShowText = true
+			d.GeneratedText = generateSample(segmentFields, d.Seps)
+		}*/
+	if err := t.ExecuteTemplate(w, "textGenerator.html", d); err != nil {
+		log.Println(err)
+		http.Error(w, "error", http.StatusInternalServerError)
+		return
+	}
+}
+
+func handleValidators(w http.ResponseWriter, r *http.Request) {
 	type data struct {
 		XUID             int64
 		ValidationResult xandr
 		Errs             bool
 		ValUUID          uuid
-		SecOne           string
-		SecTwo           string
-		SecThree         string
-		SecFour          string
-		SecFive          string
+		SecOne           string //section one of uuid
+		SecTwo           string //section two of uuid
+		SecThree         string //section three of uuid
+		SecFour          string //section four of uuid
+		SecFive          string //section five of uuid
 	}
 	var d data
 	var err error
 	d.Errs = false
 
-	//1. path = validate and type = xandrid
-	if r.URL.Path == "/validate" && r.URL.Query().Get("type") == "xandrid" {
-		log.Println("VALIDATE TYPE: ", r.URL.Query().Get("type"))
+	//1. input name = "type" value = "xandrid"
+	if r.URL.Query().Get("type") == "xandrid" {
 		id := r.URL.Query().Get("id")
-		log.Println("XandrID = ", id)
 		d.ValidationResult = processXandrUID(id)
-
-		log.Println("len errs: ", len(d.ValidationResult.ErrList))
 		if len(d.ValidationResult.ErrList) > 0 {
 			d.Errs = true
 		}
-		log.Println("errs: ", d.Errs)
 	}
-	//2. path = validate and type = uuid
-	if r.URL.Path == "/validate" && r.URL.Query().Get("type") == "uuid" {
-		log.Println("VALIDATE TYPE: ", r.URL.Query().Get("type"))
+	//2. input name = "type" value = "uuid"
+	if r.URL.Query().Get("type") == "uuid" {
 		id := r.URL.Query().Get("id")
-		log.Println("UUID = ", id)
 		d.ValUUID, err = validateUUID(id)
 		if err != nil {
 			log.Println("ValUUD err: ", len(d.ValUUID.ErrMsg))
@@ -67,87 +163,9 @@ func handleXandrtools(w http.ResponseWriter, r *http.Request) {
 			d.SecFour = d.ValUUID.Sections[3]
 			d.SecFive = d.ValUUID.Sections[4]
 		}
-		log.Println("errmsg: ", d.ValUUID.ErrMsg)
 	}
 
-	if err := t.ExecuteTemplate(w, "xandrtools.html", d); err != nil {
-		log.Println(err)
-		http.Error(w, "error", http.StatusInternalServerError)
-		return
-	}
-}
-
-func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
-	log.Println("textGenerator page")
-	type data struct {
-		ID            string
-		ShowText      bool
-		Link          string
-		InitScript    template.JS
-		GeneratedText string
-		Seps          separators
-		SegError      string //holds segment errors
-		SepError      string //separator errors
-
-	}
-
-	var err error
-	var d data
-	d.ShowText = false
-	var segs []string
-
-	//log.Println("ID = ", d.ID)
-	log.Println("initializing len of segs: ", len(segs))
-
-	d.Seps.Sep1 = r.URL.Query().Get("sep_1")
-	d.Seps.Sep2 = r.URL.Query().Get("sep_2")
-	d.Seps.Sep3 = r.URL.Query().Get("sep_3")
-	d.Seps.Sep4 = r.URL.Query().Get("sep_4")
-	d.Seps.Sep5 = r.URL.Query().Get("sep_5")
-
-	log.Println("1. -----------SET DEFAULT SEPARATORS------------")
-
-	setDefaultSeparators(&d.Seps)
-	log.Println("2. -----------CHECK SEPARATORS------------")
-	//check separators
-	if err := checkSeparators(d.Seps); err != nil {
-		d.SepError = err.Error()
-	}
-	log.Println("3. -----------CHECK SF------------")
-	sf := r.URL.Query().Get("sf")
-	segmentFields := strings.Split(sf, "-")
-	/*if sf != "" {
-		d.ShowText = true
-	}*/
-	log.Println("d.SepError: ", d.SepError)
-	log.Println("4. -----------CHECK SEGMENTS------------")
-	// checks segments
-	d.SegError, err = checkSegments(segmentFields)
-	if err != nil {
-		d.SegError = err.Error()
-		log.Println("d.SegError error: ", d.SegError)
-	}
-
-	log.Println("d.SegError = ", d.SegError)
-
-	var js string
-	for _, f := range segmentFields {
-		id := "'" + strings.ToLower(f) + "'"
-		js += "var checkBox = document.getElementById(" + id + ");\n"
-		js += "checkBox.checked = true;\n"
-		js += "checkField(" + id + ");\n"
-	}
-	d.InitScript = template.JS(js)
-
-	log.Println("5. -----------GENERATE SAMPLE------------")
-	log.Println("len d.SepError = ", len(d.SepError))
-	log.Println("len of d.SegError", len(d.SegError))
-	log.Println("SEGMENT FIELDS: ", segmentFields)
-	if len(d.SegError) == 0 && sf != "" && len(d.SepError) == 0 {
-		d.ShowText = true
-		d.GeneratedText = generateSample(segmentFields, d.Seps)
-	}
-	if err := t.ExecuteTemplate(w, "textGenerator.html", d); err != nil {
+	if err := t.ExecuteTemplate(w, "validators.html", d); err != nil {
 		log.Println(err)
 		http.Error(w, "error", http.StatusInternalServerError)
 		return

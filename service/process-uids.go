@@ -25,29 +25,24 @@ func processXandrUID(str string) xandr {
 	if err != nil {
 		if str == "" {
 			xr.ErrList = append(xr.ErrList, empty)
-			log.Println(empty)
 			xr.WrongUserID = "Empty input"
 		}
 		if strings.Contains(err.Error(), "out of range") {
 			xr.ErrList = append(xr.ErrList, large)
-			log.Println(large)
 			xr.WrongUserID = str
 		}
 
 		if str != "" && strings.Contains(err.Error(), "invalid syntax") {
 			xr.ErrList = append(xr.ErrList, letters)
-			log.Println(letters)
 			xr.WrongUserID = str
 		} else {
 			log.Println("other err: ", err)
 		}
 	} else if string(str[0]) == "0" {
 		xr.ErrList = append(xr.ErrList, zero)
-		log.Println(zero)
 		xr.WrongUserID = str
 	} else if xuid <= 0 {
 		xr.ErrList = append(xr.ErrList, negative)
-		log.Println("negative")
 		xr.WrongUserID = str
 	} else {
 		xr.ValidMsg = valid

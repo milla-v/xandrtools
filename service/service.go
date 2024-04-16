@@ -40,13 +40,15 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 func Run() {
 	t = template.Must(template.ParseFS(content,
 		"templates/xandrtools.html",
-		"templates/textGenerator.html"))
+		"templates/textGenerator.html",
+		"templates/validators.html"))
 
 	mux := http.NewServeMux()
 
 	//	mux.Handle("xandrtools.com/", proxyXandrtools)
 	mux.HandleFunc("/", handleXandrtools)
 	mux.HandleFunc("/textGenerator", handleTextGenerator)
+	mux.HandleFunc("/validators", handleValidators)
 
 	mux.HandleFunc("/templates/styles.css", handleStyle)
 	mux.HandleFunc("/templates/copy_btn.png", handlePng)
