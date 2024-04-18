@@ -10,7 +10,7 @@ require (
 require (
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/linkedin/goavro/v2 v2.12.0 // indirect
-	github.com/milla-v/xandr v1.1.0 // indirect
+	github.com/milla-v/xandr v1.2.0 // indirect
 	golang.org/x/net v0.10.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 )

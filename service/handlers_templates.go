@@ -48,6 +48,7 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 	d.ShowText = false
 
 	sfs := r.URL.Query().Get("sf")
+	log.Println("sfs: ", sfs)
 	str := strings.Split(sfs, "-")
 	var segFields []xgen.SegmentFieldName
 
@@ -85,6 +86,8 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 
 	//generate text sample
 
+	log.Println("params => segmentFields => ", params.SegmentFields)
+
 	if len(d.GenError) == 0 && sfs != "" {
 		d.ShowText = true
 		d.GeneratedText, err = generateSample(&params)
@@ -92,6 +95,8 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 			d.GenError = err.Error()
 		}
 	}
+
+	log.Println("d.GeneratedText: ", d.GeneratedText)
 
 	// old code from here
 
@@ -110,7 +115,7 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 	//	}
 	//	if len(d.GenError) == 0 && sfs != "" {
 	//		d.ShowText = true
-	//		d.GeneratedText = generateSample(text, d.Seps)
+	//		d.GeneratedText = generateSample2(text, d.Seps)
 	//	}
 	/*
 		if len(d.SegError) == 0 && sf != "" && len(d.SepError) == 0 {
