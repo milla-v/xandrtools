@@ -22,6 +22,12 @@ func main() {
 		fmt.Println("version:", Version)
 		return
 	}
+	err := getTag()
+	if err != nil {
+		log.Println("getTag err: ", err)
+		return
+	}
+	log.Println("TAG Vesion: ", Version)
 
 	service.Run()
 
