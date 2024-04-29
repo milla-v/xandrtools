@@ -13,22 +13,21 @@ import (
 var version = flag.Bool("version", false, "Print version")
 
 // Version is set by linker
-var Version string
 
 func main() {
+	var err error
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	flag.Parse()
 	if *version {
-		fmt.Println("version:", Version)
+		fmt.Println("version:", version)
 		return
 	}
-	err := getTag()
+
+	service.Version, err = getTag()
 	if err != nil {
 		log.Println("getTag err: ", err)
 		return
 	}
-	log.Println("TAG Vesion: ", Version)
-
 	service.Run()
 
 }

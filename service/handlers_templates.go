@@ -24,7 +24,16 @@ func handlePng(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleXandrtools(w http.ResponseWriter, r *http.Request) {
-	if err := t.ExecuteTemplate(w, "xandrtools.html", nil); err != nil {
+	log.Println("start xandrtools")
+	type data struct {
+		XandrVersion string
+	}
+	var d data
+
+	d.XandrVersion = Version
+	log.Println("Xandr version = ", d.XandrVersion)
+
+	if err := t.ExecuteTemplate(w, "xandrtools.html", d); err != nil {
 		log.Println(err)
 		http.Error(w, "error", http.StatusInternalServerError)
 		return

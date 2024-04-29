@@ -23,6 +23,8 @@ var cssFiles embed.FS
 //go:embed templates/*.png
 var pngFiles embed.FS
 
+var Version string
+
 var proxyXandrtools = func() *httputil.ReverseProxy {
 	u, err := url.Parse("http://zero:80/xandrtools/")
 	if err != nil {
