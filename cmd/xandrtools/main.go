@@ -23,9 +23,14 @@ func main() {
 		return
 	}
 
-	service.Version, err = getBuildInfo()
+	service.Version, err = getTag()
 	if err != nil {
 		log.Println("getTag err: ", err)
+		return
+	}
+	service.VcsInfo, err = getVCS()
+	if err != nil {
+		log.Println("get VCS err: ", err)
 		return
 	}
 	service.Run()

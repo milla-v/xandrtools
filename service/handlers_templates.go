@@ -27,11 +27,15 @@ func handleXandrtools(w http.ResponseWriter, r *http.Request) {
 	log.Println("start xandrtools")
 	type data struct {
 		XandrVersion string
+		VCS          Vcs
 	}
 	var d data
 
 	d.XandrVersion = Version
 	log.Println("Xandr version = ", d.XandrVersion)
+	d.VCS.RevisionFull = VcsInfo.RevisionFull
+	d.VCS.RevisionShort = VcsInfo.RevisionShort
+	d.VCS.Modified = VcsInfo.Modified
 
 	if err := t.ExecuteTemplate(w, "xandrtools.html", d); err != nil {
 		log.Println(err)

@@ -24,6 +24,7 @@ var cssFiles embed.FS
 var pngFiles embed.FS
 
 var Version string
+var VcsInfo Vcs
 
 var proxyXandrtools = func() *httputil.ReverseProxy {
 	u, err := url.Parse("http://zero:80/xandrtools/")

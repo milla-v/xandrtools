@@ -31,3 +31,9 @@ type uuid struct {
 	SectionsExist bool
 	Ok            bool
 }
+
+type Vcs struct {
+	RevisionFull  string
+	RevisionShort string
+	Modified      bool
+}
