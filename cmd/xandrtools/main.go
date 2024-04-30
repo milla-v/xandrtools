@@ -23,7 +23,7 @@ func main() {
 		return
 	}
 
-	service.Version, err = getTag()
+	service.Version, err = getBuildInfo()
 	if err != nil {
 		log.Println("getTag err: ", err)
 		return
