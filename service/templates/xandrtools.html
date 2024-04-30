@@ -28,6 +28,15 @@
         <a href="/textGenerator">Generate text sample</a>
       </div>
     </div>
+    <div class="dropdown">
+      <button class="dropbtn">About
+        <i class="fa fa-caret-down"></i>
+      </button>
+      <div class="dropdown-content">
+        <a href="https://github.com/milla-v/xandr/releases/tag/{{.XandrVersion}}" target="_blank">xandr-lib-{{.XandrVersion}}</a>
+        <a href="https://github.com/milla-v/xandrtools/commit/{{.VCS.RevisionFull}}" target="_blank">xandrtools-{{.VCS.RevisionShort}} {{if eq .VCS.Modified true}}modified{{end}}</a>
+      </div>
+    </div>
     <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="respNavigation()">&#9776;</a>
   </div>
   
@@ -43,7 +52,7 @@
 
   <div class="footer">
     <div class="footer-col">
-    
+      {{.XandrVersion}}
     </div>
   </div>
 </body>
