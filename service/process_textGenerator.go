@@ -174,7 +174,7 @@ func generateSample(params *xgen.TextEncoderParameters) (string, error) {
 	}
 
 	user2 := &xgen.UserRecord{
-		UID:    "12345",
+		UID:    "4557871b-8923-4306-9dd5-e40d3b241b5d",
 		Domain: xgen.IDFA,
 		Segments: []xgen.Segment{
 			{ID: 100, Expiration: 180 * 60 * 24, Value: 123, MemberID: 700, Code: "code_123", Timestamp: time.Now().Unix()},
@@ -183,10 +183,10 @@ func generateSample(params *xgen.TextEncoderParameters) (string, error) {
 	}
 
 	log.Println("User1: ", user1)
-	log.Println("Timestemp for user1: ", user1.Segments[0].Timestamp, " | ", user1.Segments[1].Timestamp)
+	log.Println("Timestamp for user1: ", user1.Segments[0].Timestamp, " | ", user1.Segments[1].Timestamp)
 	log.Println("------------------")
 	log.Println("User2: ", user2)
-	log.Println("Timestemp for user2: ", user2.Segments[0].Timestamp, " | ", user2.Segments[1].Timestamp)
+	log.Println("Timestamp for user2: ", user2.Segments[0].Timestamp, " | ", user2.Segments[1].Timestamp)
 
 	users = append(users, user1, user2)
 
