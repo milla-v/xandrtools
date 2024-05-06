@@ -87,6 +87,8 @@
   <div class="content-box">
     <div style="padding-left:16px">
       <h2>Generate text sample:</h2>
+      <a href="https://learn.microsoft.com/en-us/xandr/digital-platform-api/legacy-bss-file-format">Format description</a><br>
+      
       <div>
           <div style="padding-top: 5px;">
             <div class="segment-box">
@@ -109,18 +111,27 @@
               <h3>Separators</h3>
               <label for="sep_1">SEP_1</label>
               <input type="text" id="inp_sep_1" name="sep_1" value="{{.Seps.Sep1}}">
+              <span title="Separates the user ID from the segment list">&#9432;</span>
               <a title="click to enter TAB ('\t') character in input box" href="javascript:setTab('sep_1')">tab</a>
               <a title="click to enter SPACE (' ') character in input box" href="javascript:setSpace('sep_1')">space</a><br>
+              
               <label for="sep_2">SEP_2</label>
-              <input type="text" name="sep_2" value="{{.Seps.Sep2}}"><br>
+              <input type="text" name="sep_2" value="{{.Seps.Sep2}}">
+              <span title="Separates segments">&#9432;</span><br>
+
               <label for="sep_3">SEP_3</label>
-              <input type="text" name="sep_3" value="{{.Seps.Sep3}}"><br>
+              <input type="text" name="sep_3" value="{{.Seps.Sep3}}">
+              <span title="Separates segment fields">&#9432;</span><br>
+
               <label for="sep_4">SEP_4</label>
               <input type="text" id="inp_sep_4" name="sep_4" value="{{.Seps.Sep4}}">
+              <span title="Separates segments to remove">&#9432;</span>
               <a title="click to enter TAB ('\t') character in input box" href="javascript:setTab('sep_4')">tab</a>
               <a title="click to enter SPACE (' ') character in input box" href="javascript:setSpace('sep_4')">space</a><br>
+
               <label for="sep_5">SEP_5</label>
-              <input type="text" name="sep_5" value="{{.Seps.Sep5}}"><br>
+              <input type="text" name="sep_5" value="{{.Seps.Sep5}}">
+              <span title="Separates domain">&#9432;</span><br>
             </div>
           </div>
           <div class="fields-sample-container" id="checked">
