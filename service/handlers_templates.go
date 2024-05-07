@@ -32,7 +32,6 @@ func handleXandrtools(w http.ResponseWriter, r *http.Request) {
 	var d data
 
 	d.XandrVersion = Version
-	log.Println("Xandr version = ", d.XandrVersion)
 	d.VCS.RevisionFull = VcsInfo.RevisionFull
 	d.VCS.RevisionShort = VcsInfo.RevisionShort
 	d.VCS.Modified = VcsInfo.Modified
@@ -63,7 +62,6 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 	d.ShowText = false
 
 	d.XandrVersion = Version
-	log.Println("Xandr version = ", d.XandrVersion)
 	d.VCS.RevisionFull = VcsInfo.RevisionFull
 	d.VCS.RevisionShort = VcsInfo.RevisionShort
 	d.VCS.Modified = VcsInfo.Modified
@@ -143,10 +141,17 @@ func handleValidators(w http.ResponseWriter, r *http.Request) {
 		SecThree         string //section three of uuid
 		SecFour          string //section four of uuid
 		SecFive          string //section five of uuid
+		XandrVersion     string
+		VCS              Vcs
 	}
 	var d data
 	var err error
 	d.Errs = false
+
+	d.XandrVersion = Version
+	d.VCS.RevisionFull = VcsInfo.RevisionFull
+	d.VCS.RevisionShort = VcsInfo.RevisionShort
+	d.VCS.Modified = VcsInfo.Modified
 
 	//1. input name = "type" value = "xandrid"
 	if r.URL.Query().Get("type") == "xandrid" {
