@@ -54,11 +54,19 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 		Seps          separators
 		GenError      string //error from xgen library
 		GenText       string
+		XandrVersion  string
+		VCS           Vcs
 	}
 
 	var err error
 	var d data
 	d.ShowText = false
+
+	d.XandrVersion = Version
+	log.Println("Xandr version = ", d.XandrVersion)
+	d.VCS.RevisionFull = VcsInfo.RevisionFull
+	d.VCS.RevisionShort = VcsInfo.RevisionShort
+	d.VCS.Modified = VcsInfo.Modified
 
 	sfs := r.URL.Query().Get("sf")
 	log.Println("sfs: ", sfs)
@@ -109,10 +117,6 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	log.Println("d.GeneratedText: ", d.GeneratedText)
-
-	// old code from here
-
 	d.Seps.Sep1 = r.URL.Query().Get("sep_1")
 	d.Seps.Sep2 = r.URL.Query().Get("sep_2")
 	d.Seps.Sep3 = r.URL.Query().Get("sep_3")
@@ -121,20 +125,6 @@ func handleTextGenerator(w http.ResponseWriter, r *http.Request) {
 
 	setDefaultSeparators(&d.Seps)
 
-	//generate text sample
-	//	var text []string
-	//	for _, s := range segFields {
-	//		text = append(text, string(s))
-	//	}
-	//	if len(d.GenError) == 0 && sfs != "" {
-	//		d.ShowText = true
-	//		d.GeneratedText = generateSample2(text, d.Seps)
-	//	}
-	/*
-		if len(d.SegError) == 0 && sf != "" && len(d.SepError) == 0 {
-			d.ShowText = true
-			d.GeneratedText = generateSample(segmentFields, d.Seps)
-		}*/
 	if err := t.ExecuteTemplate(w, "textGenerator.html", d); err != nil {
 		log.Println(err)
 		http.Error(w, "error", http.StatusInternalServerError)
