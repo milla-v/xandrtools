@@ -2,8 +2,6 @@
 package service
 
 import (
-	"golang.org/x/crypto/acme/autocert"
-
 	"embed"
 	"fmt"
 	"html/template"
@@ -12,6 +10,10 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
+
+	"golang.org/x/crypto/acme/autocert"
+
+	"xandrtools/simulator"
 )
 
 //go:embed templates/*.html
@@ -52,6 +54,8 @@ func Run() {
 	mux.HandleFunc("/", handleXandrtools)
 	mux.HandleFunc("/textGenerator", handleTextGenerator)
 	mux.HandleFunc("/validators", handleValidators)
+
+	mux.HandleFunc("/xandrsim/auth", simulator.HandleAuthentication)
 
 	mux.HandleFunc("/templates/styles.css", handleStyle)
 	mux.HandleFunc("/templates/copy_btn.png", handlePng)
