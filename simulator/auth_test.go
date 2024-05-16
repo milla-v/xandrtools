@@ -6,8 +6,44 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"testing"
 )
+
+func TestAuthManyUsers(t *testing.T) {
+	testServer := httptest.NewServer(http.HandlerFunc(HandleAuthentication))
+	defer testServer.Close()
+
+	manyAuth := make([]AuthRequest, 5)
+
+	for i := 0; i < len(manyAuth); i++ {
+		manyAuth[i].Auth.Username = "user" + strconv.Itoa(i)
+		manyAuth[i].Auth.Password = "psssword" + strconv.Itoa(i)
+	}
+
+	t.Log("I AM HERE")
+	for i := 0; i < len(manyAuth); i++ {
+		t.Logf("user: %s | password: %s", manyAuth[i].Auth.Username, manyAuth[i].Auth.Password)
+	}
+
+	for i := 0; i < len(manyAuth); i++ {
+		buf, err := json.MarshalIndent(manyAuth[i], "\t", "\t")
+		if err != nil {
+			t.Fatal(err)
+		}
+		resp, err := http.Post(testServer.URL, "application/json", bytes.NewReader(buf))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		buff, err := io.ReadAll(resp.Body)
+		if err != nil {
+			t.Fatal(err)
+		}
+		resp.Body.Close()
+		t.Logf("status:%s body: %s", resp.Status, string(buff))
+	}
+}
 
 func TestAuthSuccess(t *testing.T) {
 	testServer := httptest.NewServer(http.HandlerFunc(HandleAuthentication))
@@ -59,4 +95,47 @@ func TestAuthError(t *testing.T) {
 	if resp.StatusCode != http.StatusMethodNotAllowed {
 		t.Fatal(err)
 	}
+}
+
+/*
+	func TestAuthPostRequest(t *testing.T) {
+		var user = Auth{
+			Username: "authUser",
+			Password: "authPassword",
+		}
+		err := authPostRequest(user)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	func TestWriteAuthFile(t *testing.T) {
+		var user = Auth{
+			Username: "authuser",
+			Password: "authpassword",
+		}
+		filename := "auth.json"
+		var err error
+		if err = writeAuthFile(user, filename); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	func TestReadAuthFile(t *testing.T) {
+		var user Auth
+		var err error
+		fileName := "auth.json"
+		user, err = readAuthFile(fileName)
+		if err != nil {
+			t.Fatal(err)
+		}
+		t.Log("Unmarshaled user data: ", user)
+	}
+*/
+func TestGenerateToken(t *testing.T) {
+	token, err := generateToken()
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log("token: ", token)
 }

@@ -8,6 +8,8 @@ import (
 	"net/http"
 )
 
+var UserToken = make(map[string]string) //[string] - username, string - token
+
 type AuthRequest struct {
 	Auth struct {
 		Username string `json:"username"`
@@ -48,7 +50,14 @@ func HandleAuthentication(w http.ResponseWriter, r *http.Request) {
 	var authResp AuthResponse
 
 	authResp.Response.Status = "OK"
-	authResp.Response.Token = "12345"
+	authResp.Response.Token, err = generateToken()
+	if err != nil {
+		log.Println("generate token err: ", err)
+		return
+	}
+
+	UserToken[auth.Auth.Username] = authResp.Response.Token
+	log.Println("----- map: ", UserToken)
 
 	buf, err = json.MarshalIndent(authResp, "\t", "\t")
 	if err != nil {
