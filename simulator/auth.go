@@ -6,8 +6,10 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"sync"
 )
 
+var User sync.Map
 var UserToken = make(map[string]string) //[string] - username, string - token
 
 type AuthRequest struct {

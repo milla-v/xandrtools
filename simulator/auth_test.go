@@ -7,8 +7,27 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strconv"
+	"sync"
 	"testing"
 )
+
+func TestWritingMap(t *testing.T) {
+	manyAuth := make([]AuthRequest, 5)
+	var syncMap sync.Map
+	for i := 0; i < len(manyAuth); i++ {
+		manyAuth[i].Auth.Username = "user" + strconv.Itoa(i)
+		manyAuth[i].Auth.Password = "psssword" + strconv.Itoa(i)
+	}
+	syncMap, err := writeMap(manyAuth)
+	if err != nil {
+		t.Fatal(err)
+	}
+	value, ok := syncMap.Load("user1")
+	if ok {
+		t.Log("syncMap Value = ", value)
+	}
+
+}
 
 func TestAuthManyUsers(t *testing.T) {
 	testServer := httptest.NewServer(http.HandlerFunc(HandleAuthentication))
