@@ -9,8 +9,7 @@ import (
 	"sync"
 )
 
-var User sync.Map
-var UserToken = make(map[string]string) //[string] - username, string - token
+var UserToken sync.Map
 
 type AuthRequest struct {
 	Auth struct {
@@ -58,8 +57,10 @@ func HandleAuthentication(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	UserToken[auth.Auth.Username] = authResp.Response.Token
-	log.Println("----- map: ", UserToken)
+	UserToken.Store(auth.Auth.Username, authResp.Response.Token)
+	if value, ok := UserToken.Load(auth.Auth.Username); ok {
+		log.Printf("Key %s - Value %d\n", auth.Auth.Username, value)
+	}
 
 	buf, err = json.MarshalIndent(authResp, "\t", "\t")
 	if err != nil {
