@@ -8,7 +8,42 @@ import (
 	"net/http/httptest"
 	"strconv"
 	"testing"
+	"time"
 )
+
+func TestUserRequest(t *testing.T) {
+	testServer := httptest.NewServer(http.HandlerFunc(HandleUserRequest))
+	defer testServer.Close()
+
+	//create 5 users
+	userRequest := make([]UserData, 5)
+	for i := 0; i < len(userRequest); i++ {
+		userRequest[i].Username = "username" + strconv.Itoa(i)
+		userRequest[i].TokenData.MemberId = strconv.Itoa(i+1) + strconv.Itoa(2) + strconv.Itoa(i+3)
+		userRequest[i].TokenData.Token, _ = generateToken()
+		userRequest[i].TokenData.ExpirationTime = time.Now().Add(time.Second * 2)
+	}
+
+	for i := 0; i < len(userRequest); i++ {
+		buf, err := json.MarshalIndent(userRequest[i], "\t", "\t")
+		if err != nil {
+			t.Fatal(err)
+		}
+		resp, err := http.Post(testServer.URL, "application/json", bytes.NewReader(buf))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		buff, err := io.ReadAll(resp.Body)
+		if err != nil {
+			t.Fatal(err)
+		}
+		resp.Body.Close()
+		t.Logf("status:%s body: %s", resp.Status, string(buff))
+		time.Sleep(5 * time.Second)
+	}
+
+}
 
 func TestAuthManyUsers(t *testing.T) {
 	testServer := httptest.NewServer(http.HandlerFunc(HandleAuthentication))
