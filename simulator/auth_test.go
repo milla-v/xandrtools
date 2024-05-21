@@ -19,7 +19,7 @@ func TestUserRequest(t *testing.T) {
 	userRequest := make([]UserData, 5)
 	for i := 0; i < len(userRequest); i++ {
 		userRequest[i].Username = "username" + strconv.Itoa(i)
-		userRequest[i].TokenData.MemberId = strconv.Itoa(i+1) + strconv.Itoa(2) + strconv.Itoa(i+3)
+		userRequest[i].TokenData.MemberId = strconv.Itoa(i+1) + strconv.Itoa(i+2) + strconv.Itoa(i+3)
 		userRequest[i].TokenData.Token, _ = generateToken()
 		userRequest[i].TokenData.ExpirationTime = time.Now().Add(time.Second * 2)
 	}
@@ -53,7 +53,7 @@ func TestAuthManyUsers(t *testing.T) {
 
 	for i := 0; i < len(manyAuth); i++ {
 		manyAuth[i].Auth.Username = "user" + strconv.Itoa(i)
-		manyAuth[i].Auth.Password = "psssword" + strconv.Itoa(i)
+		manyAuth[i].Auth.Password = "password" + strconv.Itoa(i)
 	}
 
 	for i := 0; i < len(manyAuth); i++ {

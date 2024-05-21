@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io"
 	"log"
+	"math/rand/v2"
 	"net/http"
 	"sync"
 	"time"
@@ -39,17 +40,18 @@ func HandleAuthentication(w http.ResponseWriter, r *http.Request) {
 	log.Println("login user", auth.Auth.Username, ":", auth.Auth.Password)
 
 	var authResp AuthResponse
-
-	authResp.Response.Status = "OK"
-	authResp.Response.Token, err = generateToken()
-	if err != nil {
-		log.Println("generate token err: ", err)
-		return
+	if auth.Auth.Username != "" || auth.Auth.Password != "" {
+		authResp.Response.Status = "OK"
+		authResp.Response.Token, err = generateToken()
+		if err != nil {
+			log.Println("generate token err: ", err)
+			return
+		}
 	}
 
 	//fill UserData struct
 	user.TokenData.Token = authResp.Response.Token
-	//this is time for test, seconf one is correct
+	log.Println("RANDOM INT", rand.IntN(10))
 
 	user.TokenData.ExpirationTime = time.Now().Add(time.Hour * 2) //token expiration time - 2 hours
 
@@ -76,7 +78,7 @@ func HandleAuthentication(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func HandleUserRequest(w http.ResponseWriter, r *http.Request) {
+func HandleBatchSegmentRequest(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "error", http.StatusMethodNotAllowed)
 		return
