@@ -17,6 +17,8 @@ func TestBatchSegment(t *testing.T) {
 	user.TokenData.ExpirationTime = time.Now().Add(time.Second * 30)
 	User.Store(user.TokenData.Token, user)
 
+	//time.Sleep(8 * time.Second)
+
 	testServer := httptest.NewServer(http.HandlerFunc(HandleBatchSegment))
 	defer testServer.Close()
 

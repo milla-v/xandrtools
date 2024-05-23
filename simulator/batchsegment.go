@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"time"
 )
 
 func HandleBatchSegment(w http.ResponseWriter, r *http.Request) {
@@ -28,8 +29,21 @@ func HandleBatchSegment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("user: %+v", user)
+	log.Println("token expiration time: ", user)
+
+	u := user.(UserData)
+	log.Println("u.TokenData. ExpirationTime: ", u.TokenData.ExpirationTime)
 
 	// TODO: check expiration time
+	if u.TokenData.ExpirationTime.IsZero() == true {
+		http.Error(w, "invalid expiration time: ", http.StatusUnauthorized)
+		return
+	} else {
+		if time.Now().Before(u.TokenData.ExpirationTime) == false {
+			http.Error(w, "invalid expiration time: ", http.StatusUnauthorized)
+			return
+		}
+	}
 
 	var resp BatchSegmentResponse
 	_ = resp
