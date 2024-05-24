@@ -39,7 +39,7 @@ func HandleAuthentication(w http.ResponseWriter, r *http.Request) {
 	var authResp AuthResponse
 	if auth.Auth.Username != "" || auth.Auth.Password != "" {
 		authResp.Response.Status = "OK"
-		authResp.Response.Token, err = generateToken()
+		authResp.Response.Token, err = generateToken(16)
 		if err != nil {
 			log.Println("generate token err: ", err)
 			return

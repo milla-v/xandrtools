@@ -132,7 +132,7 @@ func TestAuthError(t *testing.T) {
 	}
 */
 func TestGenerateToken(t *testing.T) {
-	token, err := generateToken()
+	token, err := generateToken(16)
 	if err != nil {
 		t.Fatal(err)
 	}
