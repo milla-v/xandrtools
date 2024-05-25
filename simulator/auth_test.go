@@ -18,7 +18,7 @@ func TestAuthManyUsers(t *testing.T) {
 
 	for i := 0; i < len(manyAuth); i++ {
 		manyAuth[i].Auth.Username = "user" + strconv.Itoa(i)
-		manyAuth[i].Auth.Password = "psssword" + strconv.Itoa(i)
+		manyAuth[i].Auth.Password = "password" + strconv.Itoa(i)
 	}
 
 	for i := 0; i < len(manyAuth); i++ {
@@ -132,7 +132,7 @@ func TestAuthError(t *testing.T) {
 	}
 */
 func TestGenerateToken(t *testing.T) {
-	token, err := generateToken()
+	token, err := generateToken(16)
 	if err != nil {
 		t.Fatal(err)
 	}
