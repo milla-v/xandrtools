@@ -59,7 +59,7 @@ func HandleBatchSegment(w http.ResponseWriter, r *http.Request) {
 		log.Println("generateBatchSegmentUploadJob err", http.StatusUnauthorized)
 		return
 	}
-	resp.Response.DbgInfo, err = generateDbgInfo()
+	resp.Response.Dbg, err = generateDbgInfo()
 	if err != nil {
 		log.Println("generate Dbg-info err", http.StatusUnauthorized)
 		return
@@ -82,10 +82,12 @@ func generateBatchSegmentUploadJob(numJobs int) ([]BatchSegmentUploadJob, error)
 	var list []BatchSegmentUploadJob
 	for i := 0; i < numJobs; i++ {
 		var u BatchSegmentUploadJob
-		u.StartTime = time.Now()
-		u.UploadedTime = u.StartTime.Add(time.Second * 6)
-		u.ValidatedTime = u.UploadedTime.Add(time.Minute * 3)
-		u.CompletedTime = u.ValidatedTime.Add(time.Minute * 1)
+		startTime := time.Now()
+		u.StartTime = bssTimestamp(time.Now())
+		u.UploadedTime = bssTimestamp(time.Now().Add(time.Second * 6))
+		u.ValidatedTime = bssTimestamp(time.Now().Add(time.Minute * 3))
+		completedTime := time.Now().Add(time.Minute * 1)
+		u.CompletedTime = bssTimestamp(completedTime)
 		u.CreatedOn = bssTimestamp(u.StartTime)
 		//u.ErrorCode =
 		u.ErrorLogLines = "\n\nnum_unauth_segment-4013681496264948522;5013:0,5014:1550"
@@ -97,7 +99,8 @@ func generateBatchSegmentUploadJob(numJobs int) ([]BatchSegmentUploadJob, error)
 			return list, err
 		}
 		u.LastModified = u.CompletedTime
-		u.MemberID = int32(rand.Uint32())
+		//math.Abs convert negative random numbers to positive
+		u.MemberID = int32(rand.Intn(1000))
 		u.NumInactiveSegment = 0
 		u.NumInvalidFormat = 0
 		u.NumInvalidSegment = 0
@@ -109,9 +112,12 @@ func generateBatchSegmentUploadJob(numJobs int) ([]BatchSegmentUploadJob, error)
 		u.NumValid = 200000
 		u.NumValidUser = 100000
 		u.PercentComplete = 100
+
 		u.Phase = "completed"
 		u.SegmentLogLines = "\n5010:100000\n5011:50000\n5012:50000"
-		u.TimeToProcess = u.CompletedTime.Sub(u.StartTime)
+		// TimeToProcess in Nanosecond
+		u.TimeToProcess = int64(completedTime.Sub(startTime))
+		log.Println("TIME TO PROCESS: ", u.TimeToProcess)
 		list = append(list, u)
 
 		log.Println("FOR len uploadJob.TimeToProcess: ", len(list))
@@ -120,9 +126,9 @@ func generateBatchSegmentUploadJob(numJobs int) ([]BatchSegmentUploadJob, error)
 	return list, err
 }
 
-func generateDbgInfo() (Dbg, error) {
+func generateDbgInfo() (DbgInfo, error) {
 	var err error
-	var dbg Dbg
+	var dbg DbgInfo
 	dbg.Instance = "authentication-api-production-8664bd4765-btqsz"
 	dbg.DbgTime = 0
 	dbg.StartTime = time.Now()
