@@ -1,9 +1,8 @@
 package simulator
 
 import (
-	"bytes"
 	"encoding/json"
-	"io"
+	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
@@ -66,13 +65,13 @@ func HandleBatchSegment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	buf, err := json.MarshalIndent(resp, "\t", "\t")
+	buf, err := json.MarshalIndent(resp, "", "\t")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	//fmt.Printf("json data: %s\n", buf)
-	if _, err := io.Copy(w, bytes.NewReader(buf)); err != nil {
+	if _, err := fmt.Fprintln(w, string(buf)); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -87,7 +86,7 @@ func generateBatchSegmentUploadJob(numJobs int) ([]BatchSegmentUploadJob, error)
 		u.UploadedTime = u.StartTime.Add(time.Second * 6)
 		u.ValidatedTime = u.UploadedTime.Add(time.Minute * 3)
 		u.CompletedTime = u.ValidatedTime.Add(time.Minute * 1)
-		u.CreatedOn = u.StartTime
+		u.CreatedOn = bssTimestamp(u.StartTime)
 		//u.ErrorCode =
 		u.ErrorLogLines = "\n\nnum_unauth_segment-4013681496264948522;5013:0,5014:1550"
 		u.ID = int64(rand.Uint64())

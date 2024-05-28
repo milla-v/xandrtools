@@ -1,6 +1,7 @@
 package simulator
 
 import (
+	"encoding/json"
 	"time"
 )
 
@@ -29,9 +30,16 @@ type BatchSegmentResponse struct {
 	} `json:"response"`
 }
 
+type bssTimestamp time.Time
+
+func (b bssTimestamp) MarshalJSON() ([]byte, error) {
+	s := time.Time(b).UTC().Format("2006-01-02 15:03:04")
+	return json.Marshal(s)
+}
+
 type BatchSegmentUploadJob struct {
 	CompletedTime       time.Time     `json:"completed_time"`
-	CreatedOn           time.Time     `json:"created_on"`
+	CreatedOn           bssTimestamp  `json:"created_on"`
 	ErrorCode           interface{}   `json:"error_code"`
 	ErrorLogLines       string        `json:"error_log_lines"`
 	ID                  int64         `json:"id"`

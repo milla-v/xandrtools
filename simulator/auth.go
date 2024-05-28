@@ -1,8 +1,8 @@
 package simulator
 
 import (
-	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -52,23 +52,15 @@ func HandleAuthentication(w http.ResponseWriter, r *http.Request) {
 
 	user.TokenData.ExpirationTime = time.Now().Add(time.Hour * 2) //token expiration time - 2 hours
 
-	User.Store(auth.Auth.Username, user)
-	if userValue, ok := User.Load(auth.Auth.Username); ok {
-		log.Printf("Key %s - Value %d\n", auth.Auth.Username, userValue)
-	}
-	/*
-		if value, ok := UserToken.Load(auth.Auth.Username); ok {
-			log.Printf("Key %s - Value %d\n", auth.Auth.Username, value)
-		}
-	*/
+	User.Store(user.TokenData.Token, user)
 
-	buf, err = json.MarshalIndent(authResp, "\t", "\t")
+	buf, err = json.MarshalIndent(authResp, "", "\t")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	if _, err := io.Copy(w, bytes.NewReader(buf)); err != nil {
+	if _, err := fmt.Fprintln(w, string(buf)); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
