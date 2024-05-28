@@ -22,14 +22,10 @@ type BatchSegmentResponse struct {
 	Response struct {
 		BatchSegmentUploadJob []BatchSegmentUploadJob `json:"batch_segment_upload_job"`
 		Count                 int64                   `json:"count"`
-		DbgInfo               struct {
-			OutputTerm string        `json:"output_term"`
-			Version    string        `json:"version"`
-			Warnings   []interface{} `json:"warnings"`
-		} `json:"dbg_info"`
-		NumElements  int64  `json:"num_elements"`
-		StartElement int64  `json:"start_element"`
-		Status       string `json:"status"`
+		DbgInfo               Dbg                     `json:"dbg_info"`
+		NumElements           int64                   `json:"num_elements"`
+		StartElement          int64                   `json:"start_element"`
+		Status                string                  `json:"status"`
 	} `json:"response"`
 }
 
@@ -60,6 +56,15 @@ type BatchSegmentUploadJob struct {
 	TimeToProcess       time.Duration `json:"time_to_process"`
 	UploadedTime        time.Time     `json:"uploaded_time"`
 	ValidatedTime       time.Time     `json:"validated_time"`
+}
+
+type Dbg struct {
+	Instance  string        `json: "instance"`
+	DbgTime   int           `json: "time"`
+	StartTime time.Time     `json: "start_time"`
+	Version   string        `json:"version"`
+	TraceID   string        `json: "trace_id"`
+	Warnings  []interface{} `json:"warnings"`
 }
 
 type UserData struct {

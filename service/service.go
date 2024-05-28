@@ -56,6 +56,7 @@ func Run() {
 	mux.HandleFunc("/validators", handleValidators)
 
 	mux.HandleFunc("/xandrsim/auth", simulator.HandleAuthentication)
+	mux.HandleFunc("/xandrsim/batch-segment", simulator.HandleBatchSegment())
 
 	mux.HandleFunc("/templates/styles.css", handleStyle)
 	mux.HandleFunc("/templates/copy_btn.png", handlePng)

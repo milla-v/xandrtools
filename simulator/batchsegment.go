@@ -1,6 +1,8 @@
 package simulator
 
 import (
+	"encoding/json"
+	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
@@ -47,21 +49,28 @@ func HandleBatchSegment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//var resp BatchSegmentResponse
+	// var resp BatchSegmentResponse
+	var resp BatchSegmentResponse
 	numJobs := 5
-	uploadJob, err := generateBatchSegmentUploadJob(numJobs)
+	resp.Response.StartElement = 0
+	resp.Response.Count = 1
+	resp.Response.BatchSegmentUploadJob, err = generateBatchSegmentUploadJob(numJobs)
 	if err != nil {
-		log.Println("generateBatchSegmentUploadJob err: ", err)
+		log.Println("generateBatchSegmentUploadJob err", http.StatusUnauthorized)
 		return
 	}
-	log.Println("----------- Generated Batch Segment Upload Job --------------")
-	for _, u := range uploadJob {
-		log.Println("start_time: ", u.StartTime)
-		log.Println("uploaded_time: ", u.UploadedTime)
-		log.Println("validated_time: ", u.ValidatedTime)
-		log.Println("completed_time: ", u.CompletedTime)
-		log.Println("time_to_process: ", u.TimeToProcess)
+	resp.Response.DbgInfo, err = generateDbgInfo()
+	if err != nil {
+		log.Println("generate Dbg-info err", http.StatusUnauthorized)
+		return
 	}
+	jsonData, err := json.MarshalIndent(resp, "\t", "\t")
+	if err != nil {
+		fmt.Printf("could not marshal json: %s\n", err)
+		return
+	}
+	fmt.Printf("json data: %s\n", jsonData)
+
 }
 
 func generateBatchSegmentUploadJob(numJobs int) ([]BatchSegmentUploadJob, error) {
@@ -105,4 +114,19 @@ func generateBatchSegmentUploadJob(numJobs int) ([]BatchSegmentUploadJob, error)
 	}
 
 	return list, err
+}
+
+func generateDbgInfo() (Dbg, error) {
+	var err error
+	var dbg Dbg
+	dbg.Instance = "authentication-api-production-8664bd4765-btqsz"
+	dbg.DbgTime = 0
+	dbg.StartTime = time.Now()
+	dbg.Version = "0.0.0"
+	dbg.TraceID, err = generateToken(10)
+	if err != nil {
+		log.Println("generate trace_id err: ", err)
+		return dbg, err
+	}
+	return dbg, err
 }
