@@ -96,41 +96,6 @@ func TestAuthError(t *testing.T) {
 	}
 }
 
-/*
-	func TestAuthPostRequest(t *testing.T) {
-		var user = Auth{
-			Username: "authUser",
-			Password: "authPassword",
-		}
-		err := authPostRequest(user)
-		if err != nil {
-			t.Fatal(err)
-		}
-	}
-
-	func TestWriteAuthFile(t *testing.T) {
-		var user = Auth{
-			Username: "authuser",
-			Password: "authpassword",
-		}
-		filename := "auth.json"
-		var err error
-		if err = writeAuthFile(user, filename); err != nil {
-			t.Fatal(err)
-		}
-	}
-
-	func TestReadAuthFile(t *testing.T) {
-		var user Auth
-		var err error
-		fileName := "auth.json"
-		user, err = readAuthFile(fileName)
-		if err != nil {
-			t.Fatal(err)
-		}
-		t.Log("Unmarshaled user data: ", user)
-	}
-*/
 func TestGenerateToken(t *testing.T) {
 	token, err := generateToken(16)
 	if err != nil {

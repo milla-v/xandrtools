@@ -1,8 +1,9 @@
 package simulator
 
 import (
+	"bytes"
 	"encoding/json"
-	"fmt"
+	"io"
 	"log"
 	"math/rand"
 	"net/http"
@@ -64,13 +65,17 @@ func HandleBatchSegment(w http.ResponseWriter, r *http.Request) {
 		log.Println("generate Dbg-info err", http.StatusUnauthorized)
 		return
 	}
-	jsonData, err := json.MarshalIndent(resp, "\t", "\t")
+
+	buf, err := json.MarshalIndent(resp, "\t", "\t")
 	if err != nil {
-		fmt.Printf("could not marshal json: %s\n", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	fmt.Printf("json data: %s\n", jsonData)
-
+	//fmt.Printf("json data: %s\n", buf)
+	if _, err := io.Copy(w, bytes.NewReader(buf)); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func generateBatchSegmentUploadJob(numJobs int) ([]BatchSegmentUploadJob, error) {

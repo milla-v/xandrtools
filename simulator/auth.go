@@ -72,4 +72,5 @@ func HandleAuthentication(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	//fmt.Printf("json data: %s\n", buf)
 }
