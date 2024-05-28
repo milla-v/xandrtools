@@ -18,10 +18,9 @@ func TestAuthManyUsers(t *testing.T) {
 
 	for i := 0; i < len(manyAuth); i++ {
 		manyAuth[i].Auth.Username = "user" + strconv.Itoa(i)
-		manyAuth[i].Auth.Password = "psssword" + strconv.Itoa(i)
+		manyAuth[i].Auth.Password = "password" + strconv.Itoa(i)
 	}
 
-	t.Log("I AM HERE")
 	for i := 0; i < len(manyAuth); i++ {
 		t.Logf("user: %s | password: %s", manyAuth[i].Auth.Username, manyAuth[i].Auth.Password)
 	}
@@ -97,43 +96,8 @@ func TestAuthError(t *testing.T) {
 	}
 }
 
-/*
-	func TestAuthPostRequest(t *testing.T) {
-		var user = Auth{
-			Username: "authUser",
-			Password: "authPassword",
-		}
-		err := authPostRequest(user)
-		if err != nil {
-			t.Fatal(err)
-		}
-	}
-
-	func TestWriteAuthFile(t *testing.T) {
-		var user = Auth{
-			Username: "authuser",
-			Password: "authpassword",
-		}
-		filename := "auth.json"
-		var err error
-		if err = writeAuthFile(user, filename); err != nil {
-			t.Fatal(err)
-		}
-	}
-
-	func TestReadAuthFile(t *testing.T) {
-		var user Auth
-		var err error
-		fileName := "auth.json"
-		user, err = readAuthFile(fileName)
-		if err != nil {
-			t.Fatal(err)
-		}
-		t.Log("Unmarshaled user data: ", user)
-	}
-*/
 func TestGenerateToken(t *testing.T) {
-	token, err := generateToken()
+	token, err := generateToken(16)
 	if err != nil {
 		t.Fatal(err)
 	}

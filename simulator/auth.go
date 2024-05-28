@@ -1,28 +1,16 @@
 package simulator
 
 import (
-	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
+	"sync"
+	"time"
 )
 
-var UserToken = make(map[string]string) //[string] - username, string - token
-
-type AuthRequest struct {
-	Auth struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-	} `json:"auth"`
-}
-
-type AuthResponse struct {
-	Response struct {
-		Status string `json:"status"`
-		Token  string `json:"token"`
-	} `json:"response"`
-}
+var User sync.Map
 
 func HandleAuthentication(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
@@ -39,6 +27,7 @@ func HandleAuthentication(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	var auth AuthRequest
+	var user UserData
 
 	if err := json.Unmarshal(buf, &auth); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -48,25 +37,32 @@ func HandleAuthentication(w http.ResponseWriter, r *http.Request) {
 	log.Println("login user", auth.Auth.Username, ":", auth.Auth.Password)
 
 	var authResp AuthResponse
-
-	authResp.Response.Status = "OK"
-	authResp.Response.Token, err = generateToken()
-	if err != nil {
-		log.Println("generate token err: ", err)
-		return
+	if auth.Auth.Username != "" || auth.Auth.Password != "" {
+		authResp.Response.Status = "OK"
+		authResp.Response.Token, err = generateToken(16)
+		if err != nil {
+			log.Println("generate token err: ", err)
+			return
+		}
 	}
 
-	UserToken[auth.Auth.Username] = authResp.Response.Token
-	log.Println("----- map: ", UserToken)
+	//fill UserData struct
+	user.TokenData.Token = authResp.Response.Token
+	//	log.Println("RANDOM INT", rand.IntN(10))
 
-	buf, err = json.MarshalIndent(authResp, "\t", "\t")
+	user.TokenData.ExpirationTime = time.Now().Add(time.Hour * 2) //token expiration time - 2 hours
+
+	User.Store(user.TokenData.Token, user)
+
+	buf, err = json.MarshalIndent(authResp, "", "\t")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	if _, err := io.Copy(w, bytes.NewReader(buf)); err != nil {
+	if _, err := fmt.Fprintln(w, string(buf)); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	//fmt.Printf("json data: %s\n", buf)
 }

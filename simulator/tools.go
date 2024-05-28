@@ -7,9 +7,9 @@ import (
 	"sync"
 )
 
-func generateToken() (string, error) {
+func generateToken(size int) (string, error) {
 	var s string
-	b := make([]byte, 16)
+	b := make([]byte, size)
 	_, err := rand.Read(b)
 	if err != nil {
 		log.Println("generateToken err: ", err)
