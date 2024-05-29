@@ -54,6 +54,7 @@ func HandleBatchSegment(w http.ResponseWriter, r *http.Request) {
 	numJobs := 5
 	resp.Response.StartElement = 0
 	resp.Response.Count = 1
+	resp.Response.Status = "OK"
 	resp.Response.BatchSegmentUploadJob, err = generateBatchSegmentUploadJob(numJobs)
 	if err != nil {
 		log.Println("generateBatchSegmentUploadJob err", http.StatusUnauthorized)
