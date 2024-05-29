@@ -184,3 +184,23 @@ func handleValidators(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
+	log.Println("start bss trouble shooter")
+	type data struct {
+		XandrVersion string
+		VCS          Vcs
+	}
+	var d data
+
+	d.XandrVersion = Version
+	d.VCS.RevisionFull = VcsInfo.RevisionFull
+	d.VCS.RevisionShort = VcsInfo.RevisionShort
+	d.VCS.Modified = VcsInfo.Modified
+
+	if err := t.ExecuteTemplate(w, "bsstroubleshooter.html", d); err != nil {
+		log.Println("Execute bsstroubleshooter.html ", err)
+		http.Error(w, "error", http.StatusInternalServerError)
+		return
+	}
+}
