@@ -199,8 +199,6 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 		Auth simulator.AuthRequest
 		User simulator.UserData
 
-		UserName     string
-		Password     string
 		Communicator string
 		Token        string
 		Backend      string
@@ -218,37 +216,48 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 	//d.UserName = r.FormValue("username")
 
 	//authentication request
-
 	d.Auth.Auth.Username = r.FormValue("username")
 	d.Auth.Auth.Password = r.FormValue("password")
 	d.Backend = r.FormValue("backend")
+	if d.Auth.Auth.Username != "" && d.Auth.Auth.Password != "" {
+		//sendRequest JSON with password and username
+		buf, err := json.MarshalIndent(d.Auth, "\t", "\t")
+		if err != nil {
+			log.Println("Marshal err: ", err)
+			return
+		}
 
-	buf, err := json.MarshalIndent(d.Auth, "\t", "\t")
-	if err != nil {
-		log.Println("Marshal err: ", err)
-		return
+		log.Println("json:", string(buf))
+
+		var apiURL = "https://api.appnexus.com/auth"
+		if d.Backend == "simulator" {
+			apiURL = "http://127.0.0.1:9970/xandrsim/auth"
+		}
+
+		resp, err := http.Post(apiURL, "application/json", bytes.NewReader(buf))
+		if err != nil {
+			log.Println("Post responce err: ", err)
+			return
+		}
+
+		buff, err := io.ReadAll(resp.Body)
+		if err != nil {
+			log.Println("read responce body err: ", err)
+			return
+		}
+		defer resp.Body.Close()
+
+		var u simulator.AuthResponse
+		log.Printf("status:%s body: %s", resp.Status, string(buff))
+		if err := json.Unmarshal(buf, &u); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		log.Println(u.Response.Status)
+		//fill in an user datas
+		//d.User.Username = d.Auth.Auth.Username
+
 	}
-
-	log.Println("json:", string(buf))
-
-	var apiURL = "https://api.appnexus.com/auth"
-	if d.Backend == "simulator" {
-		apiURL = "http://127.0.0.1:9001/xandrsim/auth"
-	}
-
-	resp, err := http.Post(apiURL, "application/json", bytes.NewReader(buf))
-	if err != nil {
-		log.Println("Post responce err: ", err)
-		return
-	}
-
-	buff, err := io.ReadAll(resp.Body)
-	if err != nil {
-		log.Println("read responce body err: ", err)
-		return
-	}
-	defer resp.Body.Close()
-	log.Printf("status:%s body: %s", resp.Status, string(buff))
 	log.Println("d.User.Username: ", d.Auth.Auth.Username, " | ", "d.User.Password: ", d.Auth.Auth.Password, " | ", "d.Token: ", d.Token)
 
 	//get token, check if token not empty
