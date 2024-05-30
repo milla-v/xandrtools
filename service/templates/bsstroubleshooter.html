@@ -39,14 +39,18 @@
     </div>
     <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="respNavigation()">&#9776;</a>
   </div>
-  
   <div class="content-box">
     <div style="padding-left:16px">
       <h2>BSS Upload Troubleshooter</h2>
       <br>
-      <input type="text" id="usernameid" name="username" class="valid-input" placeholder="Enter username" style="margin-bottom: 10px;"><br>
-      <input type="text" id="usernameid" name="username" class="valid-input" placeholder="Enter password"><br>
-      <input type="submit" value="Login" class="valid-submit" style="margin-top: 10px;">
+      <form method="POST">
+        <input type="text" id="usernameid" name="username" class="valid-input" {{if ne .UAuth.Username ""}} value="{{.UAuth.Username}}" {{else}} placeholder="Enter username" {{end}}><br>
+        <input type="text" id="passwordid" name="password" class="valid-input" {{if ne .UAuth.Password ""}} value="{{.UAuth.Password}}" {{else}} placeholder="Enter password" {{end}}><br>
+        <input type="submit" value="Login" class="valid-submit" style="margin-top: 10px;">
+      </form>
+        {{if ne .Token ""}}
+          <input type="text" id="tokenid" name="token" class="valid-input" value="{{.Token}}"><br>
+        {{end}}
     </div>
   </div>
 

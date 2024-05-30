@@ -1,12 +1,17 @@
 package service
 
 import (
+	"bytes"
+	"encoding/json"
 	"html/template"
+	"io"
 	"log"
 	"net/http"
 	"strings"
 
 	"github.com/milla-v/xandr/bss/xgen"
+
+	"xandrtools/simulator"
 )
 
 var t *template.Template
@@ -190,6 +195,14 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 	type data struct {
 		XandrVersion string
 		VCS          Vcs
+
+		UAuth simulator.Auth
+		User  simulator.UserData
+
+		UserName     string
+		Password     string
+		Communicator string
+		Token        string
 	}
 	var d data
 
@@ -197,6 +210,45 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 	d.VCS.RevisionFull = VcsInfo.RevisionFull
 	d.VCS.RevisionShort = VcsInfo.RevisionShort
 	d.VCS.Modified = VcsInfo.Modified
+
+	log.Println("Method before submit", r.Method)
+	//check if username and password not empty
+	//get username and passssword
+	//d.UserName = r.FormValue("username")
+	d.UAuth.Username = r.FormValue("username")
+	d.UAuth.Password = r.FormValue("password")
+
+	//authentication request
+	var auth simulator.AuthRequest
+
+	auth.Auth.Username = r.FormValue("username")
+	auth.Auth.Password = r.FormValue("password")
+
+	buf, err := json.MarshalIndent(auth, "\t", "\t")
+	if err != nil {
+		log.Println("Marshal err: ", err)
+		return
+	}
+
+	log.Println("json:", string(buf))
+
+	resp, err := http.Post(r.URL.String(), "application/json", bytes.NewReader(buf))
+	if err != nil {
+		log.Println("Post responce err: ", err)
+		return
+	}
+
+	buff, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Println("read responce body err: ", err)
+		return
+	}
+	defer resp.Body.Close()
+	log.Printf("status:%s body: %s", resp.Status, string(buff))
+	log.Println("d.User.Username: ", d.UAuth.Username, " | ", "d.User.Password: ", d.UAuth.Password, " | ", "d.Token: ", d.Token)
+
+	//get token, check if token not empty
+	//d.Token = simulator.
 
 	if err := t.ExecuteTemplate(w, "bsstroubleshooter.html", d); err != nil {
 		log.Println("Execute bsstroubleshooter.html ", err)

@@ -161,29 +161,31 @@ body {
 	margin-right: 30px;
 }
       
-      .valid-box {
-        display: flex;
-        margin-top: 10px;
-      }
-      
-      .valid-input {
-        margin-right: 10px;
-        width: 340px;
-      }
-    
-    .valid-input-out {
-	    	margin-right: 10px;
-		width: 500px;
-    }
-      
-      .valid-input, .valid-submit, .field-sample-input, .valid-input-out {
-        padding: 10px;
-        font-size: 17px;
-      }
-      
-      .valid-submit {
-        
-      }
+.valid-box {
+  display: flex;
+  margin-top: 10px;
+}
+
+.valid-input {
+	margin-right: 10px;
+	width: 340px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+.valid-input-out {
+margin-right: 10px;
+width: 500px;
+}
+
+.valid-input, .valid-submit, .field-sample-input, .valid-input-out {
+  padding: 10px;
+  font-size: 17px;
+}
+
+.valid-submit {
+  
+}
     
     @media screen and (max-width: 600px) {
       .topnav a:not(:first-child), .dropdown .dropbtn {
