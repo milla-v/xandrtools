@@ -196,8 +196,8 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 		XandrVersion string
 		VCS          Vcs
 
-		UAuth simulator.Auth
-		User  simulator.UserData
+		Auth simulator.AuthRequest
+		User simulator.UserData
 
 		UserName     string
 		Password     string
@@ -215,16 +215,13 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 	//check if username and password not empty
 	//get username and passssword
 	//d.UserName = r.FormValue("username")
-	d.UAuth.Username = r.FormValue("username")
-	d.UAuth.Password = r.FormValue("password")
 
 	//authentication request
-	var auth simulator.AuthRequest
 
-	auth.Auth.Username = r.FormValue("username")
-	auth.Auth.Password = r.FormValue("password")
+	d.Auth.Auth.Username = r.FormValue("username")
+	d.Auth.Auth.Password = r.FormValue("password")
 
-	buf, err := json.MarshalIndent(auth, "\t", "\t")
+	buf, err := json.MarshalIndent(d.Auth, "\t", "\t")
 	if err != nil {
 		log.Println("Marshal err: ", err)
 		return
@@ -245,7 +242,7 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 	}
 	defer resp.Body.Close()
 	log.Printf("status:%s body: %s", resp.Status, string(buff))
-	log.Println("d.User.Username: ", d.UAuth.Username, " | ", "d.User.Password: ", d.UAuth.Password, " | ", "d.Token: ", d.Token)
+	log.Println("d.User.Username: ", d.Auth.Auth.Username, " | ", "d.User.Password: ", d.Auth.Auth.Password, " | ", "d.Token: ", d.Token)
 
 	//get token, check if token not empty
 	//d.Token = simulator.
