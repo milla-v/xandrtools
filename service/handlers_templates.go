@@ -203,6 +203,7 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 		Password     string
 		Communicator string
 		Token        string
+		Backend      string
 	}
 	var d data
 
@@ -220,6 +221,7 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 
 	d.Auth.Auth.Username = r.FormValue("username")
 	d.Auth.Auth.Password = r.FormValue("password")
+	d.Backend = r.FormValue("backend")
 
 	buf, err := json.MarshalIndent(d.Auth, "\t", "\t")
 	if err != nil {
@@ -229,7 +231,12 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("json:", string(buf))
 
-	resp, err := http.Post(r.URL.String(), "application/json", bytes.NewReader(buf))
+	var apiURL = "https://api.appnexus.com/auth"
+	if d.Backend == "simulator" {
+		apiURL = "http://127.0.0.1:9001/xandrsim/auth"
+	}
+
+	resp, err := http.Post(apiURL, "application/json", bytes.NewReader(buf))
 	if err != nil {
 		log.Println("Post responce err: ", err)
 		return
