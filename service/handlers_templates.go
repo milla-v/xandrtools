@@ -1,16 +1,14 @@
 package service
 
 import (
-	"bytes"
-	"encoding/json"
 	"html/template"
-	"io"
 	"log"
 	"net/http"
 	"strings"
 
 	"github.com/milla-v/xandr/bss/xgen"
 
+	"xandrtools/client"
 	"xandrtools/simulator"
 )
 
@@ -215,53 +213,24 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 	//get username and passssword
 	//d.UserName = r.FormValue("username")
 
-	//authentication request
-	d.Auth.Auth.Username = r.FormValue("username")
-	d.Auth.Auth.Password = r.FormValue("password")
 	d.Backend = r.FormValue("backend")
-	if d.Auth.Auth.Username != "" && d.Auth.Auth.Password != "" {
-		//sendRequest JSON with password and username
-		buf, err := json.MarshalIndent(d.Auth, "\t", "\t")
-		if err != nil {
-			log.Println("Marshal err: ", err)
+	cli := client.NewClient(d.Backend)
+
+	if r.FormValue("token") != "" {
+		cli.User.TokenData.Token = r.FormValue("token")
+	} else {
+		//authentication request
+		d.Auth.Auth.Username = r.FormValue("username")
+		d.Auth.Auth.Password = r.FormValue("password")
+
+		if err := cli.Login(r.FormValue("username"), r.FormValue("password")); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-
-		log.Println("json:", string(buf))
-
-		var apiURL = "https://api.appnexus.com/auth"
-		if d.Backend == "simulator" {
-			apiURL = "http://127.0.0.1:9970/xandrsim/auth"
-		}
-
-		resp, err := http.Post(apiURL, "application/json", bytes.NewReader(buf))
-		if err != nil {
-			log.Println("Post responce err: ", err)
-			return
-		}
-
-		buff, err := io.ReadAll(resp.Body)
-		if err != nil {
-			log.Println("read responce body err: ", err)
-			return
-		}
-		defer resp.Body.Close()
-
-		var u simulator.AuthResponse
-		log.Printf("status:%s body: %s", resp.Status, string(buff))
-		if err := json.Unmarshal(buf, &u); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-		log.Println(u.Response.Status)
-		//fill in an user datas
-		//d.User.Username = d.Auth.Auth.Username
-
+		log.Println("d.User.Username: ", d.Auth.Auth.Username, " | ", "d.User.Password: ", d.Auth.Auth.Password, " | ", "d.Token: ", d.Token)
 	}
-	log.Println("d.User.Username: ", d.Auth.Auth.Username, " | ", "d.User.Password: ", d.Auth.Auth.Password, " | ", "d.Token: ", d.Token)
 
-	//get token, check if token not empty
-	//d.Token = simulator.
+	d.Token = cli.User.TokenData.Token
 
 	if err := t.ExecuteTemplate(w, "bsstroubleshooter.html", d); err != nil {
 		log.Println("Execute bsstroubleshooter.html ", err)
