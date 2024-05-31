@@ -8,12 +8,11 @@ import (
 	"log"
 	"net/http"
 	"time"
-	"xandrtools/simulator"
 )
 
 type Client struct {
 	backend string
-	User    simulator.UserData
+	User    UserData
 }
 
 // NewClient create new API client.
@@ -27,7 +26,7 @@ func NewClient(backend string) *Client {
 
 // Login returns user token.
 func (c *Client) Login(username, password string) error {
-	var auth simulator.AuthRequest
+	var auth AuthRequest
 
 	auth.Auth.Username = username
 	auth.Auth.Password = password
@@ -63,7 +62,7 @@ func (c *Client) Login(username, password string) error {
 	}
 	defer resp.Body.Close()
 
-	var respAuth simulator.AuthResponse
+	var respAuth AuthResponse
 
 	if err := json.Unmarshal(buf, &respAuth); err != nil {
 		return fmt.Errorf("unmarshal: %w", err)

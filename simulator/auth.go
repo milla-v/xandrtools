@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"sync"
 	"time"
+
+	"xandrtools/client"
 )
 
 var User sync.Map
@@ -26,8 +28,8 @@ func HandleAuthentication(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 
-	var auth AuthRequest
-	var user UserData
+	var auth client.AuthRequest
+	var user client.UserData
 
 	if err := json.Unmarshal(buf, &auth); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -36,7 +38,7 @@ func HandleAuthentication(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("login user", auth.Auth.Username, ":", auth.Auth.Password)
 
-	var authResp AuthResponse
+	var authResp client.AuthResponse
 	if auth.Auth.Username != "" || auth.Auth.Password != "" {
 		authResp.Response.Status = "OK"
 		authResp.Response.Token, err = generateToken(16)

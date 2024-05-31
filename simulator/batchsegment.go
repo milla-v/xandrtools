@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"xandrtools/client"
 )
 
 func HandleBatchSegment(w http.ResponseWriter, r *http.Request) {
@@ -50,7 +52,7 @@ func HandleBatchSegment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// var resp BatchSegmentResponse
-	var resp BatchSegmentResponse
+	var resp client.BatchSegmentResponse
 	numJobs := 5
 	resp.Response.StartElement = 0
 	resp.Response.Count = 1
@@ -80,9 +82,9 @@ func HandleBatchSegment(w http.ResponseWriter, r *http.Request) {
 
 func generateBatchSegmentUploadJob(numJobs int) ([]BatchSegmentUploadJob, error) {
 	var err error
-	var list []BatchSegmentUploadJob
+	var list []client.BatchSegmentUploadJob
 	for i := 0; i < numJobs; i++ {
-		var u BatchSegmentUploadJob
+		var u client.BatchSegmentUploadJob
 		startTime := time.Now()
 		u.StartTime = bssTimestamp(time.Now())
 		u.UploadedTime = bssTimestamp(time.Now().Add(time.Second * 6))
@@ -129,7 +131,7 @@ func generateBatchSegmentUploadJob(numJobs int) ([]BatchSegmentUploadJob, error)
 
 func generateDbgInfo() (DbgInfo, error) {
 	var err error
-	var dbg DbgInfo
+	var dbg client.DbgInfo
 	dbg.Instance = "authentication-api-production-8664bd4765-btqsz"
 	dbg.DbgTime = 0
 	dbg.StartTime = time.Now()
