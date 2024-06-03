@@ -79,8 +79,29 @@ func (c *Client) Login(username, password string) error {
 	return nil
 }
 
-func (c *Client) GetBatchSegmentJobs(token, memberID string) error {
-	var resp BatchSegmentResponse
+func (c *Client) GetBatchSegmentJobs(user UserData) error {
+	if user.Username == "" {
+		return fmt.Errorf("username is empty")
+	}
+	if time.Time.IsZero(user.TokenData.ExpirationTime) == true {
+		return fmt.Errorf("expiration time is empty")
+	}
+	if user.TokenData.Token == "" {
+		return fmt.Errorf("token is empty")
+	}
+	if user.TokenData.MemberId == "" {
+		return fmt.Errorf("member_id is empty")
+	}
+	c.User.Username = user.Username
+	c.User.TokenData.Token = user.TokenData.Token
+	c.User.TokenData.ExpirationTime = user.TokenData.ExpirationTime
+	c.User.TokenData.MemberId = user.TokenData.MemberId
+
+	var apiURL = "https://api.appnexus.com/batch-segment"
+	if c.backend == "simulator" {
+		apiURL = "http://127.0.0.1:9970/xandrsim/batch-segment"
+	}
+	log.Println("apiURL", apiURL)
 
 	return nil
 }
