@@ -2,6 +2,7 @@ package client
 
 import (
 	"encoding/json"
+	"strings"
 	"time"
 )
 
@@ -35,6 +36,18 @@ type BssTimestamp time.Time
 func (b BssTimestamp) MarshalJSON() ([]byte, error) {
 	s := time.Time(b).UTC().Format("2006-01-02 15:03:04")
 	return json.Marshal(s)
+}
+
+func (b *BssTimestamp) UnmarshalJSON(bytes []byte) error {
+	s := strings.Trim(string(bytes), `"`)
+	ts, err := time.Parse("2006-01-02 15:03:04", s)
+	if err != nil {
+		return err
+	}
+
+	*b = BssTimestamp(ts)
+
+	return nil
 }
 
 type BatchSegmentUploadJob struct {

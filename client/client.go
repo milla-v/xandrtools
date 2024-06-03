@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
@@ -79,23 +80,10 @@ func (c *Client) Login(username, password string) error {
 	return nil
 }
 
-func (c *Client) GetBatchSegmentJobs(user UserData) error {
-	if user.Username == "" {
-		return fmt.Errorf("username is empty")
+func (c *Client) GetBatchSegmentJobs(memberID int32) ([]BatchSegmentUploadJob, error) {
+	if c.User.TokenData.Token == "" {
+		return nil, fmt.Errorf("token is empty")
 	}
-	if time.Time.IsZero(user.TokenData.ExpirationTime) == true {
-		return fmt.Errorf("expiration time is empty")
-	}
-	if user.TokenData.Token == "" {
-		return fmt.Errorf("token is empty")
-	}
-	if user.TokenData.MemberId == "" {
-		return fmt.Errorf("member_id is empty")
-	}
-	c.User.Username = user.Username
-	c.User.TokenData.Token = user.TokenData.Token
-	c.User.TokenData.ExpirationTime = user.TokenData.ExpirationTime
-	c.User.TokenData.MemberId = user.TokenData.MemberId
 
 	var apiURL = "https://api.appnexus.com/batch-segment"
 	if c.backend == "simulator" {
@@ -103,5 +91,31 @@ func (c *Client) GetBatchSegmentJobs(user UserData) error {
 	}
 	log.Println("apiURL", apiURL)
 
-	return nil
+	req, err := http.NewRequest(http.MethodGet, apiURL, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Authorization", "Bearer "+c.User.TokenData.Token)
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	buf, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+
+	var bsResponse BatchSegmentResponse
+
+	if err := json.Unmarshal(buf, &bsResponse); err != nil {
+		log.Println("buf:", string(buf))
+		return nil, err
+	}
+
+	return bsResponse.Response.BatchSegmentUploadJob, nil
 }
