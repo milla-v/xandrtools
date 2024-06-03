@@ -214,27 +214,33 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 	d.Auth.Auth.Password = r.FormValue("password")
 	d.Backend = r.FormValue("backend")
 	if r.Method == "POST" {
-		log.Println("METHOD: ", r.Method)
-		cli := client.NewClient(d.Backend)
+		submit := r.FormValue("submit")
+		log.Println("SUBMIT: ", submit)
+		switch submit {
+		case "Login":
+			log.Println("CASE LOGIN")
+			cli := client.NewClient(d.Backend)
 
-		if r.FormValue("token") != "" {
-			cli.User.TokenData.Token = r.FormValue("token")
-		} else {
-			//authentication request
-			d.Auth.Auth.Username = r.FormValue("username")
-			d.Auth.Auth.Password = r.FormValue("password")
+			if r.FormValue("token") != "" {
+				cli.User.TokenData.Token = r.FormValue("token")
+			} else {
+				//authentication request
+				d.Auth.Auth.Username = r.FormValue("username")
+				d.Auth.Auth.Password = r.FormValue("password")
 
-			if err := cli.Login(r.FormValue("username"), r.FormValue("password")); err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
+				if err := cli.Login(r.FormValue("username"), r.FormValue("password")); err != nil {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+				log.Println("client token: ", cli.User.TokenData.Token, "token expiration time: ", cli.User.TokenData.ExpirationTime)
+				d.User = cli.User
+
 			}
-			log.Println("client token: ", cli.User.TokenData.Token, "token expiration time: ", cli.User.TokenData.ExpirationTime)
-			d.User = cli.User
-			log.Println("d.User", d.User.TokenData.Token)
-			log.Println("Submit: ", r.FormValue("submit"))
-		}
 
-		d.Token = cli.User.TokenData.Token
+			d.Token = cli.User.TokenData.Token
+		case "Get Jobs":
+			log.Println("CASE GET JOBS")
+		}
 	}
 
 	//get token, check if token not empty

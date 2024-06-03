@@ -79,6 +79,8 @@ func (c *Client) Login(username, password string) error {
 	return nil
 }
 
-func (c *Client) GetBatchSegmentJobs() error {
+func (c *Client) GetBatchSegmentJobs(token, memberID string) error {
+	var resp BatchSegmentResponse
+
 	return nil
 }
