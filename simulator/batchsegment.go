@@ -37,7 +37,7 @@ func HandleBatchSegment(w http.ResponseWriter, r *http.Request) {
 	log.Printf("user: %+v", user)
 	log.Println("token expiration time: ", user)
 
-	u := user.(UserData)
+	u := user.(client.UserData)
 	log.Println("u.TokenData. ExpirationTime: ", u.TokenData.ExpirationTime)
 
 	//check if expiration time exists
@@ -80,18 +80,18 @@ func HandleBatchSegment(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func generateBatchSegmentUploadJob(numJobs int) ([]BatchSegmentUploadJob, error) {
+func generateBatchSegmentUploadJob(numJobs int) ([]client.BatchSegmentUploadJob, error) {
 	var err error
 	var list []client.BatchSegmentUploadJob
 	for i := 0; i < numJobs; i++ {
 		var u client.BatchSegmentUploadJob
 		startTime := time.Now()
-		u.StartTime = bssTimestamp(time.Now())
-		u.UploadedTime = bssTimestamp(time.Now().Add(time.Second * 6))
-		u.ValidatedTime = bssTimestamp(time.Now().Add(time.Minute * 3))
+		u.StartTime = client.BssTimestamp(time.Now())
+		u.UploadedTime = client.BssTimestamp(time.Now().Add(time.Second * 6))
+		u.ValidatedTime = client.BssTimestamp(time.Now().Add(time.Minute * 3))
 		completedTime := time.Now().Add(time.Minute * 1)
-		u.CompletedTime = bssTimestamp(completedTime)
-		u.CreatedOn = bssTimestamp(u.StartTime)
+		u.CompletedTime = client.BssTimestamp(completedTime)
+		u.CreatedOn = client.BssTimestamp(u.StartTime)
 		//u.ErrorCode =
 		u.ErrorLogLines = "\n\nnum_unauth_segment-4013681496264948522;5013:0,5014:1550"
 		u.ID = int64(rand.Uint64())
@@ -129,7 +129,7 @@ func generateBatchSegmentUploadJob(numJobs int) ([]BatchSegmentUploadJob, error)
 	return list, err
 }
 
-func generateDbgInfo() (DbgInfo, error) {
+func generateDbgInfo() (client.DbgInfo, error) {
 	var err error
 	var dbg client.DbgInfo
 	dbg.Instance = "authentication-api-production-8664bd4765-btqsz"

@@ -5,6 +5,8 @@ import (
 	"encoding/hex"
 	"log"
 	"sync"
+
+	"xandrtools/client"
 )
 
 func generateToken(size int) (string, error) {
@@ -19,7 +21,7 @@ func generateToken(size int) (string, error) {
 	return s, err
 }
 
-func writeMap(auth []AuthRequest) (sync.Map, error) {
+func writeMap(auth []client.AuthRequest) (sync.Map, error) {
 	var m sync.Map
 	var err error
 	for i := 0; i < len(auth); i++ {
