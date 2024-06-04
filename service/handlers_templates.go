@@ -198,7 +198,7 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 		Auth client.AuthRequest
 		User client.UserData
 
-		Communicator   string
+		IsJobs         bool
 		Token          string
 		Backend        string
 		ExpirationTime time.Time
@@ -238,10 +238,13 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 				}
 				log.Println("client token: ", cli.User.TokenData.Token, "token expiration time: ", cli.User.TokenData.ExpirationTime)
 				d.User = cli.User
+				d.User.Username = d.Auth.Auth.Username
+				cli.User.Username = d.Auth.Auth.Username
 
 			}
 
 			d.Token = cli.User.TokenData.Token
+			log.Println("----------------CLI USERNAME----------------", cli.User.Username, cli.User.TokenData.ExpirationTime)
 
 		case "Get Jobs":
 			log.Println("CASE GET JOBS")
@@ -255,11 +258,7 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			log.Println("user: ", user)
-			u := user.(client.UserData)
-			log.Println("u.TokenData. ExpirationTime: ", u.TokenData.ExpirationTime)
-			d.Auth.Auth.Username = u.Username
-			d.User.TokenData = u.TokenData
-			log.Println("USER TOKEN: ", d.User.TokenData.Token)
+			d.User = user.(client.UserData)
 
 			//check expiration time ?
 
@@ -269,7 +268,14 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			log.Println("cli.Username: ", cli.User.Username)
+			if len(list) > 0 {
+				d.IsJobs = true
+			} else {
+				d.IsJobs = false
+			}
+			d.Token = d.User.TokenData.Token
+			d.User.Username = r.FormValue("username")
+			log.Println("len list: ", len(list))
 			for i, item := range list {
 				log.Println(i+1, "JOB ID: ", item.JobID, " | createdOn:", item.CreatedOn)
 			}

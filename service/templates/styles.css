@@ -183,8 +183,27 @@ width: 500px;
   font-size: 17px;
 }
 
-.valid-submit {
-  
+#jobs {
+  font-family: Arial;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#jobs td, #jobs th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#jobs tr:nth-child(even){background-color: #edf5ff;}
+
+#jobs tr:hover {background-color: #ddd;}
+
+#jobs th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #4169e1;
+  color: white;
 }
     
     @media screen and (max-width: 600px) {
