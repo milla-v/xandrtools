@@ -80,6 +80,7 @@ func (c *Client) Login(username, password string) error {
 	return nil
 }
 
+// GetBatchSegmentJobs return
 func (c *Client) GetBatchSegmentJobs(memberID int32) ([]BatchSegmentUploadJob, error) {
 	if c.User.TokenData.Token == "" {
 		return nil, fmt.Errorf("token is empty")

@@ -93,6 +93,6 @@ type UserData struct {
 	TokenData struct {
 		Token          string    `json:"token"`
 		ExpirationTime time.Time `json:"expirationTime"`
-		MemberId       string    `json:"memberid"`
+		MemberId       int32     `json:"memberid"`
 	} `json: "tokendata"`
 }

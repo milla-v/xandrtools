@@ -1,15 +1,16 @@
 package service
 
 import (
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/milla-v/xandr/bss/xgen"
 
 	"xandrtools/client"
+	"xandrtools/simulator"
 )
 
 var t *template.Template
@@ -197,11 +198,13 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 		Auth client.AuthRequest
 		User client.UserData
 
-		Communicator string
-		Token        string
-		Backend      string
+		Communicator   string
+		Token          string
+		Backend        string
+		ExpirationTime time.Time
 	}
 	var d data
+	var err error
 
 	d.XandrVersion = Version
 	d.VCS.RevisionFull = VcsInfo.RevisionFull
@@ -229,7 +232,7 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 				d.Auth.Auth.Username = r.FormValue("username")
 				d.Auth.Auth.Password = r.FormValue("password")
 
-				if err := cli.Login(r.FormValue("username"), r.FormValue("password")); err != nil {
+				if err = cli.Login(r.FormValue("username"), r.FormValue("password")); err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 					return
 				}
@@ -239,24 +242,40 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 			}
 
 			d.Token = cli.User.TokenData.Token
+
 		case "Get Jobs":
 			log.Println("CASE GET JOBS")
 			cli := client.NewClient(d.Backend)
+
+			//get user data from User sync.Map
 			cli.User.TokenData.Token = r.FormValue("token")
+			user, ok := simulator.User.Load(cli.User.TokenData.Token)
+			if !ok {
+				http.Error(w, "invalid token", http.StatusUnauthorized)
+				return
+			}
+			log.Println("user: ", user)
+			u := user.(client.UserData)
+			log.Println("u.TokenData. ExpirationTime: ", u.TokenData.ExpirationTime)
+			d.Auth.Auth.Username = u.Username
+			d.User.TokenData = u.TokenData
+			log.Println("USER TOKEN: ", d.User.TokenData.Token)
+
+			//check expiration time ?
+
+			//get list of batch segment jobs
 			list, err := cli.GetBatchSegmentJobs(0)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
+			log.Println("cli.Username: ", cli.User.Username)
 			for i, item := range list {
-				fmt.Fprintln(w, i+1, item.JobID)
+				log.Println(i+1, "JOB ID: ", item.JobID, " | createdOn:", item.CreatedOn)
 			}
-			return
+
 		}
 	}
-
-	//get token, check if token not empty
-	//d.Token = simulator.
 
 	if err := t.ExecuteTemplate(w, "bsstroubleshooter.html", d); err != nil {
 		log.Println("Execute bsstroubleshooter.html ", err)

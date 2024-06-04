@@ -57,7 +57,7 @@
               <label for="tokenid">Token:</label><br>
               <input type="text" id="tokenid" name="token" class="valid-input" value="{{.Token}}"><br>
               <label for="memberid">Memeber ID:</label><br>
-              <input type="text" id="memberid" name="member_id" class="valid-input" value="MemeberID"><br>
+              <input type="text" id="memberid" name="memberid" class="valid-input" value="MemeberID"><br>
             {{end}}
             {{if and (ne .Auth.Auth.Username "") (ne .Token "")}}
               <input type="submit" value="Get Jobs" name="submit" class="valid-submit" style="margin-top: 10px;">
