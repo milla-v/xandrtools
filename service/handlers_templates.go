@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -199,9 +200,12 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 		User client.UserData
 
 		IsJobs         bool
+		JobList        []client.BatchSegmentUploadJob
 		Token          string
 		Backend        string
 		ExpirationTime time.Time
+
+		//		JsonTag
 	}
 	var d data
 	var err error
@@ -252,6 +256,15 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 
 			//get user data from User sync.Map
 			cli.User.TokenData.Token = r.FormValue("token")
+			memberid, err := strconv.Atoi(r.FormValue("memberid"))
+			if err != nil {
+				http.Error(w, "invalid member id", http.StatusUnauthorized)
+				return
+			}
+			cli.User.TokenData.MemberId = int32(memberid)
+
+			log.Println("I AM HERE. Member id: ", cli.User.TokenData.MemberId)
+
 			user, ok := simulator.User.Load(cli.User.TokenData.Token)
 			if !ok {
 				http.Error(w, "invalid token", http.StatusUnauthorized)
@@ -263,20 +276,22 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 			//check expiration time ?
 
 			//get list of batch segment jobs
-			list, err := cli.GetBatchSegmentJobs(0)
+			d.JobList, err = cli.GetBatchSegmentJobs(cli.User.TokenData.MemberId)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			if len(list) > 0 {
+			if len(d.JobList) > 0 {
 				d.IsJobs = true
 			} else {
 				d.IsJobs = false
 			}
 			d.Token = d.User.TokenData.Token
 			d.User.Username = r.FormValue("username")
-			log.Println("len list: ", len(list))
-			for i, item := range list {
+			d.User.TokenData.MemberId = cli.User.TokenData.MemberId
+			log.Println("User memberId = ", d.User.TokenData.MemberId)
+			log.Println("len list: ", len(d.JobList))
+			for i, item := range d.JobList {
 				log.Println(i+1, "JOB ID: ", item.JobID, " | createdOn:", item.CreatedOn)
 			}
 
