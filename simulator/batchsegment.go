@@ -73,7 +73,7 @@ func HandleBatchSegment(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	//fmt.Printf("json data: %s\n", buf)
+	fmt.Printf("json data: %s\n", buf)
 	if _, err := fmt.Fprintln(w, string(buf)); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

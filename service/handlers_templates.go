@@ -248,7 +248,6 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 			}
 
 			d.Token = cli.User.TokenData.Token
-			log.Println("----------------CLI USERNAME----------------", cli.User.Username, cli.User.TokenData.ExpirationTime)
 
 		case "Get Jobs":
 			log.Println("CASE GET JOBS")
@@ -273,8 +272,6 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 			log.Println("user: ", user)
 			d.User = user.(client.UserData)
 
-			//check expiration time ?
-
 			//get list of batch segment jobs
 			d.JobList, err = cli.GetBatchSegmentJobs(cli.User.TokenData.MemberId)
 			if err != nil {
@@ -289,7 +286,6 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 			d.Token = d.User.TokenData.Token
 			d.User.Username = r.FormValue("username")
 			d.User.TokenData.MemberId = cli.User.TokenData.MemberId
-			log.Println("User memberId = ", d.User.TokenData.MemberId)
 			log.Println("len list: ", len(d.JobList))
 			for i, item := range d.JobList {
 				log.Println(i+1, "JOB ID: ", item.JobID, " | createdOn:", item.CreatedOn)
