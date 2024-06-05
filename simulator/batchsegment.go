@@ -123,7 +123,6 @@ func generateBatchSegmentUploadJob(numJobs int) ([]client.BatchSegmentUploadJob,
 		u.SegmentLogLines = "\n5010:100000\n5011:50000\n5012:50000"
 		// TimeToProcess in Nanosecond
 		u.TimeToProcess = int64(completedTime.Sub(startTime))
-		u.MatchRate = int(u.NumValidUser * 100 / (u.NumValidUser + u.NumInvalidUser))
 		log.Println("MATCH RATE: ", u.MatchRate)
 		list = append(list, u)
 

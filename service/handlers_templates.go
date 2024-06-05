@@ -287,13 +287,16 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 			d.User.Username = r.FormValue("username")
 			d.User.TokenData.MemberId = cli.User.TokenData.MemberId
 			log.Println("len list: ", len(d.JobList))
+			for i := 0; i < len(d.JobList); i++ {
+				d.JobList[i].MatchRate = int(d.JobList[i].NumValidUser * 100 / (d.JobList[i].NumValidUser + d.JobList[i].NumInvalidUser))
+			}
 			for i, item := range d.JobList {
+				log.Println("-------------itemMatchRate: ", item.MatchRate)
 				log.Println(i+1, "JOB ID: ", item.JobID, " | createdOn:", item.CreatedOn)
 			}
 
 		}
 	}
-
 	if err := t.ExecuteTemplate(w, "bsstroubleshooter.html", d); err != nil {
 		log.Println("Execute bsstroubleshooter.html ", err)
 		http.Error(w, "error", http.StatusInternalServerError)
