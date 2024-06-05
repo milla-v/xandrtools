@@ -50,6 +50,10 @@ func (b *BssTimestamp) UnmarshalJSON(bytes []byte) error {
 	return nil
 }
 
+func (b BssTimestamp) String() string {
+	return time.Time(b).UTC().Format("2006-01-02 15:03:04Z")
+}
+
 type BatchSegmentUploadJob struct {
 	CompletedTime       BssTimestamp `json:"completed_time"`
 	CreatedOn           BssTimestamp `json:"created_on"`
