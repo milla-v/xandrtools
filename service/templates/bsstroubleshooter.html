@@ -98,59 +98,59 @@
                 <td>{{.ErrorCode}}</td>
                 <td>ok</td>
               </tr>
-               <tr>
+              <tr>
                 <td>error_log_lines:</td>
                 <td>{{.ErrorLogLines}}</td>
                 <td>ok</td>
               </tr>
-               <tr>
+              <tr>
                 <td>error_log_lines:</td>
                 <td>{{.ErrorLogLines}}</td>
                 <td>ok</td>
               </tr>
-               <tr>
+              <tr>
                 <td>id:</td>
                 <td>{{.ID}}</td>
                 <td>ok</td>
               </tr>
-               <tr>
+              <tr>
                 <td>is_beam_file:</td>
                 <td>{{.IsBeamFile}}</td>
                 <td>ok</td>
               </tr>
-               <tr>
+              <tr>
                 <td>job_id:</td>
                 <td>{{.JobID}}</td>
                 <td>ok</td>
               </tr>
-               <tr>
-                <td>:</td>
-                <td>{{.}}</td>
+              <tr>
+                <td>last_modified:</td>
+                <td>{{.LastModified}}</td>
                 <td>ok</td>
               </tr>
-               <tr>
-                <td>:</td>
-                <td>{{.}}</td>
+              <tr>
+                <td>member_id:</td>
+                <td>{{.MemberID}}</td>
                 <td>ok</td>
               </tr>
-               <tr>
-                <td>:</td>
-                <td>{{.}}</td>
+              <tr>
+                <td>num_inactive_segment:</td>
+                <td>{{.NumInactiveSegment}}</td>
                 <td>ok</td>
               </tr>
-               <tr>
-                <td>:</td>
-                <td>{{.}}</td>
+              <tr>
+                <td>num_invalid_format:</td>
+                <td>{{.NumInvalidFormat}}</td>
                 <td>ok</td>
               </tr>
-               <tr>
-                <td>:</td>
-                <td>{{.}}</td>
+              <tr>
+                <td>num_invalid_segment:</td>
+                <td>{{.NumInvalidSegment}}</td>
                 <td>ok</td>
               </tr>
-               <tr>
-                <td>:</td>
-                <td>{{.}}</td>
+              <tr>
+                <td>num_invalid_timestamp:</td>
+                <td>{{.NumInvalidTimestamp}}</td>
                 <td>ok</td>
               </tr>
               <tr>
@@ -158,34 +158,34 @@
                 <td>{{.NumInvalidUser}}</td>
                 <td>ok</td>
               </tr>
-               <tr>
-                <td>last_modified:</td>
-                <td>{{.LastModified}}</td>
+              <tr>
+                <td>num_other_error:</td>
+                <td>{{.NumOtherError}}</td>
                 <td>ok</td>
               </tr>
-               <tr>
-                <td>member_id:</td>
-                <td>{{.MemberID}}</td>
+              <tr>
+                <td>num_past_expiration:</td>
+                <td>{{.NumPastExpiration}}</td>
                 <td>ok</td>
               </tr>
-               <tr>
-                <td>num_inactive_segment:</td>
-                <td>{{.NumInactiveSegment}}</td>
+              <tr>
+                <td>num_unauth_segment:</td>
+                <td>{{.NumUnauthSegment}}</td>
                 <td>ok</td>
               </tr>
-               <tr>
-                <td>:</td>
-                <td>{{.}}</td>
+              <tr>
+                <td>num_valid:</td>
+                <td>{{.NumValid}}</td>
                 <td>ok</td>
               </tr>
-               <tr>
+              <tr>
                 <td>num_valid_user:</td>
                 <td>{{.NumValidUser}}</td>
                 <td>ok</td>
               </tr>
-               <tr>
-                <td>:</td>
-                <td>{{.}}</td>
+              <tr>
+                <td>percent_complete:</td>
+                <td>{{.PercentComplete}}</td>
                 <td>ok</td>
               </tr>
               <tr>
@@ -194,28 +194,28 @@
                 <td>ok</td>
               </tr>
               <tr>
-                <td>:</td>
-                <td>{{.}}</td>
+                <td>segment_log_lines:</td>
+                <td>{{.SegmentLogLines}}</td>
                 <td>ok</td>
               </tr>
-               <tr>
-                <td>:</td>
-                <td>{{.}}</td>
+              <tr>
+                <td>start_time:</td>
+                <td>{{.StartTime}}</td>
                 <td>ok</td>
               </tr>
-               <tr>
-                <td>:</td>
-                <td>{{.}}</td>
+              <tr>
+                <td>time_to_process:</td>
+                <td>{{.TimeToProcess}}</td>
                 <td>ok</td>
               </tr>
-               <tr>
-                <td>:</td>
-                <td>{{.}}</td>
+              <tr>
+                <td>uploaded_time:</td>
+                <td>{{.UploadedTime}}</td>
                 <td>ok</td>
               </tr>
-               <tr>
-                <td>:</td>
-                <td>{{.}}</td>
+              <tr>
+                <td>validated_time:</td>
+                <td>{{.ValidatedTime}}</td>
                 <td>ok</td>
               </tr>
               <tr>
@@ -224,24 +224,6 @@
                 <td>ok</td>
               </tr>
             {{end}}
-            
-	NumInvalidFormat    int64        `json:"num_invalid_format"`
-	NumInvalidSegment   int64        `json:"num_invalid_segment"`
-	NumInvalidTimestamp int64        `json:"num_invalid_timestamp"`
-  
-	NumOtherError       int64        `json:"num_other_error"`
-	NumPastExpiration   int64        `json:"num_past_expiration"`
-	NumUnauthSegment    int64        `json:"num_unauth_segment"`
-	NumValid            int64        `json:"num_valid"`
-  
-	PercentComplete     int64        `json:"percent_complete"`
-  
-	SegmentLogLines     string       `json:"segment_log_lines"`
-	StartTime           BssTimestamp `json:"start_time"`
-	TimeToProcess       int64        `json:"time_to_process"`
-	UploadedTime        BssTimestamp `json:"uploaded_time"`
-	ValidatedTime       BssTimestamp `json:"validated_time"`
-            
             </table>
           </div>
         </div>
