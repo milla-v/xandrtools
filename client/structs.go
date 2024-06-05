@@ -64,6 +64,7 @@ type BatchSegmentUploadJob struct {
 	JobID               string       `json:"job_id"`
 	LastModified        BssTimestamp `json:"last_modified"`
 	MemberID            int32        `json:"member_id"`
+	MatchRate           int          `json:"match_rate"`
 	NumInactiveSegment  int64        `json:"num_inactive_segment"`
 	NumInvalidFormat    int64        `json:"num_invalid_format"`
 	NumInvalidSegment   int64        `json:"num_invalid_segment"`

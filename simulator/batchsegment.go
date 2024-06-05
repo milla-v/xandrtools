@@ -12,6 +12,10 @@ import (
 	"xandrtools/client"
 )
 
+func Round(x, unit float64) float64 {
+	return float64(int64(x/unit+0.5)) * unit
+}
+
 func HandleBatchSegment(w http.ResponseWriter, r *http.Request) {
 	var err error
 	if r.Method != http.MethodGet {
@@ -108,19 +112,23 @@ func generateBatchSegmentUploadJob(numJobs int) ([]client.BatchSegmentUploadJob,
 		u.NumInvalidFormat = 0
 		u.NumInvalidSegment = 0
 		//u.NumInvalidTimestamp =
-		u.NumInvalidUser = 0
+		u.NumInvalidUser = 50000
 		u.NumOtherError = 0
 		u.NumPastExpiration = 0
 		u.NumUnauthSegment = 1
 		u.NumValid = 200000
 		u.NumValidUser = 100000
 		u.PercentComplete = 100
-
 		u.Phase = "completed"
 		u.SegmentLogLines = "\n5010:100000\n5011:50000\n5012:50000"
 		// TimeToProcess in Nanosecond
 		u.TimeToProcess = int64(completedTime.Sub(startTime))
-		log.Println("TIME TO PROCESS: ", u.TimeToProcess)
+		sum := u.NumValidUser + u.NumInvalidUser
+		log.Println("SUM:", sum)
+		dif := int(u.NumValidUser / sum)
+		log.Println("DIF: ", dif)
+		u.MatchRate = dif * 100
+		log.Println("MATCH RATE: ", u.MatchRate)
 		list = append(list, u)
 
 		log.Println("FOR len uploadJob.TimeToProcess: ", len(list))
