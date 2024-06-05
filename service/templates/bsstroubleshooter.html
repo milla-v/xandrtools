@@ -58,7 +58,7 @@
               <input type="text" id="usernameid" name="username" class="valid-input" {{if ne .User.Username ""}} value="{{.User.Username}}" {{else}} placeholder="Enter username" {{end}}><br>
               <label for="tokenid">Token:</label><br>
               <input type="text" id="tokenid" name="token" class="valid-input" value="{{.Token}}"><br>
-              <label for="memberid">Memeber ID:</label><br>
+              <label for="memberid">Member ID:</label><br>
               <input type="text" id="memberidid" name="memberid" class="valid-input" {{if ne .User.TokenData.MemberId 0}} value="{{.User.TokenData.MemberId}}" {{else}} placeholder="Enter Member ID" {{end}}><br>
             {{end}}
             {{if and (ne .User.Username "") (ne .Token "")}}
@@ -84,13 +84,108 @@
                 <th colspan="3">Job ID : {{.JobID}}</th>
               </tr>
               <tr>
+                <td>comleted_time:</td>
+                <td>{{.CompletedTime}}</td>
+                <td>ok</td>
+              </tr>
+              <tr>
                 <td>created_on:</td>
                 <td>{{.CreatedOn}}</td>
+                <td>ok</td>
+              </tr>
+              <tr>
+                <td>error_code:</td>
+                <td>{{.ErrorCode}}</td>
+                <td>ok</td>
+              </tr>
+               <tr>
+                <td>error_log_lines:</td>
+                <td>{{.ErrorLogLines}}</td>
+                <td>ok</td>
+              </tr>
+               <tr>
+                <td>error_log_lines:</td>
+                <td>{{.ErrorLogLines}}</td>
+                <td>ok</td>
+              </tr>
+               <tr>
+                <td>id:</td>
+                <td>{{.ID}}</td>
+                <td>ok</td>
+              </tr>
+               <tr>
+                <td>is_beam_file:</td>
+                <td>{{.IsBeamFile}}</td>
+                <td>ok</td>
+              </tr>
+               <tr>
+                <td>job_id:</td>
+                <td>{{.JobID}}</td>
+                <td>ok</td>
+              </tr>
+               <tr>
+                <td>:</td>
+                <td>{{.}}</td>
+                <td>ok</td>
+              </tr>
+               <tr>
+                <td>:</td>
+                <td>{{.}}</td>
+                <td>ok</td>
+              </tr>
+               <tr>
+                <td>:</td>
+                <td>{{.}}</td>
+                <td>ok</td>
+              </tr>
+               <tr>
+                <td>:</td>
+                <td>{{.}}</td>
+                <td>ok</td>
+              </tr>
+               <tr>
+                <td>:</td>
+                <td>{{.}}</td>
+                <td>ok</td>
+              </tr>
+               <tr>
+                <td>:</td>
+                <td>{{.}}</td>
+                <td>ok</td>
+              </tr>
+              <tr>
+                <td>num_invalid_user:</td>
+                <td>{{.NumInvalidUser}}</td>
+                <td>ok</td>
+              </tr>
+               <tr>
+                <td>last_modified:</td>
+                <td>{{.LastModified}}</td>
+                <td>ok</td>
+              </tr>
+               <tr>
+                <td>member_id:</td>
+                <td>{{.MemberID}}</td>
+                <td>ok</td>
+              </tr>
+               <tr>
+                <td>num_inactive_segment:</td>
+                <td>{{.NumInactiveSegment}}</td>
+                <td>ok</td>
+              </tr>
+               <tr>
+                <td>:</td>
+                <td>{{.}}</td>
                 <td>ok</td>
               </tr>
                <tr>
                 <td>num_valid_user:</td>
                 <td>{{.NumValidUser}}</td>
+                <td>ok</td>
+              </tr>
+               <tr>
+                <td>:</td>
+                <td>{{.}}</td>
                 <td>ok</td>
               </tr>
               <tr>
@@ -99,18 +194,28 @@
                 <td>ok</td>
               </tr>
               <tr>
-                <td>comleted_time:</td>
-                <td>{{.CompletedTime}}</td>
+                <td>:</td>
+                <td>{{.}}</td>
                 <td>ok</td>
               </tr>
-              <tr>
-                <td>num_invalid_user:</td>
-                <td>{{.NumInvalidUser}}</td>
+               <tr>
+                <td>:</td>
+                <td>{{.}}</td>
                 <td>ok</td>
               </tr>
-              <tr>
-                <td>error_code:</td>
-                <td>{{.ErrorCode}}</td>
+               <tr>
+                <td>:</td>
+                <td>{{.}}</td>
+                <td>ok</td>
+              </tr>
+               <tr>
+                <td>:</td>
+                <td>{{.}}</td>
+                <td>ok</td>
+              </tr>
+               <tr>
+                <td>:</td>
+                <td>{{.}}</td>
                 <td>ok</td>
               </tr>
               <tr>
@@ -119,6 +224,24 @@
                 <td>ok</td>
               </tr>
             {{end}}
+            
+	NumInvalidFormat    int64        `json:"num_invalid_format"`
+	NumInvalidSegment   int64        `json:"num_invalid_segment"`
+	NumInvalidTimestamp int64        `json:"num_invalid_timestamp"`
+  
+	NumOtherError       int64        `json:"num_other_error"`
+	NumPastExpiration   int64        `json:"num_past_expiration"`
+	NumUnauthSegment    int64        `json:"num_unauth_segment"`
+	NumValid            int64        `json:"num_valid"`
+  
+	PercentComplete     int64        `json:"percent_complete"`
+  
+	SegmentLogLines     string       `json:"segment_log_lines"`
+	StartTime           BssTimestamp `json:"start_time"`
+	TimeToProcess       int64        `json:"time_to_process"`
+	UploadedTime        BssTimestamp `json:"uploaded_time"`
+	ValidatedTime       BssTimestamp `json:"validated_time"`
+            
             </table>
           </div>
         </div>
