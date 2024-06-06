@@ -12,35 +12,24 @@ import (
 	"xandrtools/client"
 )
 
-func Round(x, unit float64) float64 {
-	return float64(int64(x/unit+0.5)) * unit
-}
-
 func HandleBatchSegment(w http.ResponseWriter, r *http.Request) {
 	var err error
 	if r.Method != http.MethodGet {
 		http.Error(w, "GET", http.StatusMethodNotAllowed)
 		return
 	}
-
-	for k, v := range r.Header {
-		log.Printf("header: %s=%v", k, v)
-	}
-
+	/*
+		for k, v := range r.Header {
+			log.Printf("header: %s=%v", k, v)
+		}
+	*/
 	tokenHeader := r.Header.Get("Authorization")
 	token := strings.TrimPrefix(tokenHeader, "Bearer ")
-
-	log.Println("token:", token)
-
 	user, ok := User.Load(token)
 	if !ok {
 		http.Error(w, "invalid token", http.StatusUnauthorized)
 		return
 	}
-
-	log.Printf("user: %+v", user)
-	log.Println("token expiration time: ", user)
-
 	u := user.(client.UserData)
 	log.Println("u.TokenData. ExpirationTime: ", u.TokenData.ExpirationTime)
 
@@ -77,7 +66,7 @@ func HandleBatchSegment(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	fmt.Printf("json data: %s\n", buf)
+	//fmt.Printf("json data: %s\n", buf)
 	if _, err := fmt.Fprintln(w, string(buf)); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -123,10 +112,7 @@ func generateBatchSegmentUploadJob(numJobs int) ([]client.BatchSegmentUploadJob,
 		u.SegmentLogLines = "\n5010:100000\n5011:50000\n5012:50000"
 		// TimeToProcess in Nanosecond
 		u.TimeToProcess = int64(completedTime.Sub(startTime))
-		log.Println("MATCH RATE: ", u.MatchRate)
 		list = append(list, u)
-
-		log.Println("FOR len uploadJob.TimeToProcess: ", len(list))
 	}
 
 	return list, err

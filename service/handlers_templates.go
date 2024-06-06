@@ -204,8 +204,6 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 		Token          string
 		Backend        string
 		ExpirationTime time.Time
-
-		//		JsonTag
 	}
 	var d data
 	var err error
@@ -262,14 +260,11 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 			}
 			cli.User.TokenData.MemberId = int32(memberid)
 
-			log.Println("I AM HERE. Member id: ", cli.User.TokenData.MemberId)
-
 			user, ok := simulator.User.Load(cli.User.TokenData.Token)
 			if !ok {
 				http.Error(w, "invalid token", http.StatusUnauthorized)
 				return
 			}
-			log.Println("user: ", user)
 			d.User = user.(client.UserData)
 
 			//get list of batch segment jobs
@@ -286,15 +281,15 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 			d.Token = d.User.TokenData.Token
 			d.User.Username = r.FormValue("username")
 			d.User.TokenData.MemberId = cli.User.TokenData.MemberId
-			log.Println("len list: ", len(d.JobList))
 			for i := 0; i < len(d.JobList); i++ {
 				d.JobList[i].MatchRate = int(d.JobList[i].NumValidUser * 100 / (d.JobList[i].NumValidUser + d.JobList[i].NumInvalidUser))
 			}
-			for i, item := range d.JobList {
-				log.Println("-------------itemMatchRate: ", item.MatchRate)
-				log.Println(i+1, "JOB ID: ", item.JobID, " | createdOn:", item.CreatedOn)
-			}
-
+			/*
+				for i, item := range d.JobList {
+					log.Println("-------------itemMatchRate: ", item.MatchRate)
+					log.Println(i+1, "JOB ID: ", item.JobID, " | createdOn:", item.CreatedOn)
+				}
+			*/
 		}
 	}
 	if err := t.ExecuteTemplate(w, "bsstroubleshooter.html", d); err != nil {

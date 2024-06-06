@@ -19,9 +19,7 @@ type Client struct {
 // NewClient create new API client.
 func NewClient(backend string) *Client {
 	var c Client
-
 	c.backend = backend
-
 	return &c
 }
 
@@ -45,7 +43,7 @@ func (c *Client) Login(username, password string) error {
 		return fmt.Errorf("marshal: %w", err)
 	}
 
-	log.Println("json:", string(buf))
+	//log.Println("json:", string(buf))
 
 	var apiURL = "https://api.appnexus.com/auth"
 	if c.backend == "simulator" {
@@ -73,14 +71,13 @@ func (c *Client) Login(username, password string) error {
 		return fmt.Errorf("error response [%s]", string(buf))
 	}
 
-	log.Println("token:", respAuth.Response.Token)
 	c.User.TokenData.Token = respAuth.Response.Token
 	c.User.TokenData.ExpirationTime = time.Now().Add(time.Hour * 2)
 
 	return nil
 }
 
-// GetBatchSegmentJobs return
+// GetBatchSegmentJobs returns array of batch segment upload jobs
 func (c *Client) GetBatchSegmentJobs(memberID int32) ([]BatchSegmentUploadJob, error) {
 	if c.User.TokenData.Token == "" {
 		return nil, fmt.Errorf("token is empty")
@@ -90,7 +87,6 @@ func (c *Client) GetBatchSegmentJobs(memberID int32) ([]BatchSegmentUploadJob, e
 	if c.backend == "simulator" {
 		apiURL = "http://127.0.0.1:9970/xandrsim/batch-segment"
 	}
-	log.Println("apiURL", apiURL)
 
 	req, err := http.NewRequest(http.MethodGet, apiURL, nil)
 	if err != nil {
