@@ -1,7 +1,8 @@
-package simulator
+package client
 
 import (
 	"encoding/json"
+	"strings"
 	"time"
 )
 
@@ -30,23 +31,40 @@ type BatchSegmentResponse struct {
 	} `json:"response"`
 }
 
-type bssTimestamp time.Time
+type BssTimestamp time.Time
 
-func (b bssTimestamp) MarshalJSON() ([]byte, error) {
+func (b BssTimestamp) MarshalJSON() ([]byte, error) {
 	s := time.Time(b).UTC().Format("2006-01-02 15:03:04")
 	return json.Marshal(s)
 }
 
+func (b *BssTimestamp) UnmarshalJSON(bytes []byte) error {
+	s := strings.Trim(string(bytes), `"`)
+	ts, err := time.Parse("2006-01-02 15:03:04", s)
+	if err != nil {
+		return err
+	}
+
+	*b = BssTimestamp(ts)
+
+	return nil
+}
+
+func (b BssTimestamp) String() string {
+	return time.Time(b).UTC().Format("2006-01-02 15:03:04Z")
+}
+
 type BatchSegmentUploadJob struct {
-	CompletedTime       bssTimestamp `json:"completed_time"`
-	CreatedOn           bssTimestamp `json:"created_on"`
+	CompletedTime       BssTimestamp `json:"completed_time"`
+	CreatedOn           BssTimestamp `json:"created_on"`
 	ErrorCode           interface{}  `json:"error_code"`
 	ErrorLogLines       string       `json:"error_log_lines"`
 	ID                  int64        `json:"id"`
 	IsBeamFile          bool         `json:"is_beam_file"`
 	JobID               string       `json:"job_id"`
-	LastModified        bssTimestamp `json:"last_modified"`
+	LastModified        BssTimestamp `json:"last_modified"`
 	MemberID            int32        `json:"member_id"`
+	MatchRate           int
 	NumInactiveSegment  int64        `json:"num_inactive_segment"`
 	NumInvalidFormat    int64        `json:"num_invalid_format"`
 	NumInvalidSegment   int64        `json:"num_invalid_segment"`
@@ -60,10 +78,10 @@ type BatchSegmentUploadJob struct {
 	PercentComplete     int64        `json:"percent_complete"`
 	Phase               string       `json:"phase"`
 	SegmentLogLines     string       `json:"segment_log_lines"`
-	StartTime           bssTimestamp `json:"start_time"`
+	StartTime           BssTimestamp `json:"start_time"`
 	TimeToProcess       int64        `json:"time_to_process"`
-	UploadedTime        bssTimestamp `json:"uploaded_time"`
-	ValidatedTime       bssTimestamp `json:"validated_time"`
+	UploadedTime        BssTimestamp `json:"uploaded_time"`
+	ValidatedTime       BssTimestamp `json:"validated_time"`
 }
 
 type DbgInfo struct {
@@ -80,6 +98,6 @@ type UserData struct {
 	TokenData struct {
 		Token          string    `json:"token"`
 		ExpirationTime time.Time `json:"expirationTime"`
-		MemberId       string    `json:"memberid"`
+		MemberId       int32     `json:"memberid"`
 	} `json: "tokendata"`
 }

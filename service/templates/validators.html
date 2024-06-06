@@ -57,6 +57,7 @@
       <div class="dropdown-content">
         <a href="/validators">Validators</a>
         <a href="/textGenerator">Generate text sample</a>
+        <a href="/bsstroubleshooter"> BSS Trouble Shooter</a>
       </div>
     </div>
     <div class="dropdown">
@@ -75,7 +76,7 @@
     <div style="padding-left:16px">
       <h2>Validate the Xandr user ID:</h2>
       <form method="GET" action="/validators">
-        <label for="xuid">Insert The Xandr User ID: </label>
+        <label for="xid">Insert The Xandr User ID: </label>
         <div class="valid-box">
           <input type="hidden" id="type" name="type" value="xandrid">
           <input type="text" id="xid" name="id" class="valid-input" {{if and (ne .ValidationResult.WrongUserID "") (ne .ValidationResult.WrongUserID "Empty input")}} value="{{.ValidationResult.WrongUserID}}" {{end}} {{if ne .ValidationResult.UserID 0}} value="{{.ValidationResult.UserID}}" {{end}}><br>

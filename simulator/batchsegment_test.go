@@ -6,11 +6,13 @@ import (
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"xandrtools/client"
 )
 
 func TestBatchSegment(t *testing.T) {
 
-	var user UserData
+	var user client.UserData
 
 	user.Username = "user1"
 	user.TokenData.Token = "12345"

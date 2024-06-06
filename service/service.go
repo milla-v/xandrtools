@@ -53,7 +53,7 @@ func Run() {
 
 	//	mux.Handle("xandrtools.com/", proxyXandrtools)
 	mux.HandleFunc("/", handleXandrtools)
-	mux.HandleFunc("/bssTroubleShooter", handleBssTroubleShooter)
+	mux.HandleFunc("/bsstroubleshooter", handleBssTroubleShooter)
 	mux.HandleFunc("/textGenerator", handleTextGenerator)
 	mux.HandleFunc("/validators", handleValidators)
 

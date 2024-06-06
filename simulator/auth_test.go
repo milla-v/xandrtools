@@ -8,13 +8,15 @@ import (
 	"net/http/httptest"
 	"strconv"
 	"testing"
+
+	"xandrtools/client"
 )
 
 func TestAuthManyUsers(t *testing.T) {
 	testServer := httptest.NewServer(http.HandlerFunc(HandleAuthentication))
 	defer testServer.Close()
 
-	manyAuth := make([]AuthRequest, 5)
+	manyAuth := make([]client.AuthRequest, 5)
 
 	for i := 0; i < len(manyAuth); i++ {
 		manyAuth[i].Auth.Username = "user" + strconv.Itoa(i)
@@ -48,7 +50,7 @@ func TestAuthSuccess(t *testing.T) {
 	testServer := httptest.NewServer(http.HandlerFunc(HandleAuthentication))
 	defer testServer.Close()
 
-	var auth AuthRequest
+	var auth client.AuthRequest
 
 	auth.Auth.Username = "user1"
 	auth.Auth.Password = "pass1"

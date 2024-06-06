@@ -4,9 +4,14 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/milla-v/xandr/bss/xgen"
+
+	"xandrtools/client"
+	"xandrtools/simulator"
 )
 
 var t *template.Template
@@ -190,14 +195,103 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 	type data struct {
 		XandrVersion string
 		VCS          Vcs
+
+		Auth client.AuthRequest
+		User client.UserData
+
+		IsJobs         bool
+		JobList        []client.BatchSegmentUploadJob
+		Token          string
+		Backend        string
+		ExpirationTime time.Time
 	}
 	var d data
+	var err error
 
 	d.XandrVersion = Version
 	d.VCS.RevisionFull = VcsInfo.RevisionFull
 	d.VCS.RevisionShort = VcsInfo.RevisionShort
 	d.VCS.Modified = VcsInfo.Modified
 
+	//get username and password
+	log.Println("METHOD: ", r.Method)
+
+	d.Auth.Auth.Username = r.FormValue("username")
+	d.Auth.Auth.Password = r.FormValue("password")
+	d.Backend = r.FormValue("backend")
+	if r.Method == "POST" {
+		submit := r.FormValue("submit")
+		log.Println("SUBMIT: ", submit)
+		switch submit {
+		case "Login":
+			log.Println("CASE LOGIN")
+			cli := client.NewClient(d.Backend)
+
+			if r.FormValue("token") != "" {
+				cli.User.TokenData.Token = r.FormValue("token")
+			} else {
+				//authentication request
+				d.Auth.Auth.Username = r.FormValue("username")
+				d.Auth.Auth.Password = r.FormValue("password")
+
+				if err = cli.Login(r.FormValue("username"), r.FormValue("password")); err != nil {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+				log.Println("client token: ", cli.User.TokenData.Token, "token expiration time: ", cli.User.TokenData.ExpirationTime)
+				d.User = cli.User
+				d.User.Username = d.Auth.Auth.Username
+				cli.User.Username = d.Auth.Auth.Username
+
+			}
+
+			d.Token = cli.User.TokenData.Token
+
+		case "Get Jobs":
+			log.Println("CASE GET JOBS")
+			cli := client.NewClient(d.Backend)
+
+			//get user data from User sync.Map
+			cli.User.TokenData.Token = r.FormValue("token")
+			memberid, err := strconv.Atoi(r.FormValue("memberid"))
+			if err != nil {
+				http.Error(w, "invalid member id", http.StatusUnauthorized)
+				return
+			}
+			cli.User.TokenData.MemberId = int32(memberid)
+
+			user, ok := simulator.User.Load(cli.User.TokenData.Token)
+			if !ok {
+				http.Error(w, "invalid token", http.StatusUnauthorized)
+				return
+			}
+			d.User = user.(client.UserData)
+
+			//get list of batch segment jobs
+			d.JobList, err = cli.GetBatchSegmentJobs(cli.User.TokenData.MemberId)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			if len(d.JobList) > 0 {
+				d.IsJobs = true
+			} else {
+				d.IsJobs = false
+			}
+			d.Token = d.User.TokenData.Token
+			d.User.Username = r.FormValue("username")
+			d.User.TokenData.MemberId = cli.User.TokenData.MemberId
+			for i := 0; i < len(d.JobList); i++ {
+				d.JobList[i].MatchRate = int(d.JobList[i].NumValidUser * 100 / (d.JobList[i].NumValidUser + d.JobList[i].NumInvalidUser))
+			}
+			/*
+				for i, item := range d.JobList {
+					log.Println("-------------itemMatchRate: ", item.MatchRate)
+					log.Println(i+1, "JOB ID: ", item.JobID, " | createdOn:", item.CreatedOn)
+				}
+			*/
+		}
+	}
 	if err := t.ExecuteTemplate(w, "bsstroubleshooter.html", d); err != nil {
 		log.Println("Execute bsstroubleshooter.html ", err)
 		http.Error(w, "error", http.StatusInternalServerError)
