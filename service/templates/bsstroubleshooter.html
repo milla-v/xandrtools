@@ -101,7 +101,11 @@
               <tr>
                 <td>error_log_lines:</td>
                 <td>{{.ErrorLogLines}}</td>
-                <td>ok</td>
+                {{if ne .ErrorLogLinesErr ""}}
+                  <td style="color:red;">{{.ErrorLogLinesErr}}</td>
+                {{else}}
+                  <td></td>
+                {{end}}
               </tr>
               <tr>
                 <td>id:</td>
@@ -216,7 +220,11 @@
               <tr>
                 <td>match rate:</td>
                 <td>{{.MatchRate}}%</td>
-                <td>ok</td>
+                {{if ne .MatchRateErr ""}}
+                  <td style="color: red;">{{.MatchRateErr}}</td>
+                {{else}}
+                  <td>
+                {{end}}
               </tr>
             {{end}}
             </table>

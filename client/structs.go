@@ -82,36 +82,34 @@ type BatchSegmentUploadJob struct {
 	TimeToProcess       int64        `json:"time_to_process"`
 	UploadedTime        BssTimestamp `json:"uploaded_time"`
 	ValidatedTime       BssTimestamp `json:"validated_time"`
-}
 
-type ErrorBatchSegmentUploadJob struct {
-	CompletedTime       string
-	CreatedOn           string
-	ErrorCode           string
-	ErrorLogLines       string
-	ErrID               string
-	ErrIsBeamFile       string
-	ErrJobID            string
-	LastModified        string
-	MemberID            string
-	MatchRate           string
-	NumInactiveSegment  string
-	NumInvalidFormat    string
-	NumInvalidSegment   string
-	NumInvalidTimestamp string
-	NumInvalidUser      string
-	NumOtherError       string
-	NumPastExpiration   string
-	NumUnauthSegment    string
-	NumValid            string
-	NumValidUser        string
-	PercentComplete     string
-	Phase               string
-	SegmentLogLines     string
-	StartTime           string
-	TimeToProcess       string
-	UploadedTime        string
-	ValidatedTime       string
+	CompletedTimeErr       string
+	CreatedOnErr           string
+	ErrorCodeErr           string
+	ErrorLogLinesErr       string
+	ErrIDErr               string
+	ErrIsBeamFileErr       string
+	ErrJobIDErr            string
+	LastModifiedErr        string
+	MemberIDErr            string
+	MatchRateErr           string
+	NumInactiveSegmentErr  string
+	NumInvalidFormatErr    string
+	NumInvalidSegmentErr   string
+	NumInvalidTimestampErr string
+	NumInvalidUserErr      string
+	NumOtherErrorErr       string
+	NumPastExpirationErr   string
+	NumUnauthSegmentErr    string
+	NumValidErr            string
+	NumValidUserErr        string
+	PercentCompleteErr     string
+	PhaseErr               string
+	SegmentLogLinesErr     string
+	StartTimeErr           string
+	TimeToProcessErr       string
+	UploadedTimeErr        string
+	ValidatedTimeErr       string
 }
 
 type DbgInfo struct {

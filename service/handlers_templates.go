@@ -283,7 +283,14 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 			d.User.TokenData.MemberId = cli.User.TokenData.MemberId
 			for i := 0; i < len(d.JobList); i++ {
 				d.JobList[i].MatchRate = int(d.JobList[i].NumValidUser * 100 / (d.JobList[i].NumValidUser + d.JobList[i].NumInvalidUser))
+				if d.JobList[i].MatchRate < 71 {
+					d.JobList[i].MatchRateErr = "Low match rate"
+				}
+				if d.JobList[i].ErrorLogLines != "" && d.JobList[i].MatchRate < 71 {
+					d.JobList[i].ErrorLogLinesErr = "You can increase match rate by removing invalid segments"
+				}
 			}
+
 			/*
 				for i, item := range d.JobList {
 					log.Println("-------------itemMatchRate: ", item.MatchRate)

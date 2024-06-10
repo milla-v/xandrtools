@@ -100,12 +100,18 @@ func generateBatchSegmentUploadJob(numJobs int) ([]client.BatchSegmentUploadJob,
 		u.NumInvalidFormat = 0
 		u.NumInvalidSegment = 0
 		//u.NumInvalidTimestamp =
-		u.NumInvalidUser = 50000
+		if i == 0 {
+			u.NumInvalidUser = 5000
+			u.NumValidUser = 10000
+		} else {
+			u.NumInvalidUser = 500
+			u.NumValidUser = 100000
+		}
+
 		u.NumOtherError = 0
 		u.NumPastExpiration = 0
 		u.NumUnauthSegment = 1
 		u.NumValid = 200000
-		u.NumValidUser = 100000
 		u.PercentComplete = 100
 		u.Phase = "completed"
 		u.SegmentLogLines = "\n5010:100000\n5011:50000\n5012:50000"
