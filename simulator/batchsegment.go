@@ -31,7 +31,6 @@ func HandleBatchSegment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	u := user.(client.UserData)
-	log.Println("u.TokenData. ExpirationTime: ", u.TokenData.ExpirationTime)
 
 	//check if expiration time exists
 	if u.TokenData.ExpirationTime.IsZero() == true {

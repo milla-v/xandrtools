@@ -84,6 +84,36 @@ type BatchSegmentUploadJob struct {
 	ValidatedTime       BssTimestamp `json:"validated_time"`
 }
 
+type ErrorBatchSegmentUploadJob struct {
+	CompletedTime       string
+	CreatedOn           string
+	ErrorCode           string
+	ErrorLogLines       string
+	ErrID               string
+	ErrIsBeamFile       string
+	ErrJobID            string
+	LastModified        string
+	MemberID            string
+	MatchRate           string
+	NumInactiveSegment  string
+	NumInvalidFormat    string
+	NumInvalidSegment   string
+	NumInvalidTimestamp string
+	NumInvalidUser      string
+	NumOtherError       string
+	NumPastExpiration   string
+	NumUnauthSegment    string
+	NumValid            string
+	NumValidUser        string
+	PercentComplete     string
+	Phase               string
+	SegmentLogLines     string
+	StartTime           string
+	TimeToProcess       string
+	UploadedTime        string
+	ValidatedTime       string
+}
+
 type DbgInfo struct {
 	Instance  string        `json:"instance"`
 	DbgTime   int           `json:"time"`
