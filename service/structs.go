@@ -43,7 +43,8 @@ type Vcs struct {
 }
 
 // BSUJ: Batch Segment Upload Job
-type BSUJ struct {
+// data for website
+type WebsiteBSUJ struct {
 	client.BatchSegmentUploadJob
 	BSUJerror
 }
