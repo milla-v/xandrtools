@@ -200,10 +200,10 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 		User client.UserData
 
 		IsJobs         bool
-		JobList        []client.BatchSegmentUploadJob
 		Token          string
 		Backend        string
 		ExpirationTime time.Time
+		JobList        []BSUJ
 	}
 	var d data
 	var err error
@@ -268,35 +268,41 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 			d.User = user.(client.UserData)
 
 			//get list of batch segment jobs
-			d.JobList, err = cli.GetBatchSegmentJobs(cli.User.TokenData.MemberId)
+			jobs, err := cli.GetBatchSegmentJobs(cli.User.TokenData.MemberId)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			if len(d.JobList) > 0 {
+			if len(jobs) > 0 {
 				d.IsJobs = true
 			} else {
 				d.IsJobs = false
 			}
+
 			d.Token = d.User.TokenData.Token
 			d.User.Username = r.FormValue("username")
 			d.User.TokenData.MemberId = cli.User.TokenData.MemberId
-			for i := 0; i < len(d.JobList); i++ {
-				d.JobList[i].MatchRate = int(d.JobList[i].NumValidUser * 100 / (d.JobList[i].NumValidUser + d.JobList[i].NumInvalidUser))
-				if d.JobList[i].MatchRate < 71 {
-					d.JobList[i].MatchRateErr = "Low match rate"
+
+			for i, job := range jobs {
+				d.JobList[i].Jobs[i] = job
+				d.JobList[i].Jobs.MatchRate = int(d.JobList[i].Jobs.NumValidUser * 100 / (d.JobList[i].Jobs.NumValidUser + d.JobList[i].Jobs.NumInvalidUser))
+				if d.JobList[i].Jobs.MatchRate < 71 {
+					d.JobList[i].BSUJerror.MatchRateErr = "Low match rate"
 				}
-				if d.JobList[i].ErrorLogLines != "" && d.JobList[i].MatchRate < 71 {
-					d.JobList[i].ErrorLogLinesErr = "You can increase match rate by removing invalid segments"
+				if d.JobList[i].Jobs.ErrorLogLines != "" && d.JobList[i].Jobs.MatchRate < 71 {
+					d.JobList[i].BSUJerror.ErrorLogLinesErr = "You can increase match rate by removing invalid segments"
 				}
 			}
 
-			/*
-				for i, item := range d.JobList {
-					log.Println("-------------itemMatchRate: ", item.MatchRate)
-					log.Println(i+1, "JOB ID: ", item.JobID, " | createdOn:", item.CreatedOn)
+			for _, u := range d.JobList {
+				log.Println("JOB ID: ", u.Jobs.JobID)
+				if u.BSUJerror.MatchRateErr != "" {
+					log.Println("Match rate error: ", u.BSUJerror.MatchRateErr)
+				} else {
+					log.Println("No match rate error")
 				}
-			*/
+			}
+
 		}
 	}
 	if err := t.ExecuteTemplate(w, "bsstroubleshooter.html", d); err != nil {
