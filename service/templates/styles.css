@@ -183,6 +183,14 @@ width: 500px;
   font-size: 17px;
 }
 
+.copy-error-btn {
+	margin-right: 5px;
+ 	float: right;
+ 	padding: 5px;
+ 	font-size: 18px;
+}
+}
+
 #jobs {
   font-family: Arial;
   border-collapse: collapse;

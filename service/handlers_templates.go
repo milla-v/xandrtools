@@ -292,6 +292,12 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 				if d.JobList[i].BatchSegmentUploadJob.ErrorLogLines != "" && d.JobList[i].BatchSegmentUploadJob.MatchRate < 71 {
 					d.JobList[i].BSUJerror.ErrorLogLinesErr = "Remove invalid segments"
 				}
+				if d.JobList[i].NumInvalidFormat > 0 {
+					d.JobList[i].BSUJerror.NumInvalidFormatErr = "Fix invalid format"
+				}
+				if d.JobList[i].NumUnauthSegment > 0 {
+					d.JobList[i].NumUnauthSegmentErr = "Remove num_unauth_segment or verify that segment is active using apixandr.com/segment API call"
+				}
 			}
 
 			for _, u := range d.JobList {

@@ -97,20 +97,22 @@ func generateBatchSegmentUploadJob(numJobs int) ([]client.BatchSegmentUploadJob,
 		//math.Abs convert negative random numbers to positive
 		//u.MemberID = int32(rand.Intn(1000))
 		u.NumInactiveSegment = 0
-		u.NumInvalidFormat = 0
 		u.NumInvalidSegment = 0
 		//u.NumInvalidTimestamp =
 		if i == 0 {
 			u.NumInvalidUser = 5000
 			u.NumValidUser = 10000
+			u.NumInvalidFormat = 2
+			u.NumUnauthSegment = 3
 		} else {
 			u.NumInvalidUser = 500
 			u.NumValidUser = 100000
+			u.NumInvalidFormat = 0
+			u.NumUnauthSegment = 0
 		}
 
 		u.NumOtherError = 0
 		u.NumPastExpiration = 0
-		u.NumUnauthSegment = 1
 		u.NumValid = 200000
 		u.PercentComplete = 100
 		u.Phase = "completed"
