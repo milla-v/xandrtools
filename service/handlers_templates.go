@@ -284,18 +284,18 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 			d.User.TokenData.MemberId = cli.User.TokenData.MemberId
 
 			for i, job := range jobs {
-				d.JobList[i].Jobs[i] = job
-				d.JobList[i].Jobs.MatchRate = int(d.JobList[i].Jobs.NumValidUser * 100 / (d.JobList[i].Jobs.NumValidUser + d.JobList[i].Jobs.NumInvalidUser))
-				if d.JobList[i].Jobs.MatchRate < 71 {
+				d.JobList[i].BatchSegmentUploadJob = append(d.JobList[i].BatchSegmentUploadJob, job)
+				d.JobList[i].BatchSegmentUploadJob.MatchRate = int(d.JobList[i].BatchSegmentUploadJob.NumValidUser * 100 / (d.JobList[i].BatchSegmentUploadJob.NumValidUser + d.JobList[i].BatchSegmentUploadJob.NumInvalidUser))
+				if d.JobList[i].BatchSegmentUploadJob.MatchRate < 71 {
 					d.JobList[i].BSUJerror.MatchRateErr = "Low match rate"
 				}
-				if d.JobList[i].Jobs.ErrorLogLines != "" && d.JobList[i].Jobs.MatchRate < 71 {
+				if d.JobList[i].BatchSegmentUploadJob.ErrorLogLines != "" && d.JobList[i].BatchSegmentUploadJob.MatchRate < 71 {
 					d.JobList[i].BSUJerror.ErrorLogLinesErr = "You can increase match rate by removing invalid segments"
 				}
 			}
 
 			for _, u := range d.JobList {
-				log.Println("JOB ID: ", u.Jobs.JobID)
+				log.Println("JOB ID: ", u.BatchSegmentUploadJob.JobID)
 				if u.BSUJerror.MatchRateErr != "" {
 					log.Println("Match rate error: ", u.BSUJerror.MatchRateErr)
 				} else {
