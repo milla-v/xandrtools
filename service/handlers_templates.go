@@ -300,15 +300,6 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 
-			for _, u := range d.JobList {
-				log.Println("JOB ID: ", u.BatchSegmentUploadJob.JobID)
-				if u.BSUJerror.MatchRateErr != "" {
-					log.Println("Match rate error: ", u.BSUJerror.MatchRateErr)
-				} else {
-					log.Println("No match rate error")
-				}
-			}
-
 		}
 	}
 	if err := t.ExecuteTemplate(w, "bsstroubleshooter.html", d); err != nil {

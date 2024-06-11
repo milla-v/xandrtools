@@ -86,7 +86,7 @@ func generateBatchSegmentUploadJob(numJobs int) ([]client.BatchSegmentUploadJob,
 		u.CreatedOn = client.BssTimestamp(u.StartTime)
 		//u.ErrorCode =
 		u.ErrorLogLines = "\n\nnum_unauth_segment-4013681496264948522;5013:0,5014:1550"
-		u.ID = int64(rand.Uint64())
+		u.ID = int64(rand.Int())
 		//u.IsBeamFile =
 		u.JobID, err = generateToken(20)
 		if err != nil {
@@ -94,7 +94,6 @@ func generateBatchSegmentUploadJob(numJobs int) ([]client.BatchSegmentUploadJob,
 			return list, err
 		}
 		u.LastModified = u.CompletedTime
-		//math.Abs convert negative random numbers to positive
 		//u.MemberID = int32(rand.Intn(1000))
 		u.NumInactiveSegment = 0
 		u.NumInvalidSegment = 0
