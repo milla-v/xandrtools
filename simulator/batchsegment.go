@@ -31,7 +31,6 @@ func HandleBatchSegment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	u := user.(client.UserData)
-	log.Println("u.TokenData. ExpirationTime: ", u.TokenData.ExpirationTime)
 
 	//check if expiration time exists
 	if u.TokenData.ExpirationTime.IsZero() == true {
@@ -87,7 +86,7 @@ func generateBatchSegmentUploadJob(numJobs int) ([]client.BatchSegmentUploadJob,
 		u.CreatedOn = client.BssTimestamp(u.StartTime)
 		//u.ErrorCode =
 		u.ErrorLogLines = "\n\nnum_unauth_segment-4013681496264948522;5013:0,5014:1550"
-		u.ID = int64(rand.Uint64())
+		u.ID = int64(rand.Int())
 		//u.IsBeamFile =
 		u.JobID, err = generateToken(20)
 		if err != nil {
@@ -95,18 +94,25 @@ func generateBatchSegmentUploadJob(numJobs int) ([]client.BatchSegmentUploadJob,
 			return list, err
 		}
 		u.LastModified = u.CompletedTime
-		//math.Abs convert negative random numbers to positive
 		//u.MemberID = int32(rand.Intn(1000))
 		u.NumInactiveSegment = 0
-		u.NumInvalidFormat = 0
 		u.NumInvalidSegment = 0
 		//u.NumInvalidTimestamp =
-		u.NumInvalidUser = 50000
+		if i == 0 {
+			u.NumInvalidUser = 5000
+			u.NumValidUser = 10000
+			u.NumInvalidFormat = 2
+			u.NumUnauthSegment = 3
+		} else {
+			u.NumInvalidUser = 500
+			u.NumValidUser = 100000
+			u.NumInvalidFormat = 0
+			u.NumUnauthSegment = 0
+		}
+
 		u.NumOtherError = 0
 		u.NumPastExpiration = 0
-		u.NumUnauthSegment = 1
 		u.NumValid = 200000
-		u.NumValidUser = 100000
 		u.PercentComplete = 100
 		u.Phase = "completed"
 		u.SegmentLogLines = "\n5010:100000\n5011:50000\n5012:50000"

@@ -200,10 +200,10 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 		User client.UserData
 
 		IsJobs         bool
-		JobList        []client.BatchSegmentUploadJob
 		Token          string
 		Backend        string
 		ExpirationTime time.Time
+		JobList        []WebsiteBSUJ
 	}
 	var d data
 	var err error
@@ -268,28 +268,38 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 			d.User = user.(client.UserData)
 
 			//get list of batch segment jobs
-			d.JobList, err = cli.GetBatchSegmentJobs(cli.User.TokenData.MemberId)
+			jobs, err := cli.GetBatchSegmentJobs(cli.User.TokenData.MemberId)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			if len(d.JobList) > 0 {
+			if len(jobs) > 0 {
 				d.IsJobs = true
 			} else {
 				d.IsJobs = false
 			}
+
 			d.Token = d.User.TokenData.Token
 			d.User.Username = r.FormValue("username")
 			d.User.TokenData.MemberId = cli.User.TokenData.MemberId
-			for i := 0; i < len(d.JobList); i++ {
-				d.JobList[i].MatchRate = int(d.JobList[i].NumValidUser * 100 / (d.JobList[i].NumValidUser + d.JobList[i].NumInvalidUser))
-			}
-			/*
-				for i, item := range d.JobList {
-					log.Println("-------------itemMatchRate: ", item.MatchRate)
-					log.Println(i+1, "JOB ID: ", item.JobID, " | createdOn:", item.CreatedOn)
+			d.JobList = make([]WebsiteBSUJ, len(jobs))
+			for i, job := range jobs {
+				d.JobList[i].BatchSegmentUploadJob = job
+				d.JobList[i].BatchSegmentUploadJob.MatchRate = int(d.JobList[i].BatchSegmentUploadJob.NumValidUser * 100 / (d.JobList[i].BatchSegmentUploadJob.NumValidUser + d.JobList[i].BatchSegmentUploadJob.NumInvalidUser))
+				if d.JobList[i].BatchSegmentUploadJob.MatchRate < 71 {
+					d.JobList[i].BSUJerror.MatchRateErr = "Low match rate"
 				}
-			*/
+				if d.JobList[i].BatchSegmentUploadJob.ErrorLogLines != "" && d.JobList[i].BatchSegmentUploadJob.MatchRate < 71 {
+					d.JobList[i].BSUJerror.ErrorLogLinesErr = "Remove invalid segments"
+				}
+				if d.JobList[i].NumInvalidFormat > 0 {
+					d.JobList[i].BSUJerror.NumInvalidFormatErr = "Fix invalid format"
+				}
+				if d.JobList[i].NumUnauthSegment > 0 {
+					d.JobList[i].NumUnauthSegmentErr = "Remove num_unauth_segment or verify that segment is active using apixandr.com/segment API call"
+				}
+			}
+
 		}
 	}
 	if err := t.ExecuteTemplate(w, "bsstroubleshooter.html", d); err != nil {

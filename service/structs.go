@@ -1,5 +1,9 @@
 package service
 
+import (
+	"xandrtools/client"
+)
+
 const notHex = "Not Hexadecimal"
 
 type idtype struct {
@@ -36,4 +40,42 @@ type Vcs struct {
 	RevisionFull  string
 	RevisionShort string
 	Modified      bool
+}
+
+// BSUJ: Batch Segment Upload Job
+// data for website
+type WebsiteBSUJ struct {
+	client.BatchSegmentUploadJob
+	BSUJerror
+}
+
+// BSUJ: Batch Segment Upload Job
+type BSUJerror struct {
+	CompletedTimeErr       string
+	CreatedOnErr           string
+	ErrorCodeErr           string
+	ErrorLogLinesErr       string
+	ErrIDErr               string
+	ErrIsBeamFileErr       string
+	ErrJobIDErr            string
+	LastModifiedErr        string
+	MemberIDErr            string
+	MatchRateErr           string
+	NumInactiveSegmentErr  string
+	NumInvalidFormatErr    string
+	NumInvalidSegmentErr   string
+	NumInvalidTimestampErr string
+	NumInvalidUserErr      string
+	NumOtherErrorErr       string
+	NumPastExpirationErr   string
+	NumUnauthSegmentErr    string
+	NumValidErr            string
+	NumValidUserErr        string
+	PercentCompleteErr     string
+	PhaseErr               string
+	SegmentLogLinesErr     string
+	StartTimeErr           string
+	TimeToProcessErr       string
+	UploadedTimeErr        string
+	ValidatedTimeErr       string
 }

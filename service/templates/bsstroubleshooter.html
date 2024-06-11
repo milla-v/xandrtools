@@ -81,147 +81,158 @@
             <table id="jobs">
             {{range .JobList}}
               <tr>
-                <th colspan="3">Job ID : {{.JobID}}</th>
+                <th colspan="3">Job ID : {{.BatchSegmentUploadJob.JobID}}<button class="copy-error-btn">Copy Errors</button></th>
               </tr>
               <tr>
                 <td>comleted_time:</td>
-                <td>{{.CompletedTime}}</td>
+                <td>{{.BatchSegmentUploadJob.CompletedTime}}</td>
                 <td>ok</td>
               </tr>
               <tr>
                 <td>created_on:</td>
-                <td>{{.CreatedOn}}</td>
+                <td>{{.BatchSegmentUploadJob.CreatedOn}}</td>
                 <td>ok</td>
               </tr>
               <tr>
                 <td>error_code:</td>
-                <td>{{.ErrorCode}}</td>
+                <td>{{.BatchSegmentUploadJob.ErrorCode}}</td>
                 <td>ok</td>
               </tr>
               <tr>
                 <td>error_log_lines:</td>
-                <td>{{.ErrorLogLines}}</td>
-                <td>ok</td>
-              </tr>
-              <tr>
-                <td>error_log_lines:</td>
-                <td>{{.ErrorLogLines}}</td>
-                <td>ok</td>
+                <td>{{.BatchSegmentUploadJob.ErrorLogLines}}</td>
+                {{if ne .BSUJerror.ErrorLogLinesErr ""}}
+                  <td id="{{.BatchSegmentUploadJob.JobID}}err" style="color:red;">{{.BSUJerror.ErrorLogLinesErr}}</td>
+                {{else}}
+                  <td></td>
+                {{end}}
               </tr>
               <tr>
                 <td>id:</td>
-                <td>{{.ID}}</td>
+                <td>{{.BatchSegmentUploadJob.ID}}</td>
                 <td>ok</td>
               </tr>
               <tr>
                 <td>is_beam_file:</td>
-                <td>{{.IsBeamFile}}</td>
+                <td>{{.BatchSegmentUploadJob.IsBeamFile}}</td>
                 <td>ok</td>
               </tr>
               <tr>
                 <td>job_id:</td>
-                <td>{{.JobID}}</td>
+                <td>{{.BatchSegmentUploadJob.JobID}}</td>
                 <td>ok</td>
               </tr>
               <tr>
                 <td>last_modified:</td>
-                <td>{{.LastModified}}</td>
+                <td>{{.BatchSegmentUploadJob.LastModified}}</td>
                 <td>ok</td>
               </tr>
               <tr>
                 <td>member_id:</td>
-                <td>{{.MemberID}}</td>
+                <td>{{.BatchSegmentUploadJob.MemberID}}</td>
                 <td>ok</td>
               </tr>
               <tr>
                 <td>num_inactive_segment:</td>
-                <td>{{.NumInactiveSegment}}</td>
+                <td>{{.BatchSegmentUploadJob.NumInactiveSegment}}</td>
                 <td>ok</td>
               </tr>
               <tr>
                 <td>num_invalid_format:</td>
-                <td>{{.NumInvalidFormat}}</td>
-                <td>ok</td>
+                <td>{{.BatchSegmentUploadJob.NumInvalidFormat}}</td>
+                {{if ne .BSUJerror.NumInvalidFormatErr ""}}
+                  <td id="{{.BatchSegmentUploadJob.JobID}}err" style="color:red;">{{.BSUJerror.NumInvalidFormatErr}}</td>
+                {{else}}
+                  <td></td>
+                {{end}}
               </tr>
               <tr>
                 <td>num_invalid_segment:</td>
-                <td>{{.NumInvalidSegment}}</td>
+                <td>{{.BatchSegmentUploadJob.NumInvalidSegment}}</td>
                 <td>ok</td>
               </tr>
               <tr>
                 <td>num_invalid_timestamp:</td>
-                <td>{{.NumInvalidTimestamp}}</td>
+                <td>{{.BatchSegmentUploadJob.NumInvalidTimestamp}}</td>
                 <td>ok</td>
               </tr>
               <tr>
                 <td>num_invalid_user:</td>
-                <td>{{.NumInvalidUser}}</td>
+                <td>{{.BatchSegmentUploadJob.NumInvalidUser}}</td>
                 <td>ok</td>
               </tr>
               <tr>
                 <td>num_other_error:</td>
-                <td>{{.NumOtherError}}</td>
+                <td>{{.BatchSegmentUploadJob.NumOtherError}}</td>
                 <td>ok</td>
               </tr>
               <tr>
                 <td>num_past_expiration:</td>
-                <td>{{.NumPastExpiration}}</td>
+                <td>{{.BatchSegmentUploadJob.NumPastExpiration}}</td>
                 <td>ok</td>
               </tr>
               <tr>
                 <td>num_unauth_segment:</td>
-                <td>{{.NumUnauthSegment}}</td>
-                <td>ok</td>
+                <td>{{.BatchSegmentUploadJob.NumUnauthSegment}}</td>
+                {{if ne .BSUJerror.NumUnauthSegmentErr ""}}
+                  <td id="{{.BatchSegmentUploadJob.JobID}}err" style="color:red;">{{.BSUJerror.NumUnauthSegmentErr}}</td>
+                {{else}}
+                  <td></td>
+                {{end}}
               </tr>
               <tr>
                 <td>num_valid:</td>
-                <td>{{.NumValid}}</td>
+                <td>{{.BatchSegmentUploadJob.NumValid}}</td>
                 <td>ok</td>
               </tr>
               <tr>
                 <td>num_valid_user:</td>
-                <td>{{.NumValidUser}}</td>
+                <td>{{.BatchSegmentUploadJob.NumValidUser}}</td>
                 <td>ok</td>
               </tr>
               <tr>
                 <td>percent_complete:</td>
-                <td>{{.PercentComplete}}</td>
+                <td>{{.BatchSegmentUploadJob.PercentComplete}}</td>
                 <td>ok</td>
               </tr>
               <tr>
                 <td>phase:</td>
-                <td>{{.Phase}}</td>
+                <td>{{.BatchSegmentUploadJob.Phase}}</td>
                 <td>ok</td>
               </tr>
               <tr>
                 <td>segment_log_lines:</td>
-                <td>{{.SegmentLogLines}}</td>
+                <td>{{.BatchSegmentUploadJob.SegmentLogLines}}</td>
                 <td>ok</td>
               </tr>
               <tr>
                 <td>start_time:</td>
-                <td>{{.StartTime}}</td>
+                <td>{{.BatchSegmentUploadJob.StartTime}}</td>
                 <td>ok</td>
               </tr>
               <tr>
                 <td>time_to_process:</td>
-                <td>{{.TimeToProcess}}</td>
+                <td>{{.BatchSegmentUploadJob.TimeToProcess}}</td>
                 <td>ok</td>
               </tr>
               <tr>
                 <td>uploaded_time:</td>
-                <td>{{.UploadedTime}}</td>
+                <td>{{.BatchSegmentUploadJob.UploadedTime}}</td>
                 <td>ok</td>
               </tr>
               <tr>
                 <td>validated_time:</td>
-                <td>{{.ValidatedTime}}</td>
+                <td>{{.BatchSegmentUploadJob.ValidatedTime}}</td>
                 <td>ok</td>
               </tr>
               <tr>
                 <td>match rate:</td>
-                <td>{{.MatchRate}}%</td>
-                <td>ok</td>
+                <td>{{.BatchSegmentUploadJob.MatchRate}}%</td>
+                {{if ne .BSUJerror.MatchRateErr ""}}
+                  <td id="{{.BatchSegmentUploadJob.JobID}}err" style="color: red;">{{.BSUJerror.MatchRateErr}}</td>
+                {{else}}
+                  <td>
+                {{end}}
               </tr>
             {{end}}
             </table>
