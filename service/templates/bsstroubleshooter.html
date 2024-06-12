@@ -239,8 +239,14 @@
                   <td>
                 {{end}}
               </tr>
-              <tr hidden>
-                <td><div id="{{.BatchSegmentUploadJob.JobID}}">{{range .JobErrors}}<p style="margin-top: 3px; margin-bottom: 3px;"> -- {{.}}</p>{{end}}</div></td>
+              <tr>
+                <td colspan="3">
+                  <div style="display:none;" id="{{.BatchSegmentUploadJob.JobID}}">
+{{range .JobErrors}}
+--{{.}}<br>
+{{end}}
+                  </div>
+                </td>
               </tr>
             {{end}}
             </table>
