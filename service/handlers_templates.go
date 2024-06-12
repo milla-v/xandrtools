@@ -287,16 +287,20 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 				d.JobList[i].BatchSegmentUploadJob = job
 				d.JobList[i].BatchSegmentUploadJob.MatchRate = int(d.JobList[i].BatchSegmentUploadJob.NumValidUser * 100 / (d.JobList[i].BatchSegmentUploadJob.NumValidUser + d.JobList[i].BatchSegmentUploadJob.NumInvalidUser))
 				if d.JobList[i].BatchSegmentUploadJob.MatchRate < 71 {
-					d.JobList[i].BSUJerror.MatchRateErr = "Low match rate"
+					d.JobList[i].BSUJerror.MatchRateErr = "Low match rate."
+					d.JobList[i].JobErrors = append(d.JobList[i].JobErrors, d.JobList[i].BSUJerror.MatchRateErr)
 				}
 				if d.JobList[i].BatchSegmentUploadJob.ErrorLogLines != "" && d.JobList[i].BatchSegmentUploadJob.MatchRate < 71 {
-					d.JobList[i].BSUJerror.ErrorLogLinesErr = "Remove invalid segments"
+					d.JobList[i].BSUJerror.ErrorLogLinesErr = "Remove invalid segments."
+					d.JobList[i].JobErrors = append(d.JobList[i].JobErrors, d.JobList[i].BSUJerror.ErrorLogLinesErr)
 				}
 				if d.JobList[i].NumInvalidFormat > 0 {
-					d.JobList[i].BSUJerror.NumInvalidFormatErr = "Fix invalid format"
+					d.JobList[i].BSUJerror.NumInvalidFormatErr = "Fix invalid format."
+					d.JobList[i].JobErrors = append(d.JobList[i].JobErrors, d.JobList[i].BSUJerror.NumInvalidFormatErr)
 				}
 				if d.JobList[i].NumUnauthSegment > 0 {
-					d.JobList[i].NumUnauthSegmentErr = "Remove num_unauth_segment or verify that segment is active using apixandr.com/segment API call"
+					d.JobList[i].NumUnauthSegmentErr = "Remove num_unauth_segment or verify that segment is active using apixandr.com/segment API call."
+					d.JobList[i].JobErrors = append(d.JobList[i].JobErrors, d.JobList[i].NumUnauthSegmentErr)
 				}
 			}
 

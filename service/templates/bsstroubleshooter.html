@@ -15,6 +15,11 @@
         x.className = "topnav";
       }
     }
+    
+    function copyErrors(id) {
+      var copytext = document.getElementById(id);
+      navigator.clipboard.writeText(copytext.innerText);
+    }
   </script>
   
   <div class="topnav" id="myTopnav">
@@ -81,7 +86,7 @@
             <table id="jobs">
             {{range .JobList}}
               <tr>
-                <th colspan="3">Job ID : {{.BatchSegmentUploadJob.JobID}}<button class="copy-error-btn">Copy Errors</button></th>
+                <th colspan="3">Job ID : {{.BatchSegmentUploadJob.JobID}}<button onclick="copyErrors('{{.BatchSegmentUploadJob.JobID}}')" class="copy-error-btn">Copy Errors</button></th>
               </tr>
               <tr>
                 <td>comleted_time:</td>
@@ -102,7 +107,7 @@
                 <td>error_log_lines:</td>
                 <td>{{.BatchSegmentUploadJob.ErrorLogLines}}</td>
                 {{if ne .BSUJerror.ErrorLogLinesErr ""}}
-                  <td id="{{.BatchSegmentUploadJob.JobID}}err" style="color:red;">{{.BSUJerror.ErrorLogLinesErr}}</td>
+                  <td style="color:red;">{{.BSUJerror.ErrorLogLinesErr}}</td>
                 {{else}}
                   <td></td>
                 {{end}}
@@ -141,7 +146,7 @@
                 <td>num_invalid_format:</td>
                 <td>{{.BatchSegmentUploadJob.NumInvalidFormat}}</td>
                 {{if ne .BSUJerror.NumInvalidFormatErr ""}}
-                  <td id="{{.BatchSegmentUploadJob.JobID}}err" style="color:red;">{{.BSUJerror.NumInvalidFormatErr}}</td>
+                  <td style="color:red;">{{.BSUJerror.NumInvalidFormatErr}}</td>
                 {{else}}
                   <td></td>
                 {{end}}
@@ -175,7 +180,7 @@
                 <td>num_unauth_segment:</td>
                 <td>{{.BatchSegmentUploadJob.NumUnauthSegment}}</td>
                 {{if ne .BSUJerror.NumUnauthSegmentErr ""}}
-                  <td id="{{.BatchSegmentUploadJob.JobID}}err" style="color:red;">{{.BSUJerror.NumUnauthSegmentErr}}</td>
+                  <td style="color:red;">{{.BSUJerror.NumUnauthSegmentErr}}</td>
                 {{else}}
                   <td></td>
                 {{end}}
@@ -229,10 +234,19 @@
                 <td>match rate:</td>
                 <td>{{.BatchSegmentUploadJob.MatchRate}}%</td>
                 {{if ne .BSUJerror.MatchRateErr ""}}
-                  <td id="{{.BatchSegmentUploadJob.JobID}}err" style="color: red;">{{.BSUJerror.MatchRateErr}}</td>
+                  <td style="color: red;">{{.BSUJerror.MatchRateErr}}</td>
                 {{else}}
                   <td>
                 {{end}}
+              </tr>
+              <tr>
+                <td colspan="3">
+                  <div style="display:none;" id="{{.BatchSegmentUploadJob.JobID}}">
+{{range .JobErrors}}
+--{{.}}<br>
+{{end}}
+                  </div>
+                </td>
               </tr>
             {{end}}
             </table>
