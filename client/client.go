@@ -47,7 +47,7 @@ func (c *Client) Login(username, password string) error {
 
 	var apiURL = "https://api.appnexus.com/auth"
 	if c.backend == "simulator" {
-		apiURL = "http://127.0.0.1:9970/xandrsim/auth"
+		apiURL = "https://xandrtools.com/xandrsim/auth"
 	}
 
 	resp, err := http.Post(apiURL, "application/json", bytes.NewReader(buf))
