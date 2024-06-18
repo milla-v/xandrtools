@@ -2,7 +2,6 @@
 package service
 
 import (
-	"crypto/tls"
 	"embed"
 	"fmt"
 	"html/template"
@@ -70,19 +69,6 @@ func Run() {
 	} else {
 		startProdServer(mux)
 	}
-
-	serverConfig := &tls.Config{
-		ClientAuth: tls.RequireAndVerifyClientCert,
-	}
-	server := &http.Server{
-		Addr:      ":9970",
-		TLSConfig: serverConfig,
-	}
-	err := server.ListenAndServeTLS("cert.pem", "key.pem")
-	if err != nil {
-		fmt.Println("Error:", err)
-	}
-	log.Println("cert.pem does not exist. Starting prod server with autocert")
 }
 
 // startProdServer get the certificate for domain and starts a https server.
@@ -104,5 +90,18 @@ func startDevServer(h http.Handler, addr string) {
 		Handler: h,
 	}
 
-	log.Fatal(s.ListenAndServe())
+	certPath := os.Getenv("HOME") + "/.config/xandrtools/cert.pem"
+	
+	_, err := os.Stat(certPath)
+	if err == nil {
+		log.Println("local certificate found")
+		keyPath := os.Getenv("HOME") + "/.config/xandrtools/key.pem"
+		err = s.ListenAndServeTLS(certPath, keyPath)
+	} else {
+		err = s.ListenAndServe()
+	}
+
+	if err != nil {
+		fmt.Println("Error:", err)
+	}
 }
