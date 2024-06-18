@@ -2,6 +2,7 @@
 package service
 
 import (
+	"crypto/tls"
 	"embed"
 	"fmt"
 	"html/template"
@@ -70,6 +71,17 @@ func Run() {
 		startProdServer(mux)
 	}
 
+	serverConfig := &tls.Config{
+		ClientAuth: tls.RequireAndVerifyClientCert,
+	}
+	server := &http.Server{
+		Addr:      ":9970",
+		TLSConfig: serverConfig,
+	}
+	err := server.ListenAndServeTLS("cert.pem", "key.pem")
+	if err != nil {
+		fmt.Println("Error:", err)
+	}
 	log.Println("cert.pem does not exist. Starting prod server with autocert")
 }
 
