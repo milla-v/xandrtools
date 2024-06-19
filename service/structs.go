@@ -1,6 +1,7 @@
 package service
 
 import (
+	"time"
 	"xandrtools/client"
 )
 
@@ -79,4 +80,12 @@ type BSUJerror struct {
 	TimeToProcessErr       string
 	UploadedTimeErr        string
 	ValidatedTimeErr       string
+}
+
+type XandrUser struct {
+	Username       string
+	Token          string
+	MemberID       int32
+	ExpirationTime time.Time
+	Jobs           []client.BatchSegmentUploadJob
 }

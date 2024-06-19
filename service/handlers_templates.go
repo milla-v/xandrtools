@@ -319,85 +319,84 @@ func handleBssTroubleShooterTest(w http.ResponseWriter, r *http.Request) {
 		XandrVersion string
 		VCS          Vcs
 
-		User client.UserData
+		User XandrUser
+		//JobList []client.BatchSegmentUploadJob
 
-		Backend        string
+		//Backend        string
 		ExpirationTime time.Time
 		JobList        []WebsiteBSUJ
 		IsJobs         bool
 	}
 	var d data
 	var err error
-	var password string
 
 	d.XandrVersion = Version
 	d.VCS.RevisionFull = VcsInfo.RevisionFull
 	d.VCS.RevisionShort = VcsInfo.RevisionShort
 	d.VCS.Modified = VcsInfo.Modified
+	d.IsJobs = false
+	//var token string
+	var memberid int
 
 	//get username and password
 	log.Println("METHOD: ", r.Method)
 
 	d.User.Username = r.FormValue("username")
-	password = r.FormValue("password")
-	d.Backend = r.FormValue("backend")
+	password := r.FormValue("password")
+	backend := r.FormValue("backend")
+	cli := client.NewClient(backend)
 	if r.Method == "POST" {
 		submit := r.FormValue("submit")
 		log.Println("SUBMIT: ", submit)
 		switch submit {
 		case "Login":
 			log.Println("CASE LOGIN")
-			cli := client.NewClient(d.Backend)
-
 			if r.FormValue("token") != "" {
-				d.Token = r.FormValue("token")
+				d.User.Token = r.FormValue("token")
 			} else {
 				//authentication request
 				if err = cli.Login(d.User.Username, password); err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 					return
 				}
-				d.User = cli.User
-				log.Println("UserName: ", d.User.Username, " | Token: ", d.User.TokenData.Token, " | ExpTime: ", d.User.TokenData.ExpirationTime, " | MemberID: ", d.User.TokenData.MemberId)
+				d.User.Token = cli.User.TokenData.Token
+				log.Println("CASE LOGIN-----------UserName: ", d.User.Username, " | Token: ", d.User.Token, " | ExpTime: ", d.User.ExpirationTime, " | MemberID: ", d.User.MemberID)
 			}
 		case "Get Jobs":
-			log.Println("CASE GET JOBS")
-			cli := client.NewClient(d.Backend)
-			if 
 
 			//get user data from User sync.Map
-			cli.User.TokenData.Token = r.FormValue("token")
-			memberid, err := strconv.Atoi(r.FormValue("memberid"))
+			d.User.Token = r.FormValue("token")
+			cli.User.TokenData.Token = d.User.Token
+			memberid, err = strconv.Atoi(r.FormValue("memberid"))
 			if err != nil {
 				http.Error(w, "invalid member id", http.StatusUnauthorized)
 				return
 			}
-			cli.User.TokenData.MemberId = int32(memberid)
-
-			user, ok := simulator.User.Load(cli.User.TokenData.Token)
-			if !ok {
-				http.Error(w, "invalid token", http.StatusUnauthorized)
-				return
-			}
-			d.User = user.(client.UserData)
+			d.User.MemberID = int32(memberid)
+			log.Println("CASE GET JOBS-----------UserName: ", d.User.Username, " | Token: ", d.User.Token, " | ExpTime: ", d.User.ExpirationTime, " | MemberID: ", d.User.MemberID)
 
 			//get list of batch segment jobs
-			jobs, err := cli.GetBatchSegmentJobs(cli.User.TokenData.MemberId)
+			d.User.Jobs, err = cli.GetBatchSegmentJobs(d.User.MemberID)
 			if err != nil {
+				log.Println("getBatchSegmentJobs err: ", err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			if len(jobs) > 0 {
-				d.IsJobs = true
-			} else {
-				d.IsJobs = false
+			log.Println("ARRAY of BATCH SEGMENT JOBS")
+			log.Println("CASE Get Jobs-----------UserName: ", d.User.Username, " | Token: ", d.User.Token, " | ExpTime: ", d.User.ExpirationTime, " | MemberID: ", d.User.MemberID)
+			for _, job := range d.User.Jobs {
+				log.Println("jobID: ", job.ID, "MatchRate: ", job.MatchRate)
 			}
 
-			d.Token = d.User.TokenData.Token
-			d.User.Username = r.FormValue("username")
-			d.User.TokenData.MemberId = cli.User.TokenData.MemberId
-			d.JobList = make([]WebsiteBSUJ, len(jobs))
-			for i, job := range jobs {
+			if len(d.User.Jobs) > 0 {
+				d.IsJobs = true
+			}
+
+			//d.Token = d.User.TokenData.Token
+			//d.User.Username = r.FormValue("username")
+			//d.User.TokenData.MemberId = cli.User.TokenData.MemberId
+			d.JobList = make([]WebsiteBSUJ, len(d.User.Jobs))
+			for i, job := range d.User.Jobs {
 				d.JobList[i].BatchSegmentUploadJob = job
 				d.JobList[i].BatchSegmentUploadJob.MatchRate = int(d.JobList[i].BatchSegmentUploadJob.NumValidUser * 100 / (d.JobList[i].BatchSegmentUploadJob.NumValidUser + d.JobList[i].BatchSegmentUploadJob.NumInvalidUser))
 				if d.JobList[i].BatchSegmentUploadJob.MatchRate < 71 {

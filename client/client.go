@@ -85,7 +85,7 @@ func (c *Client) GetBatchSegmentJobs(memberID int32) ([]BatchSegmentUploadJob, e
 
 	var apiURL = "https://api.appnexus.com/batch-segment"
 	if c.backend == "simulator" {
-		apiURL = "https://xandrtools.comgit st/xandrsim/batch-segment"
+		apiURL = "https://xandrtools.com/xandrsim/batch-segment"
 	}
 
 	req, err := http.NewRequest(http.MethodGet, apiURL, nil)
