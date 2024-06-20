@@ -87,5 +87,4 @@ type XandrUser struct {
 	Token          string
 	MemberID       int32
 	ExpirationTime time.Time
-	Jobs           []client.BatchSegmentUploadJob
 }

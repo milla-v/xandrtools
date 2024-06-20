@@ -318,14 +318,10 @@ func handleBssTroubleShooterTest(w http.ResponseWriter, r *http.Request) {
 	type data struct {
 		XandrVersion string
 		VCS          Vcs
-
-		User XandrUser
-		//JobList []client.BatchSegmentUploadJob
-
-		//Backend        string
-		ExpirationTime time.Time
-		JobList        []WebsiteBSUJ
-		IsJobs         bool
+		User         XandrUser
+		//ExpirationTime time.Time
+		JobList []WebsiteBSUJ
+		IsJobs  bool
 	}
 	var d data
 	var err error
@@ -335,7 +331,6 @@ func handleBssTroubleShooterTest(w http.ResponseWriter, r *http.Request) {
 	d.VCS.RevisionShort = VcsInfo.RevisionShort
 	d.VCS.Modified = VcsInfo.Modified
 	d.IsJobs = false
-	//var token string
 	var memberid int
 
 	//get username and password
@@ -360,23 +355,25 @@ func handleBssTroubleShooterTest(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 				d.User.Token = cli.User.TokenData.Token
-				log.Println("CASE LOGIN-----------UserName: ", d.User.Username, " | Token: ", d.User.Token, " | ExpTime: ", d.User.ExpirationTime, " | MemberID: ", d.User.MemberID)
+				//d.User.ExpirationTime = cli.User.TokenData.ExpirationTime
+				log.Println("CASE LOGIN-----------UserName: ", d.User.Username, " | Token: ", d.User.Token, " | ExpTime: ", cli.User.TokenData.ExpirationTime, " | MemberID: ", d.User.MemberID)
 			}
 		case "Get Jobs":
 
 			//get user data from User sync.Map
 			d.User.Token = r.FormValue("token")
 			cli.User.TokenData.Token = d.User.Token
+
 			memberid, err = strconv.Atoi(r.FormValue("memberid"))
 			if err != nil {
 				http.Error(w, "invalid member id", http.StatusUnauthorized)
 				return
 			}
 			d.User.MemberID = int32(memberid)
-			log.Println("CASE GET JOBS-----------UserName: ", d.User.Username, " | Token: ", d.User.Token, " | ExpTime: ", d.User.ExpirationTime, " | MemberID: ", d.User.MemberID)
+			log.Println("CASE GET JOBS-----------UserName: ", d.User.Username, " | Token: ", d.User.Token, " | ExpTime: ", cli.User.TokenData.ExpirationTime, " | MemberID: ", d.User.MemberID)
 
 			//get list of batch segment jobs
-			d.User.Jobs, err = cli.GetBatchSegmentJobs(d.User.MemberID)
+			joblist, err := cli.GetBatchSegmentJobs(d.User.MemberID)
 			if err != nil {
 				log.Println("getBatchSegmentJobs err: ", err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -384,19 +381,16 @@ func handleBssTroubleShooterTest(w http.ResponseWriter, r *http.Request) {
 			}
 			log.Println("ARRAY of BATCH SEGMENT JOBS")
 			log.Println("CASE Get Jobs-----------UserName: ", d.User.Username, " | Token: ", d.User.Token, " | ExpTime: ", d.User.ExpirationTime, " | MemberID: ", d.User.MemberID)
-			for _, job := range d.User.Jobs {
+			for _, job := range joblist {
 				log.Println("jobID: ", job.ID, "MatchRate: ", job.MatchRate)
 			}
 
-			if len(d.User.Jobs) > 0 {
+			if len(joblist) > 0 {
 				d.IsJobs = true
 			}
 
-			//d.Token = d.User.TokenData.Token
-			//d.User.Username = r.FormValue("username")
-			//d.User.TokenData.MemberId = cli.User.TokenData.MemberId
-			d.JobList = make([]WebsiteBSUJ, len(d.User.Jobs))
-			for i, job := range d.User.Jobs {
+			d.JobList = make([]WebsiteBSUJ, len(joblist))
+			for i, job := range joblist {
 				d.JobList[i].BatchSegmentUploadJob = job
 				d.JobList[i].BatchSegmentUploadJob.MatchRate = int(d.JobList[i].BatchSegmentUploadJob.NumValidUser * 100 / (d.JobList[i].BatchSegmentUploadJob.NumValidUser + d.JobList[i].BatchSegmentUploadJob.NumInvalidUser))
 				if d.JobList[i].BatchSegmentUploadJob.MatchRate < 71 {
