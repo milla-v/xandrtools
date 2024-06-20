@@ -46,7 +46,6 @@ func Run() {
 	t = template.Must(template.ParseFS(content,
 		"templates/xandrtools.html",
 		"templates/bsstroubleshooter.html",
-		"templates/bsstroubleshootertest.html",
 		"templates/textGenerator.html",
 		"templates/validators.html"))
 
@@ -55,7 +54,7 @@ func Run() {
 	//	mux.Handle("xandrtools.com/", proxyXandrtools)
 	mux.HandleFunc("/", handleXandrtools)
 	mux.HandleFunc("/bsstroubleshooter", handleBssTroubleShooter)
-	mux.HandleFunc("/bsstroubleshootertest", handleBssTroubleShooterTest)
+	//mux.HandleFunc("/bsstroubleshootertest", handleBssTroubleShooterTest)
 	mux.HandleFunc("/textGenerator", handleTextGenerator)
 	mux.HandleFunc("/validators", handleValidators)
 

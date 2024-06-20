@@ -1,7 +1,6 @@
 package service
 
 import (
-	"time"
 	"xandrtools/client"
 )
 
@@ -83,8 +82,7 @@ type BSUJerror struct {
 }
 
 type XandrUser struct {
-	Username       string
-	Token          string
-	MemberID       int32
-	ExpirationTime time.Time
+	Username string
+	Token    string
+	MemberID int32
 }
