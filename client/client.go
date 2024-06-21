@@ -73,7 +73,6 @@ func (c *Client) Login(username, password string) error {
 
 	c.User.TokenData.Token = respAuth.Response.Token
 	c.User.TokenData.ExpirationTime = time.Now().Add(time.Hour * 2)
-	log.Println("CLIENT. Expiration time: ", c.User.TokenData.ExpirationTime)
 
 	return nil
 }
