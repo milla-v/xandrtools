@@ -56,7 +56,7 @@
               <label for="usernameid">User name:</label><br>
               <input type="text" id="usernameid" name="username" class="valid-input" {{if ne .User.Username ""}} value="{{.User.Username}}" {{else}} placeholder="Enter username" {{end}}><br>
               <label for="passwordid">Password:</label><br>
-              <input type="text" id="passwordid" name="password" class="valid-input" placeholder="Enter password"><br>
+              <input type="password" id="passwordid" name="password" class="valid-input" placeholder="Enter password"><br>
             {{end}}
             {{if ne .User.Token ""}}
               <label for="usernameid">Get jobs User name:</label><br>
