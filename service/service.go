@@ -91,7 +91,7 @@ func startDevServer(h http.Handler, addr string) {
 	}
 
 	certPath := os.Getenv("HOME") + "/.config/xandrtools/cert.pem"
-	
+
 	_, err := os.Stat(certPath)
 	if err == nil {
 		log.Println("local certificate found")

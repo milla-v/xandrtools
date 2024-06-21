@@ -80,3 +80,9 @@ type BSUJerror struct {
 	UploadedTimeErr        string
 	ValidatedTimeErr       string
 }
+
+type XandrUser struct {
+	Username string
+	Token    string
+	MemberID int32
+}
