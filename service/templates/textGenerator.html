@@ -98,9 +98,9 @@
     <div style="padding-left:16px">
       <h2>Generate text sample:</h2>
       <a href="https://learn.microsoft.com/en-us/xandr/digital-platform-api/legacy-bss-file-format">Format description</a><br>
-      
+      WRITE
       <div>
-          <div style="padding-top: 5px;">
+        <div style="padding-top: 5px;">
             <div class="segment-box">
               <h3>Segment fields</h3>
               <input type="checkbox" id="seg_id" onclick="checkField('seg_id')">
@@ -116,58 +116,58 @@
               <input type="checkbox" id="expiration" onclick="checkField('expiration')">
               <label for="expiration">EXPIRATION</label><br>
             </div>
-          <form method="GET">
-            <div>
-              <h3>Separators</h3>
-              <label for="sep_1">SEP_1</label>
-              <input type="text" id="inp_sep_1" name="sep_1" value="{{.Seps.Sep1}}">
-              <span title="Separates the user ID from the segment list">&#9432;</span>
-              <a title="click to enter TAB ('\t') character in input box" href="javascript:setTab('sep_1')">tab</a>
-              <a title="click to enter SPACE (' ') character in input box" href="javascript:setSpace('sep_1')">space</a><br>
-              
-              <label for="sep_2">SEP_2</label>
-              <input type="text" name="sep_2" value="{{.Seps.Sep2}}">
-              <span title="Separates segments">&#9432;</span><br>
-
-              <label for="sep_3">SEP_3</label>
-              <input type="text" name="sep_3" value="{{.Seps.Sep3}}">
-              <span title="Separates segment fields">&#9432;</span><br>
-
-              <label for="sep_4">SEP_4</label>
-              <input type="text" id="inp_sep_4" name="sep_4" value="{{.Seps.Sep4}}">
-              <span title="Separates segments to remove">&#9432;</span>
-              <a title="click to enter TAB ('\t') character in input box" href="javascript:setTab('sep_4')">tab</a>
-              <a title="click to enter SPACE (' ') character in input box" href="javascript:setSpace('sep_4')">space</a><br>
-
-              <label for="sep_5">SEP_5</label>
-              <input type="text" name="sep_5" value="{{.Seps.Sep5}}">
-              <span title="Separates domain">&#9432;</span><br>
-            </div>
+            <form method="GET">
+              <div>
+                <h3>Separators</h3>
+                <label for="sep_1">SEP_1</label>
+                <input type="text" id="inp_sep_1" name="sep_1" value="{{.Seps.Sep1}}">
+                <span title="Separates the user ID from the segment list">&#9432;</span>
+                <a title="click to enter TAB ('\t') character in input box" href="javascript:setTab('sep_1')">tab</a>
+                <a title="click to enter SPACE (' ') character in input box" href="javascript:setSpace('sep_1')">space</a><br>
+                
+                <label for="sep_2">SEP_2</label>
+                <input type="text" name="sep_2" value="{{.Seps.Sep2}}">
+                <span title="Separates segments">&#9432;</span><br>
+  
+                <label for="sep_3">SEP_3</label>
+                <input type="text" name="sep_3" value="{{.Seps.Sep3}}">
+                <span title="Separates segment fields">&#9432;</span><br>
+  
+                <label for="sep_4">SEP_4</label>
+                <input type="text" id="inp_sep_4" name="sep_4" value="{{.Seps.Sep4}}">
+                <span title="Separates segments to remove">&#9432;</span>
+                <a title="click to enter TAB ('\t') character in input box" href="javascript:setTab('sep_4')">tab</a>
+                <a title="click to enter SPACE (' ') character in input box" href="javascript:setSpace('sep_4')">space</a><br>
+  
+                <label for="sep_5">SEP_5</label>
+                <input type="text" name="sep_5" value="{{.Seps.Sep5}}">
+                <span title="Separates domain">&#9432;</span><br>
+              </div>
+              <div class="fields-sample-container" id="checked">
+                <input type="text" id="field_seg_id" style="display:none" class="field-sample-input" value="SEG_ID">
+                <input type="text" id="field_seg_code" style="display:none" class="field-sample-input" value="SEG_CODE">
+                <input type="text" id="field_member_id" style="display:none" class="field-sample-input" value="MEMBER_ID">
+                <input type="text" id="field_timestamp" style="display:none" class="field-sample-input" value="TIMESTAMP">
+                <input type="text" id="field_value" style="display:none" class="field-sample-input" value="VALUE">
+                <input type="text" id="field_expiration" style="display:none" class="field-sample-input" value="EXPIRATION">
+              </div>
+              {{if ne .GenError ""}}
+                <p style="color: red;">{{.GenError}}</p>
+              {{end}}
+              <input type="submit" value="Generate" class="valid-submit" style="margin-top: 10px;">
+              <input type="hidden" id="sf" name="sf">
+  	          </form>
           </div>
-          <div class="fields-sample-container" id="checked">
-            <input type="text" id="field_seg_id" style="display:none" class="field-sample-input" value="SEG_ID">
-            <input type="text" id="field_seg_code" style="display:none" class="field-sample-input" value="SEG_CODE">
-            <input type="text" id="field_member_id" style="display:none" class="field-sample-input" value="MEMBER_ID">
-            <input type="text" id="field_timestamp" style="display:none" class="field-sample-input" value="TIMESTAMP">
-            <input type="text" id="field_value" style="display:none" class="field-sample-input" value="VALUE">
-            <input type="text" id="field_expiration" style="display:none" class="field-sample-input" value="EXPIRATION">
+        {{if eq .ShowText true}}
+        <div class="gen-text-container">
+          	<textarea class="gen-box">{{- .GeneratedText -}}</textarea>
+          <div class="valid-box">
+            <input type="hidden" id="out" name="out" ><br>
+            <div title="Copy link" class="box-btn-copy"  onclick="copyOut()"><img id="copy_link_button" src="templates/copy_btn.png" alt=""></div>
           </div>
-          {{if ne .GenError ""}}
-            <p style="color: red;">{{.GenError}}</p>
-          {{end}}
-          <input type="submit" value="Generate" class="valid-submit" style="margin-top: 10px;">
-          <input type="hidden" id="sf" name="sf">
-  	      </form>
-      </div>
-      {{if eq .ShowText true}}
-      <div class="gen-text-container">
-        	<textarea class="gen-box">{{- .GeneratedText -}}</textarea>
-        <div class="valid-box">
-          <input type="hidden" id="out" name="out" ><br>
-          <div title="Copy link" class="box-btn-copy"  onclick="copyOut()"><img id="copy_link_button" src="templates/copy_btn.png" alt=""></div>
         </div>
+        {{end}}
       </div>
-      {{end}}
     </div>
   </div>
 
