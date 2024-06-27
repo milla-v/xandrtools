@@ -123,6 +123,8 @@ body {
 	padding-top: 15px;
 	padding-bottom: 15px;
 	margin-top: 20px;
+	display: -webkit-flex;
+	display: -moz-flex;
 }
 
 .footer {
@@ -162,8 +164,10 @@ body {
 }
       
 .valid-box {
-  display: flex;
-  margin-top: 10px;
+	display: flex;
+	margin-top: 10px;
+	display: -webkit-flex;
+	display: -moz-flex;
 }
 
 .valid-input {
@@ -189,7 +193,17 @@ width: 500px;
  	padding: 5px;
  	font-size: 18px;
 }
+
+.segment_separators_container {
+	display: flex;
+	display: -moz-flex;
+    display: -webkit-flex;
+    display: -ms-flex;
+	flex-direction: row;
+	-webkit-flex-direction: row;
+	-moz-flex-direction: row;
 }
+
 
 #jobs {
   font-family: Arial;
@@ -244,4 +258,5 @@ width: 500px;
         width: 100%;
         text-align: left;
       }
+    .segment_separators_container {flex-direction:column; -webkit-flex-direction: column; -moz-flex-direction: column;}
     }
