@@ -50,6 +50,8 @@ func (c *Client) Login(username, password string) error {
 		apiURL = "https://xandrtools.com/xandrsim/auth"
 	}
 
+	log.Println("request:", apiURL, "user:", username)
+
 	resp, err := http.Post(apiURL, "application/json", bytes.NewReader(buf))
 	if err != nil {
 		return fmt.Errorf("post: %w", err)
@@ -74,6 +76,8 @@ func (c *Client) Login(username, password string) error {
 	c.User.TokenData.Token = respAuth.Response.Token
 	c.User.TokenData.ExpirationTime = time.Now().Add(time.Hour * 2)
 
+	log.Println("auth request completed")
+
 	return nil
 }
 
@@ -87,6 +91,8 @@ func (c *Client) GetBatchSegmentJobs(memberID int32) ([]BatchSegmentUploadJob, e
 	if c.backend == "simulator" {
 		apiURL = "https://xandrtools.com/xandrsim/batch-segment"
 	}
+
+	log.Println("request:", apiURL)
 
 	req, err := http.NewRequest(http.MethodGet, apiURL, nil)
 	if err != nil {
@@ -113,6 +119,8 @@ func (c *Client) GetBatchSegmentJobs(memberID int32) ([]BatchSegmentUploadJob, e
 		log.Println("buf:", string(buf))
 		return nil, err
 	}
+
+	log.Println("jobs:", len(bsResponse.Response.BatchSegmentUploadJob))
 
 	return bsResponse.Response.BatchSegmentUploadJob, nil
 }
