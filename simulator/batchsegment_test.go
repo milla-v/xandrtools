@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 
@@ -11,13 +12,7 @@ import (
 )
 
 func TestBatchSegment(t *testing.T) {
-
-	var user client.UserData
-
-	user.Username = "user1"
-	user.TokenData.Token = "12345"
-	user.TokenData.ExpirationTime = time.Now().Add(time.Second * 30)
-	User.Store(user.TokenData.Token, user)
+	createTestUser()
 
 	//time.Sleep(8 * time.Second)
 
@@ -44,4 +39,62 @@ func TestBatchSegment(t *testing.T) {
 	defer resp.Body.Close()
 
 	t.Log(string(buf))
+}
+
+func TestClientNoAuthError(t *testing.T) {
+	createTestUser()
+
+	testServer := httptest.NewServer(http.HandlerFunc(HandleBatchSegment))
+	defer testServer.Close()
+
+	cli := client.NewClient("test:" + testServer.URL)
+	cli.User.TokenData.Token = "123"
+	_, err := cli.GetBatchSegmentJobs(111)
+	if err == nil {
+		t.Fatal("should be NOAUTH error")
+	}
+	if !strings.Contains(err.Error(), "NOAUTH:Authentication failed - not logged in") {
+		t.Fatal("should be auth error but returned: ", err.Error())
+	}
+}
+
+func TestClientNoMemberIdError(t *testing.T) {
+	createTestUser()
+
+	testServer := httptest.NewServer(http.HandlerFunc(HandleBatchSegment))
+	defer testServer.Close()
+
+	cli := client.NewClient("test:" + testServer.URL)
+	cli.User.TokenData.Token = "12345"
+	_, err := cli.GetBatchSegmentJobs(111)
+	if err == nil {
+		t.Fatal("should be SYNTAX error")
+	}
+	if !strings.Contains(err.Error(), "SYNTAX:no member_id provided") {
+		t.Fatal("should syntax error but returned: ", err.Error())
+	}
+}
+
+func TestClientGetJobsSuccess(t *testing.T) {
+	createTestUser()
+
+	testServer := httptest.NewServer(http.HandlerFunc(HandleBatchSegment))
+	defer testServer.Close()
+
+	cli := client.NewClient("test:" + testServer.URL + "?member_id=111")
+	cli.User.TokenData.Token = "12345"
+	jobs, err := cli.GetBatchSegmentJobs(111)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log("jobs:", len(jobs))
+}
+
+func createTestUser() {
+	var user client.UserData
+
+	user.Username = "user1"
+	user.TokenData.Token = "12345"
+	user.TokenData.ExpirationTime = time.Now().Add(time.Second * 30)
+	User.Store(user.TokenData.Token, user)
 }

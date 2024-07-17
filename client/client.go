@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -46,8 +47,11 @@ func (c *Client) Login(username, password string) error {
 	//log.Println("json:", string(buf))
 
 	var apiURL = "https://api.appnexus.com/auth"
-	if c.backend == "simulator" {
+	if c.backend != "" {
 		apiURL = "https://xandrtools.com/xandrsim/auth"
+	}
+	if strings.HasPrefix(c.backend, "test:") {
+		apiURL = strings.TrimPrefix(c.backend, "test:")
 	}
 
 	log.Println("request:", apiURL, "user:", username)
@@ -91,6 +95,9 @@ func (c *Client) GetBatchSegmentJobs(memberID int32) ([]BatchSegmentUploadJob, e
 	if c.backend == "simulator" {
 		apiURL = "https://xandrtools.com/xandrsim/batch-segment"
 	}
+	if strings.HasPrefix(c.backend, "test:") {
+		apiURL = strings.TrimPrefix(c.backend, "test:")
+	}
 
 	log.Println("request:", apiURL)
 
@@ -112,6 +119,16 @@ func (c *Client) GetBatchSegmentJobs(memberID int32) ([]BatchSegmentUploadJob, e
 	}
 
 	defer resp.Body.Close()
+
+	var errResponse ErrorResponse
+	if err := json.Unmarshal(buf, &errResponse); err != nil {
+		log.Println("buf:", string(buf))
+		return nil, err
+	}
+
+	if errResponse.Response.Error != "" {
+		return nil, fmt.Errorf("%s:%s", errResponse.Response.ErrorId, errResponse.Response.Error)
+	}
 
 	var bsResponse BatchSegmentResponse
 
