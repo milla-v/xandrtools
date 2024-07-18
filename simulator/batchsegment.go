@@ -3,6 +3,7 @@ package simulator
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"math/rand"
 	"net/http"
@@ -27,7 +28,7 @@ func HandleBatchSegment(w http.ResponseWriter, r *http.Request) {
 	token := strings.TrimPrefix(tokenHeader, "Bearer ")
 	user, ok := User.Load(token)
 	if !ok {
-		http.Error(w, "invalid token", http.StatusUnauthorized)
+		authenticationFailedError(w)
 		return
 	}
 	u := user.(client.UserData)
@@ -40,6 +41,12 @@ func HandleBatchSegment(w http.ResponseWriter, r *http.Request) {
 	//check expiration time
 	if time.Now().Before(u.TokenData.ExpirationTime) == false {
 		http.Error(w, "invalid expiration time: ", http.StatusUnauthorized)
+		return
+	}
+
+	s := r.URL.Query().Get("member_id")
+	if s == "" {
+		noMemberIdError(w)
 		return
 	}
 
@@ -70,6 +77,34 @@ func HandleBatchSegment(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+}
+
+func authenticationFailedError(w io.Writer) {
+	var resp client.ErrorResponse
+
+	resp.Response.ErrorId = "NOAUTH"
+	resp.Response.Error = "Authentication failed - not logged in"
+
+	enc := json.NewEncoder(w)
+	if err := enc.Encode(resp); err != nil {
+		log.Println("encode error response:", err.Error())
+	}
+
+	log.Println("auth failed error")
+}
+
+func noMemberIdError(w io.Writer) {
+	var resp client.ErrorResponse
+
+	resp.Response.ErrorId = "SYNTAX"
+	resp.Response.Error = "no member_id provided"
+
+	enc := json.NewEncoder(w)
+	if err := enc.Encode(resp); err != nil {
+		log.Println("encode error response:", err.Error())
+	}
+
+	log.Println("no member_id error")
 }
 
 func generateBatchSegmentUploadJob(numJobs int) ([]client.BatchSegmentUploadJob, error) {

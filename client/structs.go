@@ -6,6 +6,14 @@ import (
 	"time"
 )
 
+type ErrorResponse struct {
+	Response struct {
+		ErrorId          string `json:"error_id"`
+		Error            string `json:"error"`
+		ErrorDescription string `json:"error_description"`
+	} `json:"response"`
+}
+
 type AuthRequest struct {
 	Auth struct {
 		Username string `json:"username"`
