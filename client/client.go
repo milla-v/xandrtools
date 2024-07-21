@@ -8,7 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"strings"
+	"os"
 	"time"
 )
 
@@ -22,6 +22,18 @@ func NewClient(backend string) *Client {
 	var c Client
 	c.backend = backend
 	return &c
+}
+
+func (c *Client) getAPIURL() string {
+	var apiURL = "https://api.appnexus.com/"
+	if c.backend == "simulator" {
+		apiURL = "https://xandrtools.com/xandrsim/"
+	}
+	testUrl := os.Getenv("TEST_BACKEND")
+	if testUrl != "" {
+		apiURL = testUrl + "/"
+	}
+	return apiURL
 }
 
 // Login returns user token.
@@ -46,13 +58,7 @@ func (c *Client) Login(username, password string) error {
 
 	//log.Println("json:", string(buf))
 
-	var apiURL = "https://api.appnexus.com/auth"
-	if c.backend != "" {
-		apiURL = "https://xandrtools.com/xandrsim/auth"
-	}
-	if strings.HasPrefix(c.backend, "test:") {
-		apiURL = strings.TrimPrefix(c.backend, "test:")
-	}
+	var apiURL = c.getAPIURL() + "auth"
 
 	log.Println("request:", apiURL, "user:", username)
 
@@ -91,13 +97,7 @@ func (c *Client) GetBatchSegmentJobs(memberID int32) ([]BatchSegmentUploadJob, e
 		return nil, fmt.Errorf("token is empty")
 	}
 
-	var apiURL = "https://api.appnexus.com/batch-segment"
-	if c.backend == "simulator" {
-		apiURL = "https://xandrtools.com/xandrsim/batch-segment"
-	}
-	if strings.HasPrefix(c.backend, "test:") {
-		apiURL = strings.TrimPrefix(c.backend, "test:")
-	}
+	var apiURL = c.getAPIURL() + fmt.Sprintf("batch-segment?member_id=%d", memberID)
 
 	log.Println("request:", apiURL)
 
