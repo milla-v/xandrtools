@@ -7,6 +7,7 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -50,13 +51,25 @@ func HandleBatchSegment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	memberID, err := strconv.Atoi(s)
+	if err != nil {
+		log.Println("error:", err)
+		noMemberIdError(w)
+		return
+	}
+	if memberID == 0 {
+		log.Println("memberID is 0")
+		noMemberIdError(w)
+		return
+	}
+
 	// var resp BatchSegmentResponse
 	var resp client.BatchSegmentResponse
 	numJobs := 5
 	resp.Response.StartElement = 0
 	resp.Response.Count = 1
 	resp.Response.Status = "OK"
-	resp.Response.BatchSegmentUploadJob, err = generateBatchSegmentUploadJob(numJobs)
+	resp.Response.BatchSegmentUploadJob, err = generateBatchSegmentUploadJob(numJobs, int32(memberID))
 	if err != nil {
 		log.Println("generateBatchSegmentUploadJob err", http.StatusUnauthorized)
 		return
@@ -107,7 +120,7 @@ func noMemberIdError(w io.Writer) {
 	log.Println("no member_id error")
 }
 
-func generateBatchSegmentUploadJob(numJobs int) ([]client.BatchSegmentUploadJob, error) {
+func generateBatchSegmentUploadJob(numJobs int, memberID int32) ([]client.BatchSegmentUploadJob, error) {
 	var err error
 	var list []client.BatchSegmentUploadJob
 	for i := 0; i < numJobs; i++ {
@@ -122,6 +135,7 @@ func generateBatchSegmentUploadJob(numJobs int) ([]client.BatchSegmentUploadJob,
 		//u.ErrorCode =
 		u.ErrorLogLines = "\n\nnum_unauth_segment-4013681496264948522;5013:0,5014:1550"
 		u.ID = int64(rand.Int())
+		u.MemberID = memberID
 		//u.IsBeamFile =
 		u.JobID, err = generateToken(20)
 		if err != nil {
