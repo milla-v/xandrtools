@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -90,7 +91,6 @@ func (c *Client) GetBatchSegmentJobs(memberID int32) ([]BatchSegmentUploadJob, e
 	if c.User.TokenData.Token == "" {
 		return nil, fmt.Errorf("token is empty")
 	}
-
 	var apiURL = "https://api.appnexus.com/batch-segment"
 	if c.backend == "simulator" {
 		apiURL = "https://xandrtools.com/xandrsim/batch-segment"
@@ -98,8 +98,7 @@ func (c *Client) GetBatchSegmentJobs(memberID int32) ([]BatchSegmentUploadJob, e
 	if strings.HasPrefix(c.backend, "test:") {
 		apiURL = strings.TrimPrefix(c.backend, "test:")
 	}
-
-	log.Println("request:", apiURL)
+	apiURL += "?member_id=" + strconv.Itoa(int(memberID))
 
 	req, err := http.NewRequest(http.MethodGet, apiURL, nil)
 	if err != nil {
@@ -126,9 +125,12 @@ func (c *Client) GetBatchSegmentJobs(memberID int32) ([]BatchSegmentUploadJob, e
 		return nil, err
 	}
 
+	log.Println("I AM HERE")
+
 	if errResponse.Response.Error != "" {
 		return nil, fmt.Errorf("%s:%s", errResponse.Response.ErrorId, errResponse.Response.Error)
 	}
+	log.Println("I AM HERE")
 
 	var bsResponse BatchSegmentResponse
 

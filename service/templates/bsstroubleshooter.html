@@ -52,24 +52,38 @@
       <form method="POST" name="login">
         <div style="display: flex;">
           <div style="margin: 10px;">
-            {{if eq .User.Token ""}}
+            {{if and (eq .IsLogin false) (eq .IsLoginWithToken false) (eq .IsJobs false)}}
               <label for="usernameid">User name:</label><br>
               <input type="text" id="usernameid" name="username" class="valid-input" {{if ne .User.Username ""}} value="{{.User.Username}}" {{else}} placeholder="Enter username" {{end}}><br>
               <label for="passwordid">Password:</label><br>
               <input type="password" id="passwordid" name="password" class="valid-input" placeholder="Enter password"><br>
+              <input type="submit" value="Login" name="submit" class="valid-submit" style="margin-top: 10px;">
+              <p>OR</p>
+              <input type="usertoken" id="usertokenid" name="usertoken" class="valid-input" {{if ne .User.Token ""}} value="{{.User.Token}}" {{else}} placeholder="Enter token" {{end}}><br>
+              <input type="submit" value="Login with Token" name="submit" class="valid-submit" style="margin-top: 10px;">
             {{end}}
-            {{if ne .User.Token ""}}
+            {{if and (eq .IsLogin true) (eq .IsLoginWithToken false)}}
               <label for="usernameid">Get jobs User name:</label><br>
               <input type="text" id="usernameid" name="username" class="valid-input" {{if ne .User.Username ""}} value="{{.User.Username}}" {{else}} placeholder="Enter username" {{end}}><br>
               <label for="tokenid">Token:</label><br>
-              <input type="text" id="tokenid" name="token" class="valid-input" value="{{.User.Token}}"><br>
+              <input type="text" id="tokenid" name="token" class="valid-input" {{if ne .User.Token ""}} value="{{.User.Token}}" {{else}} placeholder="Enter token" {{end}}><br>
               <label for="memberid">Member ID:</label><br>
               <input type="text" id="memberid" name="memberid" class="valid-input" {{if ne .User.MemberID 0}} value="{{.User.MemberID}}" {{else}} placeholder="Enter Member ID" {{end}}><br>
-            {{end}}
-            {{if and (ne .User.Username "") (ne .User.Token "")}}
               <input type="submit" value="Get Jobs" name="submit" class="valid-submit" style="margin-top: 10px;">
-            {{else}}
-              <input type="submit" value="Login" name="submit" class="valid-submit" style="margin-top: 10px;">
+            {{end}}
+            {{if and (eq .IsLogin false) (eq .IsLoginWithToken true)}}
+              <label for="tokenid">Token:</label><br>
+              <input type="text" id="tokenid" name="token" class="valid-input" {{if ne .User.Token ""}} value="{{.User.Token}}" {{else}} placeholder="Enter token" {{end}}><br>
+              <label for="memberid">Member ID:</label><br>
+              <input type="text" id="memberid" name="memberid" class="valid-input" {{if ne .User.MemberID 0}} value="{{.User.MemberID}}" {{else}} placeholder="Enter Member ID" {{end}}><br>
+              <input type="submit" value="Get Jobs" name="submit" class="valid-submit" style="margin-top: 10px;">
+            {{end}}
+            {{if eq .IsJobs true}}
+              <label for="tokenid">Token:</label><br>
+              <input type="text" id="tokenid" name="token" class="valid-input" {{if ne .User.Token ""}} value="{{.User.Token}}" {{else}} placeholder="Enter token" {{end}}><br>
+              <label for="memberid">Member ID:</label><br>
+              <input type="text" id="memberid" name="memberid" class="valid-input" {{if ne .User.MemberID 0}} value="{{.User.MemberID}}" {{else}} placeholder="Enter Member ID" {{end}}><br>
+              <input type="submit" value="Get Jobs" name="submit" class="valid-submit" style="margin-top: 10px;">
             {{end}}
           </div>
           <div style="margin: 10px;">

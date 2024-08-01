@@ -191,11 +191,13 @@ func handleValidators(w http.ResponseWriter, r *http.Request) {
 func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 	log.Println("start bss trouble shooter")
 	type data struct {
-		XandrVersion string
-		VCS          Vcs
-		User         XandrUser
-		JobList      []WebsiteBSUJ
-		IsJobs       bool
+		XandrVersion     string
+		VCS              Vcs
+		User             XandrUser
+		JobList          []WebsiteBSUJ
+		IsJobs           bool
+		IsLogin          bool
+		IsLoginWithToken bool
 	}
 	var d data
 	var err error
@@ -209,6 +211,7 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 
 	//get username and password
 	log.Println("METHOD: ", r.Method)
+	log.Println("d.User.Token = ", d.User.Token)
 
 	d.User.Username = r.FormValue("username")
 	password := r.FormValue("password")
@@ -230,6 +233,11 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 				}
 				d.User.Token = cli.User.TokenData.Token
 			}
+			if d.User.Username != "" {
+				d.IsLogin = true
+			} else {
+				d.IsLogin = false
+			}
 		case "Get Jobs":
 			//get user data from User sync.Map
 			d.User.Token = r.FormValue("token")
@@ -239,7 +247,10 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "invalid member id", http.StatusUnauthorized)
 				return
 			}
+			log.Println("memberid: ", memberid)
 			d.User.MemberID = int32(memberid)
+
+			log.Println("d.User.MemberID = ", d.User.MemberID)
 
 			//get list of batch segment jobs
 			joblist, err := cli.GetBatchSegmentJobs(d.User.MemberID)
@@ -254,6 +265,17 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 			}
 
 			d.JobList = getJobList(joblist)
+		case "Login with Token":
+			d.User.Token = r.FormValue("usertoken")
+			log.Println("usertoken: ", d.User.Token)
+			log.Println("Login with token before: ", d.IsLoginWithToken)
+
+			if d.User.Token != "" {
+				d.IsLoginWithToken = true
+			} else {
+				d.IsLoginWithToken = false
+			}
+			log.Println("Login with token after: ", d.IsLoginWithToken)
 		}
 	}
 	if err := t.ExecuteTemplate(w, "bsstroubleshooter.html", d); err != nil {
