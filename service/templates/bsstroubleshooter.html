@@ -70,6 +70,7 @@
               <label for="memberid">Member ID:</label><br>
               <input type="text" id="memberid" name="memberid" class="valid-input" {{if ne .User.MemberID 0}} value="{{.User.MemberID}}" {{else}} placeholder="Enter Member ID" {{end}}><br>
               <input type="submit" value="Get Jobs" name="submit" class="valid-submit" style="margin-top: 10px;">
+              <input type="hidden" id="backid" name="back" value="{{.Backend}}">
             {{end}}
             {{if and (eq .IsLogin false) (eq .IsLoginWithToken true)}}
               <label for="tokenid">Token:</label><br>
@@ -77,6 +78,7 @@
               <label for="memberid">Member ID:</label><br>
               <input type="text" id="memberid" name="memberid" class="valid-input" {{if ne .User.MemberID 0}} value="{{.User.MemberID}}" {{else}} placeholder="Enter Member ID" {{end}}><br>
               <input type="submit" value="Get Jobs" name="submit" class="valid-submit" style="margin-top: 10px;">
+              <input type="hidden" id="backid" name="back" value="{{.Backend}}">
             {{end}}
             {{if eq .IsJobs true}}
               <label for="tokenid">Token:</label><br>
@@ -84,8 +86,10 @@
               <label for="memberid">Member ID:</label><br>
               <input type="text" id="memberid" name="memberid" class="valid-input" {{if ne .User.MemberID 0}} value="{{.User.MemberID}}" {{else}} placeholder="Enter Member ID" {{end}}><br>
               <input type="submit" value="Get Jobs" name="submit" class="valid-submit" style="margin-top: 10px;">
+              <input type="hidden" id="backid" name="back" value="{{.Backend}}">
             {{end}}
           </div>
+          {{if and (eq .IsLogin false) (eq .IsLoginWithToken false) (eq .IsJobs false)}}
           <div style="margin: 10px;">
           <label></label><br>
             <select name="backend" style="padding: 10px; font-size: inherit; margin-top: 5px;">
@@ -93,6 +97,7 @@
             	<option>xandr</option>
             </select>
           </div>
+          {{end}}
         </div>
       </form>
       {{if eq .IsJobs true}}

@@ -195,6 +195,7 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 		VCS              Vcs
 		User             XandrUser
 		JobList          []WebsiteBSUJ
+		Backend          string
 		IsJobs           bool
 		IsLogin          bool
 		IsLoginWithToken bool
@@ -211,18 +212,18 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 
 	//get username and password
 	log.Println("METHOD: ", r.Method)
-	log.Println("d.User.Token = ", d.User.Token)
 
 	d.User.Username = r.FormValue("username")
 	password := r.FormValue("password")
-	backend := r.FormValue("backend")
-	cli := client.NewClient(backend)
+	d.Backend = r.FormValue("backend")
+	cli := client.NewClient(d.Backend)
 	if r.Method == "POST" {
 		submit := r.FormValue("submit")
 		log.Println("SUBMIT: ", submit)
 		switch submit {
 		case "Login":
 			log.Println("CASE LOGIN")
+			log.Println("LOGIN backend: ", d.Backend)
 			if r.FormValue("token") != "" {
 				d.User.Token = r.FormValue("token")
 			} else {
@@ -238,9 +239,14 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 			} else {
 				d.IsLogin = false
 			}
+			log.Println("LOGIN: d.User.Token = ", d.User.Token)
+
 		case "Get Jobs":
 			//get user data from User sync.Map
+			d.Backend = r.FormValue("back")
+			log.Println("GET JOBS backend: ", d.Backend)
 			d.User.Token = r.FormValue("token")
+			log.Println("GET JOBS: d.User.Token = ", d.User.Token)
 			cli.User.TokenData.Token = d.User.Token
 			memberid, err = strconv.Atoi(r.FormValue("memberid"))
 			if err != nil {
@@ -265,7 +271,10 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 			}
 
 			d.JobList = getJobList(joblist)
+
 		case "Login with Token":
+
+			log.Println("LOGIN WITH TOKEN backend: ", d.Backend)
 			d.User.Token = r.FormValue("usertoken")
 			log.Println("usertoken: ", d.User.Token)
 			log.Println("Login with token before: ", d.IsLoginWithToken)
@@ -276,6 +285,7 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 				d.IsLoginWithToken = false
 			}
 			log.Println("Login with token after: ", d.IsLoginWithToken)
+
 		}
 	}
 	if err := t.ExecuteTemplate(w, "bsstroubleshooter.html", d); err != nil {
