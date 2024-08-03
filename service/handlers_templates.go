@@ -247,6 +247,7 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 			log.Println("GET JOBS backend: ", d.Backend)
 			d.User.Token = r.FormValue("token")
 			log.Println("GET JOBS: d.User.Token = ", d.User.Token)
+			cli := client.NewClient(d.Backend)
 			cli.User.TokenData.Token = d.User.Token
 			memberid, err = strconv.Atoi(r.FormValue("memberid"))
 			if err != nil {
@@ -273,9 +274,10 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 			d.JobList = getJobList(joblist)
 
 		case "Login with Token":
-
-			log.Println("LOGIN WITH TOKEN backend: ", d.Backend)
 			d.User.Token = r.FormValue("usertoken")
+
+			d.Backend = "xandr"
+			log.Println("LOGIN WITH TOKEN backend: ", d.Backend)
 			log.Println("usertoken: ", d.User.Token)
 			log.Println("Login with token before: ", d.IsLoginWithToken)
 
