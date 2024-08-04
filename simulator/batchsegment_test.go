@@ -2,6 +2,7 @@ package simulator
 
 import (
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -96,5 +97,8 @@ func createTestUser() {
 	user.Username = "user1"
 	user.TokenData.Token = "12345"
 	user.TokenData.ExpirationTime = time.Now().Add(time.Second * 30)
+	//newlayout := time.Now()
+	//user.TokenData.ExpirationTime, _ = time.Parse(newlayout, "2024-08-04 21:00:00")
+	log.Println("TIME: ", user.TokenData.ExpirationTime)
 	User.Store(user.TokenData.Token, user)
 }

@@ -215,13 +215,14 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 
 	d.User.Username = r.FormValue("username")
 	password := r.FormValue("password")
-	d.Backend = r.FormValue("backend")
-	cli := client.NewClient(d.Backend)
+
 	if r.Method == "POST" {
 		submit := r.FormValue("submit")
 		log.Println("SUBMIT: ", submit)
 		switch submit {
 		case "Login":
+			d.Backend = r.FormValue("backend")
+			cli := client.NewClient(d.Backend)
 			log.Println("CASE LOGIN")
 			log.Println("LOGIN backend: ", d.Backend)
 			if r.FormValue("token") != "" {
@@ -243,6 +244,7 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 
 		case "Get Jobs":
 			//get user data from User sync.Map
+			log.Println("START GET JOBS")
 			d.Backend = r.FormValue("back")
 			log.Println("GET JOBS backend: ", d.Backend)
 			d.User.Token = r.FormValue("token")
