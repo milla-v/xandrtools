@@ -21,7 +21,7 @@ const text = `{
 	"response": {
 		"batch_segment_upload_job": [
 			{
-				"completed_time": "2024-06-03 21:09:34",
+				"completed_time": "2024-06-03 21:00:00",
 				"created_on": "2024-06-03 21:09:33",
 				"error_code": null,
 				"error_log_lines": "\n\nnum_unauth_segment-4013681496264948522;5013:0,5014:1550",

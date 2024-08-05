@@ -46,15 +46,24 @@ func (c *Client) Login(username, password string) error {
 	}
 
 	//log.Println("json:", string(buf))
-
-	var apiURL = "https://api.appnexus.com/auth"
-	if c.backend != "" {
+	log.Println("c.backend: ", c.backend)
+	var apiURL string
+	switch c.backend {
+	case "simulator":
 		apiURL = "https://xandrtools.com/xandrsim/auth"
-	}
-	if strings.HasPrefix(c.backend, "test:") {
-		apiURL = strings.TrimPrefix(c.backend, "test:")
+	case "xandr":
+		apiURL = "https://api.appnexus.com/auth"
 	}
 
+	/*
+		var apiURL = "https://api.appnexus.com/auth"
+		if c.backend != "" {
+			apiURL = "https://xandrtools.com/xandrsim/auth"
+		}
+		if strings.HasPrefix(c.backend, "test:") {
+			apiURL = strings.TrimPrefix(c.backend, "test:")
+		}
+	*/
 	log.Println("request:", apiURL, "user:", username)
 
 	resp, err := http.Post(apiURL, "application/json", bytes.NewReader(buf))
@@ -142,6 +151,7 @@ func (c *Client) GetBatchSegmentJobs(memberID int32) ([]BatchSegmentUploadJob, e
 	}
 
 	log.Println("jobs:", len(bsResponse.Response.BatchSegmentUploadJob))
+	log.Println("COMPLETE_time: ", bsResponse.Response.BatchSegmentUploadJob[0].CompletedTime)
 
 	return bsResponse.Response.BatchSegmentUploadJob, nil
 }

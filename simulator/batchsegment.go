@@ -66,7 +66,7 @@ func HandleBatchSegment(w http.ResponseWriter, r *http.Request) {
 		log.Println("generateBatchSegmentUploadJob err", http.StatusUnauthorized)
 		return
 	}
-	log.Println("3. ")
+	log.Println("3. complete_job: ", resp.Response.BatchSegmentUploadJob[0].CompletedTime)
 	resp.Response.Dbg, err = generateDbgInfo()
 	if err != nil {
 		log.Println("generate Dbg-info err", http.StatusUnauthorized)
@@ -124,6 +124,7 @@ func generateBatchSegmentUploadJob(numJobs int) ([]client.BatchSegmentUploadJob,
 		u.UploadedTime = client.BssTimestamp(time.Now().UTC().Add(time.Second * 6))
 		u.ValidatedTime = client.BssTimestamp(time.Now().UTC().Add(time.Minute * 3))
 		completedTime := time.Now().UTC().Add(time.Minute * 1)
+		//completedTime := time.Date(2024, time.August, 5, 21, 0, 0, 0, time.UTC)
 		u.CompletedTime = client.BssTimestamp(completedTime)
 		u.CreatedOn = client.BssTimestamp(u.StartTime)
 		//u.ErrorCode =
