@@ -32,17 +32,19 @@ func HandleBatchSegment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	u := user.(client.UserData)
-
+	log.Println("u.Token.ExpirationTime: ", u.TokenData.ExpirationTime)
 	//check if expiration time exists
 	if u.TokenData.ExpirationTime.IsZero() == true {
 		http.Error(w, "invalid expiration time: ", http.StatusUnauthorized)
 		return
 	}
 	//check expiration time
-	if time.Now().Before(u.TokenData.ExpirationTime) == false {
+	if time.Now().UTC().Before(u.TokenData.ExpirationTime) == false {
 		http.Error(w, "invalid expiration time: ", http.StatusUnauthorized)
 		return
 	}
+	log.Println("TIME NOW: ", time.Now().UTC())
+	log.Println("EXPIRATION TIME: ", u.TokenData.ExpirationTime)
 
 	s := r.URL.Query().Get("member_id")
 	if s == "" {
@@ -50,22 +52,27 @@ func HandleBatchSegment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Println("1. member_id: ", s)
+
 	// var resp BatchSegmentResponse
 	var resp client.BatchSegmentResponse
 	numJobs := 5
 	resp.Response.StartElement = 0
 	resp.Response.Count = 1
 	resp.Response.Status = "OK"
+	log.Println("2. status: ", resp.Response.Status)
 	resp.Response.BatchSegmentUploadJob, err = generateBatchSegmentUploadJob(numJobs)
 	if err != nil {
 		log.Println("generateBatchSegmentUploadJob err", http.StatusUnauthorized)
 		return
 	}
+	log.Println("3. ")
 	resp.Response.Dbg, err = generateDbgInfo()
 	if err != nil {
 		log.Println("generate Dbg-info err", http.StatusUnauthorized)
 		return
 	}
+	log.Println("4. Dbg: ", resp.Response.Dbg.DbgTime)
 
 	buf, err := json.MarshalIndent(resp, "", "\t")
 	if err != nil {
@@ -112,11 +119,11 @@ func generateBatchSegmentUploadJob(numJobs int) ([]client.BatchSegmentUploadJob,
 	var list []client.BatchSegmentUploadJob
 	for i := 0; i < numJobs; i++ {
 		var u client.BatchSegmentUploadJob
-		startTime := time.Now()
-		u.StartTime = client.BssTimestamp(time.Now())
-		u.UploadedTime = client.BssTimestamp(time.Now().Add(time.Second * 6))
-		u.ValidatedTime = client.BssTimestamp(time.Now().Add(time.Minute * 3))
-		completedTime := time.Now().Add(time.Minute * 1)
+		startTime := time.Now().UTC()
+		u.StartTime = client.BssTimestamp(time.Now().UTC())
+		u.UploadedTime = client.BssTimestamp(time.Now().UTC().Add(time.Second * 6))
+		u.ValidatedTime = client.BssTimestamp(time.Now().UTC().Add(time.Minute * 3))
+		completedTime := time.Now().UTC().Add(time.Minute * 1)
 		u.CompletedTime = client.BssTimestamp(completedTime)
 		u.CreatedOn = client.BssTimestamp(u.StartTime)
 		//u.ErrorCode =
@@ -164,7 +171,7 @@ func generateDbgInfo() (client.DbgInfo, error) {
 	var dbg client.DbgInfo
 	dbg.Instance = "authentication-api-production-8664bd4765-btqsz"
 	dbg.DbgTime = 0
-	dbg.StartTime = time.Now()
+	dbg.StartTime = time.Now().UTC()
 	dbg.Version = "0.0.0"
 	dbg.TraceID, err = generateToken(10)
 	if err != nil {

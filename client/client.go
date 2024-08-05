@@ -79,8 +79,7 @@ func (c *Client) Login(username, password string) error {
 	}
 
 	c.User.TokenData.Token = respAuth.Response.Token
-	c.User.TokenData.ExpirationTime = time.Now().Add(time.Hour * 2)
-
+	c.User.TokenData.ExpirationTime = time.Now().UTC().Add(time.Hour * 2)
 	log.Println("auth request completed")
 
 	return nil
@@ -91,13 +90,20 @@ func (c *Client) GetBatchSegmentJobs(memberID int32) ([]BatchSegmentUploadJob, e
 	if c.User.TokenData.Token == "" {
 		return nil, fmt.Errorf("token is empty")
 	}
-	var apiURL = "https://api.appnexus.com/batch-segment"
+	var apiURL string
+	log.Println("BACKEND: ", c.backend)
+
+	if strings.HasPrefix(c.backend, "test:") {
+		apiURL = strings.TrimPrefix(c.backend, "test:")
+		log.Println("URL: ", apiURL)
+	}
 	if c.backend == "simulator" {
 		apiURL = "https://xandrtools.com/xandrsim/batch-segment"
 	}
-	if strings.HasPrefix(c.backend, "test:") {
-		apiURL = strings.TrimPrefix(c.backend, "test:")
+	if c.backend == "xandr" {
+		apiURL = "https://api.appnexus.com/batch-segment"
 	}
+
 	apiURL += "?member_id=" + strconv.Itoa(int(memberID))
 
 	req, err := http.NewRequest(http.MethodGet, apiURL, nil)
@@ -125,13 +131,9 @@ func (c *Client) GetBatchSegmentJobs(memberID int32) ([]BatchSegmentUploadJob, e
 		return nil, err
 	}
 
-	log.Println("I AM HERE")
-
 	if errResponse.Response.Error != "" {
 		return nil, fmt.Errorf("%s:%s", errResponse.Response.ErrorId, errResponse.Response.Error)
 	}
-	log.Println("I AM HERE")
-
 	var bsResponse BatchSegmentResponse
 
 	if err := json.Unmarshal(buf, &bsResponse); err != nil {

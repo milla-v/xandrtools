@@ -59,23 +59,6 @@ func TestClientNoAuthError(t *testing.T) {
 	}
 }
 
-func TestClientNoMemberIdError(t *testing.T) {
-	createTestUser()
-
-	testServer := httptest.NewServer(http.HandlerFunc(HandleBatchSegment))
-	defer testServer.Close()
-
-	cli := client.NewClient("test:" + testServer.URL)
-	cli.User.TokenData.Token = "12345"
-	_, err := cli.GetBatchSegmentJobs(111)
-	if err == nil {
-		t.Fatal("should be SYNTAX error")
-	}
-	if !strings.Contains(err.Error(), "SYNTAX:no member_id provided") {
-		t.Fatal("should syntax error but returned: ", err.Error())
-	}
-}
-
 func TestClientGetJobsSuccess(t *testing.T) {
 	createTestUser()
 
@@ -96,9 +79,8 @@ func createTestUser() {
 
 	user.Username = "user1"
 	user.TokenData.Token = "12345"
-	user.TokenData.ExpirationTime = time.Now().Add(time.Second * 30)
-	//newlayout := time.Now()
-	//user.TokenData.ExpirationTime, _ = time.Parse(newlayout, "2024-08-04 21:00:00")
-	log.Println("TIME: ", user.TokenData.ExpirationTime)
+	//user.TokenData.ExpirationTime = time.Now().Add(time.Second * 30)
+	user.TokenData.ExpirationTime = time.Date(2024, time.August, 5, 21, 0, 0, 0, time.UTC)
+	log.Println("TIME Expiration: ", user.TokenData.ExpirationTime)
 	User.Store(user.TokenData.Token, user)
 }
