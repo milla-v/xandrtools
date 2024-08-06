@@ -210,6 +210,17 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 	d.IsJobs = false
 	var memberid int
 
+	/*
+		mux := http.NewServeMux()
+		addr := os.Getenv("DEBUG_ADDR")
+		if addr != "" {
+			startDevServer(mux, addr)
+		} else {
+			startProdServer(mux)
+		}
+
+		log.Println("START SERVER: ", mux)
+	*/
 	//get username and password
 	log.Println("METHOD: ", r.Method)
 
@@ -219,6 +230,7 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		submit := r.FormValue("submit")
 		log.Println("SUBMIT: ", submit)
+		log.Println("URL: ", r.URL)
 		switch submit {
 		case "Login":
 			d.Backend = r.FormValue("backend")

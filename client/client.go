@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -45,14 +46,26 @@ func (c *Client) Login(username, password string) error {
 		return fmt.Errorf("marshal: %w", err)
 	}
 
-	//log.Println("json:", string(buf))
+	var isDebug bool
+	log.Println("BACKEND Login: ", c.backend)
+	debugAddr := os.Getenv("DEBUG_ADDR")
+	if debugAddr != "" {
+		isDebug = true
+	}
+	log.Println("ADDR in Login: ", debugAddr)
+
 	log.Println("c.backend: ", c.backend)
 	var apiURL string
-	switch c.backend {
-	case "simulator":
-		apiURL = "https://xandrtools.com/xandrsim/auth"
-	case "xandr":
-		apiURL = "https://api.appnexus.com/auth"
+	switch {
+	case c.backend == "simulator" && isDebug == true:
+		apiURL = "http://localhost:9970/xandrsim/batch-segment"
+		log.Println("apiUPL: ", apiURL)
+	case c.backend == "simulator" && isDebug == false:
+		apiURL = "https://xandrtools.com/xandrsim/batch-segment"
+		log.Println("apiUPL: ", apiURL)
+	case c.backend == "xandr" && isDebug == false:
+		apiURL = "https://api.appnexus.com/batch-segment"
+		log.Println("apiUPL: ", apiURL)
 	}
 
 	/*
@@ -100,18 +113,39 @@ func (c *Client) GetBatchSegmentJobs(memberID int32) ([]BatchSegmentUploadJob, e
 		return nil, fmt.Errorf("token is empty")
 	}
 	var apiURL string
-	log.Println("BACKEND: ", c.backend)
+	var isDebug bool
+	log.Println("BACKEND Get Job: ", c.backend)
+	debugAddr := os.Getenv("DEBUG_ADDR")
+	if debugAddr != "" {
+		isDebug = true
+	}
+	log.Println("ADDR in jobs: ", debugAddr)
 
 	if strings.HasPrefix(c.backend, "test:") {
 		apiURL = strings.TrimPrefix(c.backend, "test:")
 		log.Println("URL: ", apiURL)
 	}
-	if c.backend == "simulator" {
+	switch {
+	case c.backend == "simulator" && isDebug == true:
+		apiURL = "http://localhost:9970/xandrsim/batch-segment"
+		log.Println("apiUPL: ", apiURL)
+	case c.backend == "simulator" && isDebug == false:
 		apiURL = "https://xandrtools.com/xandrsim/batch-segment"
-	}
-	if c.backend == "xandr" {
+		log.Println("apiUPL: ", apiURL)
+	case c.backend == "xandr" && isDebug == false:
 		apiURL = "https://api.appnexus.com/batch-segment"
+		log.Println("apiUPL: ", apiURL)
 	}
+	/*
+		if c.backend == "simulator" {
+			apiURL = "https://xandrtools.com/xandrsim/batch-segment"
+			log.Println("apiUPL: ", apiURL)
+		}
+		if c.backend == "xandr" {
+			apiURL = "https://api.appnexus.com/batch-segment"
+			log.Println("apiUPL: ", apiURL)
+		}
+	*/
 
 	apiURL += "?member_id=" + strconv.Itoa(int(memberID))
 
