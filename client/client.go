@@ -46,29 +46,40 @@ func (c *Client) Login(username, password string) error {
 	if err != nil {
 		return fmt.Errorf("marshal: %w", err)
 	}
-
-	var isDebug bool
-	log.Println("BACKEND Login: ", c.backend)
 	debugAddr := os.Getenv("DEBUG_ADDR")
-	if debugAddr != "" {
-		isDebug = true
+	/*
+		var isDebug bool
+		log.Println("BACKEND Login: ", c.backend)
+		debugAddr := os.Getenv("DEBUG_ADDR")
+		if debugAddr != "" {
+			isDebug = true
+		}
+	*/
+	apiURL, err := getApiURL(c.backend, debugAddr)
+	if err != nil {
+		log.Println("get api url err:", err)
+		return nil
 	}
-	log.Println("ADDR in Login: ", debugAddr)
+	apiURL = apiURL + "auth"
+
+	//log.Println("ADDR in Login: ", debugAddr)
 
 	log.Println("c.backend: ", c.backend)
-	var apiURL string
-	switch {
-	case c.backend == "simulator" && isDebug == true:
-		apiURL = "https://" + debugAddr + "/xandrsim/auth"
-		http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-		log.Println("apiUPL: ", apiURL)
-	case c.backend == "simulator" && isDebug == false:
-		apiURL = "https://xandrtools.com/xandrsim/auth"
-		log.Println("apiUPL: ", apiURL)
-	case c.backend == "xandr" && isDebug == false:
-		apiURL = "https://api.appnexus.com/auth"
-		log.Println("apiUPL: ", apiURL)
-	}
+	/*
+		var apiURL string
+		switch {
+		case c.backend == "simulator" && isDebug == true:
+			apiURL = "https://" + debugAddr + "/xandrsim/auth"
+			http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+			log.Println("apiUPL: ", apiURL)
+		case c.backend == "simulator" && isDebug == false:
+			apiURL = "https://xandrtools.com/xandrsim/auth"
+			log.Println("apiUPL: ", apiURL)
+		case c.backend == "xandr" && isDebug == false:
+			apiURL = "https://api.appnexus.com/auth"
+			log.Println("apiUPL: ", apiURL)
+		}
+	*/
 
 	/*
 		var apiURL = "https://api.appnexus.com/auth"
