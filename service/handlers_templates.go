@@ -243,6 +243,7 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 				//authentication request
 				if err = cli.Login(d.User.Username, password); err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
+					log.Println("login err:", err)
 					return
 				}
 				d.User.Token = cli.User.TokenData.Token

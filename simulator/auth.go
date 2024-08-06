@@ -17,12 +17,14 @@ var User sync.Map
 func HandleAuthentication(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "error", http.StatusMethodNotAllowed)
+		log.Println("simulator: method")
 		return
 	}
 
 	buf, err := io.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, "error", http.StatusBadRequest)
+		log.Println("simulator:", err)
 		return
 	}
 
@@ -33,6 +35,7 @@ func HandleAuthentication(w http.ResponseWriter, r *http.Request) {
 
 	if err := json.Unmarshal(buf, &auth); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		log.Println("simulator:", err)
 		return
 	}
 
@@ -59,12 +62,17 @@ func HandleAuthentication(w http.ResponseWriter, r *http.Request) {
 	buf, err = json.MarshalIndent(authResp, "", "\t")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println("simulator:", err)
 		return
 	}
 
 	if _, err := fmt.Fprintln(w, string(buf)); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println("simulator:", err)
 		return
 	}
+
+	log.Println("simulator: login ok")
+
 	//fmt.Printf("json data: %s\n", buf)
 }

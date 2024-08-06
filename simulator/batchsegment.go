@@ -17,6 +17,7 @@ func HandleBatchSegment(w http.ResponseWriter, r *http.Request) {
 	var err error
 	if r.Method != http.MethodGet {
 		http.Error(w, "GET", http.StatusMethodNotAllowed)
+		log.Print("simulator: method")
 		return
 	}
 	/*
@@ -29,6 +30,7 @@ func HandleBatchSegment(w http.ResponseWriter, r *http.Request) {
 	user, ok := User.Load(token)
 	if !ok {
 		authenticationFailedError(w)
+		log.Print("simulator: no token")
 		return
 	}
 	u := user.(client.UserData)
@@ -36,11 +38,13 @@ func HandleBatchSegment(w http.ResponseWriter, r *http.Request) {
 	//check if expiration time exists
 	if u.TokenData.ExpirationTime.IsZero() == true {
 		http.Error(w, "invalid expiration time: ", http.StatusUnauthorized)
+		log.Print("simulator: expiration time")
 		return
 	}
 	//check expiration time
 	if time.Now().UTC().Before(u.TokenData.ExpirationTime) == false {
 		http.Error(w, "invalid expiration time: ", http.StatusUnauthorized)
+		log.Print("simulator: expiration time 2")
 		return
 	}
 	log.Println("TIME NOW: ", time.Now().UTC())
@@ -49,6 +53,7 @@ func HandleBatchSegment(w http.ResponseWriter, r *http.Request) {
 	s := r.URL.Query().Get("member_id")
 	if s == "" {
 		noMemberIdError(w)
+		log.Print("simulator: no member id")
 		return
 	}
 
@@ -63,13 +68,15 @@ func HandleBatchSegment(w http.ResponseWriter, r *http.Request) {
 	log.Println("2. status: ", resp.Response.Status)
 	resp.Response.BatchSegmentUploadJob, err = generateBatchSegmentUploadJob(numJobs)
 	if err != nil {
-		log.Println("generateBatchSegmentUploadJob err", http.StatusUnauthorized)
+		http.Error(w, "error", http.StatusUnauthorized)
+		log.Print("simulator:", err)
 		return
 	}
 	log.Println("3. complete_job: ", resp.Response.BatchSegmentUploadJob[0].CompletedTime)
 	resp.Response.Dbg, err = generateDbgInfo()
 	if err != nil {
-		log.Println("generate Dbg-info err", http.StatusUnauthorized)
+		http.Error(w, "error", http.StatusUnauthorized)
+		log.Print("simulator:", err)
 		return
 	}
 	log.Println("4. Dbg: ", resp.Response.Dbg.DbgTime)
@@ -77,13 +84,17 @@ func HandleBatchSegment(w http.ResponseWriter, r *http.Request) {
 	buf, err := json.MarshalIndent(resp, "", "\t")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Print("simulator:", err)
 		return
 	}
 	//fmt.Printf("json data: %s\n", buf)
 	if _, err := fmt.Fprintln(w, string(buf)); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Print("simulator:", err)
 		return
 	}
+
+	log.Print("ok")
 }
 
 func authenticationFailedError(w io.Writer) {

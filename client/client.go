@@ -2,6 +2,7 @@ package client
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -58,13 +59,14 @@ func (c *Client) Login(username, password string) error {
 	var apiURL string
 	switch {
 	case c.backend == "simulator" && isDebug == true:
-		apiURL = "http://localhost:9970/xandrsim/batch-segment"
+		apiURL = "https://" + debugAddr + "/xandrsim/auth"
+		http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 		log.Println("apiUPL: ", apiURL)
 	case c.backend == "simulator" && isDebug == false:
-		apiURL = "https://xandrtools.com/xandrsim/batch-segment"
+		apiURL = "https://xandrtools.com/xandrsim/auth"
 		log.Println("apiUPL: ", apiURL)
 	case c.backend == "xandr" && isDebug == false:
-		apiURL = "https://api.appnexus.com/batch-segment"
+		apiURL = "https://api.appnexus.com/auth"
 		log.Println("apiUPL: ", apiURL)
 	}
 
@@ -93,7 +95,7 @@ func (c *Client) Login(username, password string) error {
 	var respAuth AuthResponse
 
 	if err := json.Unmarshal(buf, &respAuth); err != nil {
-		return fmt.Errorf("unmarshal: %w", err)
+		return fmt.Errorf("unmarshal: %w.\nresp: %s", err, string(buf))
 	}
 
 	if respAuth.Response.Status != "OK" {
@@ -127,8 +129,9 @@ func (c *Client) GetBatchSegmentJobs(memberID int32) ([]BatchSegmentUploadJob, e
 	}
 	switch {
 	case c.backend == "simulator" && isDebug == true:
-		apiURL = "http://localhost:9970/xandrsim/batch-segment"
+		apiURL = "https://" + debugAddr + "/xandrsim/batch-segment"
 		log.Println("apiUPL: ", apiURL)
+		http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	case c.backend == "simulator" && isDebug == false:
 		apiURL = "https://xandrtools.com/xandrsim/batch-segment"
 		log.Println("apiUPL: ", apiURL)
