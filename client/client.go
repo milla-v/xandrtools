@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -45,9 +44,8 @@ func (c *Client) Login(username, password string) error {
 	if err != nil {
 		return fmt.Errorf("marshal: %w", err)
 	}
-	debugAddr := os.Getenv("DEBUG_ADDR")
 
-	apiURL, err := getApiURL(c.backend, debugAddr)
+	apiURL, err := getApiURL(c.backend)
 	if err != nil {
 		log.Println("get api url err:", err)
 		return nil
@@ -90,39 +88,15 @@ func (c *Client) GetBatchSegmentJobs(memberID int32) ([]BatchSegmentUploadJob, e
 	var apiURL string
 	var bsResponse BatchSegmentResponse
 	log.Println("BACKEND Get Job: ", c.backend)
-	debugAddr := os.Getenv("DEBUG_ADDR")
 
-	if strings.HasPrefix(c.backend, "test:") {
-		apiURL = strings.TrimPrefix(c.backend, "test:")
-		log.Println("URL: ", apiURL)
-	}
-	/*
-		switch {
-		case c.backend == "simulator" && isDebug == true:
-			apiURL = "https://" + debugAddr + "/xandrsim/batch-segment"
-			log.Println("apiUPL: ", apiURL)
-			http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-		case c.backend == "simulator" && isDebug == false:
-			apiURL = "https://xandrtools.com/xandrsim/batch-segment"
-			log.Println("apiUPL: ", apiURL)
-		case c.backend == "xandr" && isDebug == false:
-			apiURL = "https://api.appnexus.com/batch-segment"
-			log.Println("apiUPL: ", apiURL)
-		}
-
-			if c.backend == "simulator" {
-				apiURL = "https://xandrtools.com/xandrsim/batch-segment"
-				log.Println("apiUPL: ", apiURL)
-			}
-			if c.backend == "xandr" {
-				apiURL = "https://api.appnexus.com/batch-segment"
-				log.Println("apiUPL: ", apiURL)
-			}
-	*/
-	apiURL, err := getApiURL(c.backend, debugAddr)
+	apiURL, err := getApiURL(c.backend)
 	if err != nil {
 		log.Println("get api url err:", err)
 		return bsResponse.Response.BatchSegmentUploadJob, nil
+	}
+	if strings.HasPrefix(c.backend, "test:") {
+		apiURL = strings.TrimPrefix(c.backend, "test:")
+		log.Println("URL: ", apiURL)
 	}
 
 	apiURL += "batch-segment?member_id=" + strconv.Itoa(int(memberID))
@@ -161,8 +135,8 @@ func (c *Client) GetBatchSegmentJobs(memberID int32) ([]BatchSegmentUploadJob, e
 		return nil, err
 	}
 
-	log.Println("jobs:", len(bsResponse.Response.BatchSegmentUploadJob))
-	log.Println("COMPLETE_time: ", bsResponse.Response.BatchSegmentUploadJob[0].CompletedTime)
+	//log.Println("jobs:", len(bsResponse.Response.BatchSegmentUploadJob))
+	//log.Println("COMPLETE_time: ", bsResponse.Response.BatchSegmentUploadJob[0].CompletedTime)
 
 	return bsResponse.Response.BatchSegmentUploadJob, nil
 }

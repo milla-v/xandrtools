@@ -134,8 +134,8 @@ func generateBatchSegmentUploadJob(numJobs int) ([]client.BatchSegmentUploadJob,
 		u.StartTime = client.BssTimestamp(time.Now().UTC())
 		u.UploadedTime = client.BssTimestamp(time.Now().UTC().Add(time.Second * 6))
 		u.ValidatedTime = client.BssTimestamp(time.Now().UTC().Add(time.Minute * 3))
-		//completedTime := time.Now().UTC().Add(time.Minute * 1)
-		completedTime := time.Date(2024, time.August, 5, 21, 0, 0, 0, time.UTC)
+		completedTime := time.Now().UTC().Add(time.Minute * 1)
+		//completedTime := time.Date(2024, time.August, 5, 21, 0, 0, 0, time.UTC)
 		u.CompletedTime = client.BssTimestamp(completedTime)
 		u.CreatedOn = client.BssTimestamp(u.StartTime)
 		//u.ErrorCode =

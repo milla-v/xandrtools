@@ -5,29 +5,24 @@ import (
 	"errors"
 	"log"
 	"net/http"
-	"strings"
+	"os"
 )
 
-// get  backend and debug adress string
+// get  backend string
 // returns api url to login and get bss jobs
 // returns err if apiURL is empty
-func getApiURL(backend string, debugAddress string) (string, error) {
+func getApiURL(backend string) (string, error) {
 	var apiURL string
 	var err error
-	addr := debugAddress
+	debugAddr := os.Getenv("DEBUG_ADDR")
 	var isDebug bool
-	var port string
-	log.Println("Backend: ", backend)
-	log.Println("debug address: ", debugAddress)
-	if debugAddress != "" {
+	if debugAddr != "" {
 		isDebug = true
-		port = strings.TrimPrefix(addr, "127.0.0.1")
 	}
-	log.Println("port: ", port)
 
 	switch {
 	case backend == "simulator" && isDebug == true:
-		apiURL = "http://localhost" + port + "/xandrsim/"
+		apiURL = "http://" + debugAddr + "/xandrsim/"
 		http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 		log.Println("apiUPL: ", apiURL)
 	case backend == "simulator" && isDebug == false:
