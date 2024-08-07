@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"os"
 	"time"
 )
 
@@ -23,6 +24,18 @@ func NewClient(backend string) *Client {
 	var c Client
 	c.backend = backend
 	return &c
+}
+
+func (c *Client) getAPIURL() string {
+	var apiURL = "https://api.appnexus.com/"
+	if c.backend == "simulator" {
+		apiURL = "https://xandrtools.com/xandrsim/"
+	}
+	testUrl := os.Getenv("TEST_BACKEND")
+	if testUrl != "" {
+		apiURL = testUrl + "/"
+	}
+	return apiURL
 }
 
 // Login returns user token.
@@ -51,6 +64,8 @@ func (c *Client) Login(username, password string) error {
 		return nil
 	}
 	apiURL += "auth"
+
+	log.Println("request:", apiURL, "user:", username)
 
 	resp, err := http.Post(apiURL, "application/json", bytes.NewReader(buf))
 	if err != nil {
@@ -94,11 +109,6 @@ func (c *Client) GetBatchSegmentJobs(memberID int32) ([]BatchSegmentUploadJob, e
 		log.Println("get api url err:", err)
 		return bsResponse.Response.BatchSegmentUploadJob, nil
 	}
-	if strings.HasPrefix(c.backend, "test:") {
-		apiURL = strings.TrimPrefix(c.backend, "test:")
-		log.Println("URL: ", apiURL)
-	}
-
 	apiURL += "batch-segment?member_id=" + strconv.Itoa(int(memberID))
 
 	req, err := http.NewRequest(http.MethodGet, apiURL, nil)
