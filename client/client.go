@@ -2,7 +2,6 @@ package client
 
 import (
 	"bytes"
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -47,50 +46,13 @@ func (c *Client) Login(username, password string) error {
 		return fmt.Errorf("marshal: %w", err)
 	}
 	debugAddr := os.Getenv("DEBUG_ADDR")
-	/*
-		var isDebug bool
-		log.Println("BACKEND Login: ", c.backend)
-		debugAddr := os.Getenv("DEBUG_ADDR")
-		if debugAddr != "" {
-			isDebug = true
-		}
-	*/
+
 	apiURL, err := getApiURL(c.backend, debugAddr)
 	if err != nil {
 		log.Println("get api url err:", err)
 		return nil
 	}
-	apiURL = apiURL + "auth"
-
-	//log.Println("ADDR in Login: ", debugAddr)
-
-	log.Println("c.backend: ", c.backend)
-	/*
-		var apiURL string
-		switch {
-		case c.backend == "simulator" && isDebug == true:
-			apiURL = "https://" + debugAddr + "/xandrsim/auth"
-			http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-			log.Println("apiUPL: ", apiURL)
-		case c.backend == "simulator" && isDebug == false:
-			apiURL = "https://xandrtools.com/xandrsim/auth"
-			log.Println("apiUPL: ", apiURL)
-		case c.backend == "xandr" && isDebug == false:
-			apiURL = "https://api.appnexus.com/auth"
-			log.Println("apiUPL: ", apiURL)
-		}
-	*/
-
-	/*
-		var apiURL = "https://api.appnexus.com/auth"
-		if c.backend != "" {
-			apiURL = "https://xandrtools.com/xandrsim/auth"
-		}
-		if strings.HasPrefix(c.backend, "test:") {
-			apiURL = strings.TrimPrefix(c.backend, "test:")
-		}
-	*/
-	log.Println("request:", apiURL, "user:", username)
+	apiURL += "auth"
 
 	resp, err := http.Post(apiURL, "application/json", bytes.NewReader(buf))
 	if err != nil {
@@ -126,42 +88,44 @@ func (c *Client) GetBatchSegmentJobs(memberID int32) ([]BatchSegmentUploadJob, e
 		return nil, fmt.Errorf("token is empty")
 	}
 	var apiURL string
-	var isDebug bool
+	var bsResponse BatchSegmentResponse
 	log.Println("BACKEND Get Job: ", c.backend)
 	debugAddr := os.Getenv("DEBUG_ADDR")
-	if debugAddr != "" {
-		isDebug = true
-	}
-	log.Println("ADDR in jobs: ", debugAddr)
 
 	if strings.HasPrefix(c.backend, "test:") {
 		apiURL = strings.TrimPrefix(c.backend, "test:")
 		log.Println("URL: ", apiURL)
 	}
-	switch {
-	case c.backend == "simulator" && isDebug == true:
-		apiURL = "https://" + debugAddr + "/xandrsim/batch-segment"
-		log.Println("apiUPL: ", apiURL)
-		http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-	case c.backend == "simulator" && isDebug == false:
-		apiURL = "https://xandrtools.com/xandrsim/batch-segment"
-		log.Println("apiUPL: ", apiURL)
-	case c.backend == "xandr" && isDebug == false:
-		apiURL = "https://api.appnexus.com/batch-segment"
-		log.Println("apiUPL: ", apiURL)
-	}
 	/*
-		if c.backend == "simulator" {
+		switch {
+		case c.backend == "simulator" && isDebug == true:
+			apiURL = "https://" + debugAddr + "/xandrsim/batch-segment"
+			log.Println("apiUPL: ", apiURL)
+			http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+		case c.backend == "simulator" && isDebug == false:
 			apiURL = "https://xandrtools.com/xandrsim/batch-segment"
 			log.Println("apiUPL: ", apiURL)
-		}
-		if c.backend == "xandr" {
+		case c.backend == "xandr" && isDebug == false:
 			apiURL = "https://api.appnexus.com/batch-segment"
 			log.Println("apiUPL: ", apiURL)
 		}
-	*/
 
-	apiURL += "?member_id=" + strconv.Itoa(int(memberID))
+			if c.backend == "simulator" {
+				apiURL = "https://xandrtools.com/xandrsim/batch-segment"
+				log.Println("apiUPL: ", apiURL)
+			}
+			if c.backend == "xandr" {
+				apiURL = "https://api.appnexus.com/batch-segment"
+				log.Println("apiUPL: ", apiURL)
+			}
+	*/
+	apiURL, err := getApiURL(c.backend, debugAddr)
+	if err != nil {
+		log.Println("get api url err:", err)
+		return bsResponse.Response.BatchSegmentUploadJob, nil
+	}
+
+	apiURL += "batch-segment?member_id=" + strconv.Itoa(int(memberID))
 
 	req, err := http.NewRequest(http.MethodGet, apiURL, nil)
 	if err != nil {
@@ -191,7 +155,6 @@ func (c *Client) GetBatchSegmentJobs(memberID int32) ([]BatchSegmentUploadJob, e
 	if errResponse.Response.Error != "" {
 		return nil, fmt.Errorf("%s:%s", errResponse.Response.ErrorId, errResponse.Response.Error)
 	}
-	var bsResponse BatchSegmentResponse
 
 	if err := json.Unmarshal(buf, &bsResponse); err != nil {
 		log.Println("buf:", string(buf))
