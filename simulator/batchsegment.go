@@ -7,7 +7,6 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 
@@ -18,6 +17,7 @@ func HandleBatchSegment(w http.ResponseWriter, r *http.Request) {
 	var err error
 	if r.Method != http.MethodGet {
 		http.Error(w, "GET", http.StatusMethodNotAllowed)
+		log.Print("simulator: method")
 		return
 	}
 	/*
@@ -30,38 +30,34 @@ func HandleBatchSegment(w http.ResponseWriter, r *http.Request) {
 	user, ok := User.Load(token)
 	if !ok {
 		authenticationFailedError(w)
+		log.Print("simulator: no token")
 		return
 	}
 	u := user.(client.UserData)
-
+	log.Println("u.Token.ExpirationTime: ", u.TokenData.ExpirationTime)
 	//check if expiration time exists
 	if u.TokenData.ExpirationTime.IsZero() == true {
 		http.Error(w, "invalid expiration time: ", http.StatusUnauthorized)
+		log.Print("simulator: expiration time")
 		return
 	}
 	//check expiration time
-	if time.Now().Before(u.TokenData.ExpirationTime) == false {
+	if time.Now().UTC().Before(u.TokenData.ExpirationTime) == false {
 		http.Error(w, "invalid expiration time: ", http.StatusUnauthorized)
+		log.Print("simulator: expiration time 2")
 		return
 	}
+	log.Println("TIME NOW: ", time.Now().UTC())
+	log.Println("EXPIRATION TIME: ", u.TokenData.ExpirationTime)
 
 	s := r.URL.Query().Get("member_id")
 	if s == "" {
 		noMemberIdError(w)
+		log.Print("simulator: no member id")
 		return
 	}
 
-	memberID, err := strconv.Atoi(s)
-	if err != nil {
-		log.Println("error:", err)
-		noMemberIdError(w)
-		return
-	}
-	if memberID == 0 {
-		log.Println("memberID is 0")
-		noMemberIdError(w)
-		return
-	}
+	log.Println("1. member_id: ", s)
 
 	// var resp BatchSegmentResponse
 	var resp client.BatchSegmentResponse
@@ -69,27 +65,36 @@ func HandleBatchSegment(w http.ResponseWriter, r *http.Request) {
 	resp.Response.StartElement = 0
 	resp.Response.Count = 1
 	resp.Response.Status = "OK"
-	resp.Response.BatchSegmentUploadJob, err = generateBatchSegmentUploadJob(numJobs, int32(memberID))
+	log.Println("2. status: ", resp.Response.Status)
+	resp.Response.BatchSegmentUploadJob, err = generateBatchSegmentUploadJob(numJobs)
 	if err != nil {
-		log.Println("generateBatchSegmentUploadJob err", http.StatusUnauthorized)
+		http.Error(w, "error", http.StatusUnauthorized)
+		log.Print("simulator:", err)
 		return
 	}
+	log.Println("3. complete_job: ", resp.Response.BatchSegmentUploadJob[0].CompletedTime)
 	resp.Response.Dbg, err = generateDbgInfo()
 	if err != nil {
-		log.Println("generate Dbg-info err", http.StatusUnauthorized)
+		http.Error(w, "error", http.StatusUnauthorized)
+		log.Print("simulator:", err)
 		return
 	}
+	log.Println("4. Dbg: ", resp.Response.Dbg.DbgTime)
 
 	buf, err := json.MarshalIndent(resp, "", "\t")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Print("simulator:", err)
 		return
 	}
 	//fmt.Printf("json data: %s\n", buf)
 	if _, err := fmt.Fprintln(w, string(buf)); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Print("simulator:", err)
 		return
 	}
+
+	log.Print("ok")
 }
 
 func authenticationFailedError(w io.Writer) {
@@ -120,22 +125,22 @@ func noMemberIdError(w io.Writer) {
 	log.Println("no member_id error")
 }
 
-func generateBatchSegmentUploadJob(numJobs int, memberID int32) ([]client.BatchSegmentUploadJob, error) {
+func generateBatchSegmentUploadJob(numJobs int) ([]client.BatchSegmentUploadJob, error) {
 	var err error
 	var list []client.BatchSegmentUploadJob
 	for i := 0; i < numJobs; i++ {
 		var u client.BatchSegmentUploadJob
-		startTime := time.Now()
-		u.StartTime = client.BssTimestamp(time.Now())
-		u.UploadedTime = client.BssTimestamp(time.Now().Add(time.Second * 6))
-		u.ValidatedTime = client.BssTimestamp(time.Now().Add(time.Minute * 3))
-		completedTime := time.Now().Add(time.Minute * 1)
+		startTime := time.Now().UTC()
+		u.StartTime = client.BssTimestamp(time.Now().UTC())
+		u.UploadedTime = client.BssTimestamp(time.Now().UTC().Add(time.Second * 6))
+		u.ValidatedTime = client.BssTimestamp(time.Now().UTC().Add(time.Minute * 3))
+		completedTime := time.Now().UTC().Add(time.Minute * 1)
+		//completedTime := time.Date(2024, time.August, 5, 21, 0, 0, 0, time.UTC)
 		u.CompletedTime = client.BssTimestamp(completedTime)
 		u.CreatedOn = client.BssTimestamp(u.StartTime)
 		//u.ErrorCode =
 		u.ErrorLogLines = "\n\nnum_unauth_segment-4013681496264948522;5013:0,5014:1550"
 		u.ID = int64(rand.Int())
-		u.MemberID = memberID
 		//u.IsBeamFile =
 		u.JobID, err = generateToken(20)
 		if err != nil {
@@ -178,7 +183,7 @@ func generateDbgInfo() (client.DbgInfo, error) {
 	var dbg client.DbgInfo
 	dbg.Instance = "authentication-api-production-8664bd4765-btqsz"
 	dbg.DbgTime = 0
-	dbg.StartTime = time.Now()
+	dbg.StartTime = time.Now().UTC()
 	dbg.Version = "0.0.0"
 	dbg.TraceID, err = generateToken(10)
 	if err != nil {

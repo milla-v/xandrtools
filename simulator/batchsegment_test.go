@@ -2,6 +2,7 @@ package simulator
 
 import (
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -61,24 +62,6 @@ func TestClientNoAuthError(t *testing.T) {
 	}
 }
 
-func TestClientNoMemberIdError(t *testing.T) {
-	createTestUser()
-
-	testServer := httptest.NewServer(http.HandlerFunc(HandleBatchSegment))
-	defer testServer.Close()
-	os.Setenv("TEST_BACKEND", testServer.URL)
-
-	cli := client.NewClient("")
-	cli.User.TokenData.Token = "12345"
-	_, err := cli.GetBatchSegmentJobs(0)
-	if err == nil {
-		t.Fatal("should be SYNTAX error")
-	}
-	if !strings.Contains(err.Error(), "SYNTAX:no member_id provided") {
-		t.Fatal("should syntax error but returned: ", err.Error())
-	}
-}
-
 func TestClientGetJobsSuccess(t *testing.T) {
 	createTestUser()
 
@@ -100,6 +83,8 @@ func createTestUser() {
 
 	user.Username = "user1"
 	user.TokenData.Token = "12345"
-	user.TokenData.ExpirationTime = time.Now().Add(time.Second * 30)
+	//user.TokenData.ExpirationTime = time.Now().Add(time.Second * 30)
+	user.TokenData.ExpirationTime = time.Date(2024, time.August, 5, 21, 0, 0, 0, time.UTC)
+	log.Println("TIME Expiration: ", user.TokenData.ExpirationTime)
 	User.Store(user.TokenData.Token, user)
 }

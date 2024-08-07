@@ -42,13 +42,13 @@ type BatchSegmentResponse struct {
 type BssTimestamp time.Time
 
 func (b BssTimestamp) MarshalJSON() ([]byte, error) {
-	s := time.Time(b).UTC().Format("2006-01-02 15:03:04")
+	s := time.Time(b).UTC().Format("2006-01-02 15:04:05")
 	return json.Marshal(s)
 }
 
 func (b *BssTimestamp) UnmarshalJSON(bytes []byte) error {
 	s := strings.Trim(string(bytes), `"`)
-	ts, err := time.Parse("2006-01-02 15:03:04", s)
+	ts, err := time.Parse("2006-01-02 15:04:05", s)
 	if err != nil {
 		return err
 	}
@@ -59,7 +59,7 @@ func (b *BssTimestamp) UnmarshalJSON(bytes []byte) error {
 }
 
 func (b BssTimestamp) String() string {
-	return time.Time(b).UTC().Format("2006-01-02 15:03:04Z")
+	return time.Time(b).UTC().Format("2006-01-02 15:04:05Z")
 }
 
 type BatchSegmentUploadJob struct {

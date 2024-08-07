@@ -191,11 +191,14 @@ func handleValidators(w http.ResponseWriter, r *http.Request) {
 func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 	log.Println("start bss trouble shooter")
 	type data struct {
-		XandrVersion string
-		VCS          Vcs
-		User         XandrUser
-		JobList      []WebsiteBSUJ
-		IsJobs       bool
+		XandrVersion     string
+		VCS              Vcs
+		User             XandrUser
+		JobList          []WebsiteBSUJ
+		Backend          string
+		IsJobs           bool
+		IsLogin          bool
+		IsLoginWithToken bool
 	}
 	var d data
 	var err error
@@ -207,39 +210,69 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 	d.IsJobs = false
 	var memberid int
 
+	/*
+		mux := http.NewServeMux()
+		addr := os.Getenv("DEBUG_ADDR")
+		if addr != "" {
+			startDevServer(mux, addr)
+		} else {
+			startProdServer(mux)
+		}
+
+		log.Println("START SERVER: ", mux)
+	*/
 	//get username and password
 	log.Println("METHOD: ", r.Method)
 
 	d.User.Username = r.FormValue("username")
 	password := r.FormValue("password")
-	backend := r.FormValue("backend")
-	cli := client.NewClient(backend)
+
 	if r.Method == "POST" {
 		submit := r.FormValue("submit")
 		log.Println("SUBMIT: ", submit)
+		log.Println("URL: ", r.URL)
 		switch submit {
 		case "Login":
+			d.Backend = r.FormValue("backend")
+			cli := client.NewClient(d.Backend)
 			log.Println("CASE LOGIN")
+			log.Println("LOGIN backend: ", d.Backend)
 			if r.FormValue("token") != "" {
 				d.User.Token = r.FormValue("token")
 			} else {
 				//authentication request
 				if err = cli.Login(d.User.Username, password); err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
+					log.Println("login err:", err)
 					return
 				}
 				d.User.Token = cli.User.TokenData.Token
 			}
+			if d.User.Username != "" {
+				d.IsLogin = true
+			} else {
+				d.IsLogin = false
+			}
+			log.Println("LOGIN: d.User.Token = ", d.User.Token)
+
 		case "Get Jobs":
 			//get user data from User sync.Map
+			log.Println("START GET JOBS")
+			d.Backend = r.FormValue("back")
+			log.Println("GET JOBS backend: ", d.Backend)
 			d.User.Token = r.FormValue("token")
+			log.Println("GET JOBS: d.User.Token = ", d.User.Token)
+			cli := client.NewClient(d.Backend)
 			cli.User.TokenData.Token = d.User.Token
 			memberid, err = strconv.Atoi(r.FormValue("memberid"))
 			if err != nil {
 				http.Error(w, "invalid member id", http.StatusUnauthorized)
 				return
 			}
+			log.Println("memberid: ", memberid)
 			d.User.MemberID = int32(memberid)
+
+			log.Println("d.User.MemberID = ", d.User.MemberID)
 
 			//get list of batch segment jobs
 			joblist, err := cli.GetBatchSegmentJobs(d.User.MemberID)
@@ -254,6 +287,22 @@ func handleBssTroubleShooter(w http.ResponseWriter, r *http.Request) {
 			}
 
 			d.JobList = getJobList(joblist)
+
+		case "Login with Token":
+			d.User.Token = r.FormValue("usertoken")
+
+			d.Backend = "xandr"
+			log.Println("LOGIN WITH TOKEN backend: ", d.Backend)
+			log.Println("usertoken: ", d.User.Token)
+			log.Println("Login with token before: ", d.IsLoginWithToken)
+
+			if d.User.Token != "" {
+				d.IsLoginWithToken = true
+			} else {
+				d.IsLoginWithToken = false
+			}
+			log.Println("Login with token after: ", d.IsLoginWithToken)
+
 		}
 	}
 	if err := t.ExecuteTemplate(w, "bsstroubleshooter.html", d); err != nil {
