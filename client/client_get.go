@@ -22,7 +22,7 @@ func getApiURL(backend string) (string, error) {
 
 	switch {
 	case backend == "simulator" && isDebug == true:
-		apiURL = "http://" + debugAddr + "/xandrsim/"
+		apiURL = "https://" + debugAddr + "/xandrsim/"
 		http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 		log.Println("apiUPL: ", apiURL)
 	case backend == "simulator" && isDebug == false:
