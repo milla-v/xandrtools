@@ -107,6 +107,8 @@ body {
     	flex-direction: column;
     	min-height: calc(100vh - 70px);
     	background-color: white;
+	display: -webkit-flex;
+	display: -moz-flex;
     }
     
 .field-sample-input, .field-sample-input-small {
@@ -203,6 +205,7 @@ width: 500px;
 	-webkit-flex-direction: row;
 	-moz-flex-direction: row;
 }
+
 
 
 #jobs {

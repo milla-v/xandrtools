@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -19,6 +20,7 @@ func TestBatchSegment(t *testing.T) {
 
 	testServer := httptest.NewServer(http.HandlerFunc(HandleBatchSegment))
 	defer testServer.Close()
+	os.Setenv("TEST_BACKEND", testServer.URL)
 
 	req, err := http.NewRequest(http.MethodGet, testServer.URL, nil)
 	if err != nil {
@@ -47,8 +49,9 @@ func TestClientNoAuthError(t *testing.T) {
 
 	testServer := httptest.NewServer(http.HandlerFunc(HandleBatchSegment))
 	defer testServer.Close()
+	os.Setenv("TEST_BACKEND", testServer.URL)
 
-	cli := client.NewClient("test:" + testServer.URL)
+	cli := client.NewClient(testServer.URL)
 	cli.User.TokenData.Token = "123"
 	_, err := cli.GetBatchSegmentJobs(111)
 	if err == nil {
@@ -64,8 +67,9 @@ func TestClientGetJobsSuccess(t *testing.T) {
 
 	testServer := httptest.NewServer(http.HandlerFunc(HandleBatchSegment))
 	defer testServer.Close()
+	os.Setenv("TEST_BACKEND", testServer.URL)
 
-	cli := client.NewClient("test:" + testServer.URL + "?member_id=111")
+	cli := client.NewClient("")
 	cli.User.TokenData.Token = "12345"
 	jobs, err := cli.GetBatchSegmentJobs(111)
 	if err != nil {
