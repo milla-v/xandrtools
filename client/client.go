@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"os"
@@ -17,12 +18,21 @@ import (
 type Client struct {
 	backend string
 	User    UserData
+	log     *log.Logger
 }
 
 // NewClient create new API client.
 func NewClient(backend string) *Client {
 	var c Client
 	c.backend = backend
+
+	debugAddr := os.Getenv("DEBUG_ADDR")
+	if debugAddr != "" {
+		c.log = log.New(os.Stderr, "client: ", log.Lmsgprefix|log.Lshortfile|log.LstdFlags)
+	} else {
+		c.log = log.New(io.Discard, "", 0)
+	}
+
 	return &c
 }
 
@@ -60,7 +70,7 @@ func (c *Client) Login(username, password string) error {
 
 	apiURL, err := getApiURL(c.backend)
 	if err != nil {
-		log.Println("get api url err:", err)
+		c.log.Println("get api url err:", err)
 		return nil
 	}
 	apiURL += "auth"
@@ -90,7 +100,7 @@ func (c *Client) Login(username, password string) error {
 
 	c.User.TokenData.Token = respAuth.Response.Token
 	c.User.TokenData.ExpirationTime = time.Now().UTC().Add(time.Hour * 2)
-	log.Println("auth request completed")
+	c.log.Println("auth request completed")
 
 	return nil
 }
@@ -102,13 +112,14 @@ func (c *Client) GetBatchSegmentJobs(memberID int32) ([]BatchSegmentUploadJob, e
 	}
 	var apiURL string
 	var bsResponse BatchSegmentResponse
-	log.Println("BACKEND Get Job: ", c.backend)
+	c.log.Println("BACKEND Get Job: ", c.backend)
 
 	apiURL, err := getApiURL(c.backend)
 	if err != nil {
-		log.Println("get api url err:", err)
+		c.log.Println("get api url err:", err)
 		return bsResponse.Response.BatchSegmentUploadJob, nil
 	}
+
 	apiURL += "batch-segment?member_id=" + strconv.Itoa(int(memberID))
 
 	req, err := http.NewRequest(http.MethodGet, apiURL, nil)
@@ -132,7 +143,7 @@ func (c *Client) GetBatchSegmentJobs(memberID int32) ([]BatchSegmentUploadJob, e
 
 	var errResponse ErrorResponse
 	if err := json.Unmarshal(buf, &errResponse); err != nil {
-		log.Println("buf:", string(buf))
+		c.log.Println("buf:", string(buf))
 		return nil, err
 	}
 
@@ -141,12 +152,12 @@ func (c *Client) GetBatchSegmentJobs(memberID int32) ([]BatchSegmentUploadJob, e
 	}
 
 	if err := json.Unmarshal(buf, &bsResponse); err != nil {
-		log.Println("buf:", string(buf))
+		c.log.Println("buf:", string(buf))
 		return nil, err
 	}
 
-	//log.Println("jobs:", len(bsResponse.Response.BatchSegmentUploadJob))
-	//log.Println("COMPLETE_time: ", bsResponse.Response.BatchSegmentUploadJob[0].CompletedTime)
+	//c.log.Println("jobs:", len(bsResponse.Response.BatchSegmentUploadJob))
+	//c.log.Println("COMPLETE_time: ", bsResponse.Response.BatchSegmentUploadJob[0].CompletedTime)
 
 	return bsResponse.Response.BatchSegmentUploadJob, nil
 }
