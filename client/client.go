@@ -10,8 +10,6 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"strings"
-	"os"
 	"time"
 )
 
@@ -73,6 +71,7 @@ func (c *Client) Login(username, password string) error {
 		c.log.Println("get api url err:", err)
 		return nil
 	}
+	log.Println("I AM HERE", " apiUrl: ", apiURL)
 	apiURL += "auth"
 
 	log.Println("request:", apiURL, "user:", username)
